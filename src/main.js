@@ -1,22 +1,44 @@
 import Vue from 'vue'
-import { createPinia, PiniaVuePlugin } from 'pinia'
-import { Icon, Button, ColorPicker, Cascader } from 'element-ui'
-import { Buffer } from 'buffer/'
 
-import App from './App.vue'
- import router from './router'
+import 'normalize.css/normalize.css' // A modern alternative to CSS resets
 
-import './assets/main.css'
+import ElementUI from 'element-ui'
+import 'element-ui/lib/theme-chalk/index.css'
+import locale from 'element-ui/lib/locale/lang/en' // lang i18n
 
-Vue.use(PiniaVuePlugin)
-Vue.use(Icon)
-Vue.use(Button)
-Vue.use(Buffer)
-Vue.use(ColorPicker)
-Vue.use(Cascader)
-// asdsadad
+import '@/styles/index.scss' // global css
+
+import App from './App'
+import store from './store'
+import router from './router'
+
+import '@/icons' // icon
+import '@/permission' // permission control
+import * as echarts from 'echarts'
+Vue.prototype.$echarts = echarts
+/**
+ * If you don't want to use mock-server
+ * you want to use MockJs for mock api
+ * you can execute: mockXHR()
+ *
+ * Currently MockJs will be used in the production environment,
+ * please remove it before going online ! ! !
+ */
+if (process.env.NODE_ENV === 'production') {
+  const { mockXHR } = require('../mock')
+  mockXHR()
+}
+
+// set ElementUI lang to EN
+Vue.use(ElementUI, { locale })
+// 如果想要中文版 element-ui，按如下方式声明
+// Vue.use(ElementUI)
+
+Vue.config.productionTip = false
+
 new Vue({
+  el: '#app',
   router,
-  pinia: createPinia(),
-  render: (h) => h(App)
-}).$mount('#app')
+  store,
+  render: h => h(App)
+})
