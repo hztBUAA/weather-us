@@ -4,7 +4,7 @@ import { Icon, Button, ColorPicker, Cascader } from 'element-ui'
 import { Buffer } from 'buffer/'
 
 import App from './App.vue'
-import router from './router'
+ import router from './router'
 
 import './assets/main.css'
 
