@@ -198,6 +198,42 @@ export const constantRoutes = [
       }
     ]
   },
+  {
+    path: '/user-con',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/admin/user-con'),
+        name: '用户管理',
+        meta: { title: '用户管理', icon: 'el-icon-user' }
+      }
+    ]
+  },
+  {
+    path: '/launch-varn',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/admin/launch-varn'),
+        name: '发布预警',
+        meta: { title: '发布预警', icon: 'el-icon-bell' }
+      }
+    ]
+  },
+  {
+    path: '/deal-feedback',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/admin/deal-feedback'),
+        name: '发布预警',
+        meta: { title: '处理反馈', icon: 'el-icon-edit-outline' }
+      }
+    ]
+  },
 
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
