@@ -31,8 +31,8 @@
 
 <script>
 import * as echarts from "echarts";
-import mapData from "../../assets/jsonData/china.json"
-import cityData from "../../assets/jsonData/city.json"
+import mapData from "../assets/jsonData/china.json"
+import cityData from "../assets/jsonData/city.json"
 import { getCityJson } from "../api/staticApi";
 import { getCityData } from "../api/dataApi"
 const predefineColors = ['#ff4500',
