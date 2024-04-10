@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import { createPinia, PiniaVuePlugin } from 'pinia'
-import { Icon, Button, ColorPicker, Cascader } from 'element-ui'
+import ElementUI from 'element-ui'
+import 'element-ui/lib/theme-chalk/index.css';
 import { Buffer } from 'buffer/'
 
 import App from './App.vue'
@@ -9,11 +10,8 @@ import App from './App.vue'
 import './assets/main.css'
 
 Vue.use(PiniaVuePlugin)
-Vue.use(Icon)
-Vue.use(Button)
+Vue.use(ElementUI)
 Vue.use(Buffer)
-Vue.use(ColorPicker)
-Vue.use(Cascader)
 // asdsadad
 new Vue({
   router,
