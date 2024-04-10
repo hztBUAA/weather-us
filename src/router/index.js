@@ -5,6 +5,11 @@ Vue.use(Router)
 
 /* Layout */
 import Layout from '@/layout'
+// import LayoutView from "@/views/LayoutView.vue";
+import ChangePassword from '@/views/user/ChangePassword.vue'
+import CitySubsribe from '@/views/user/CitySubsribe.vue'
+import ProfileView from '@/views/user/ProfileView.vue'
+import UserView from '@/views/user/UserView.vue'
 
 // 路由 和 sidebar这一块 以及显示的时候有关系   children？？？
 
@@ -54,6 +59,25 @@ export const constantRoutes = [
       name: 'Dashboard',
       component: () => import('@/views/dashboard/index'),
       meta: { title: 'Dashboard', icon: 'dashboard' }
+    },
+    {
+      path: 'user',
+      component: UserView,
+      children: [
+        {
+          path: 'profile',
+          component: ProfileView,
+          alias: ''
+        },
+        {
+          path: 'changePassword',
+          component: ChangePassword
+        },
+        {
+          path: 'citySubscribe',
+          component: CitySubsribe
+        }
+      ]
     }]
   },
 
