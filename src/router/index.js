@@ -60,6 +60,7 @@ export const constantRoutes = [
       component: () => import('@/views/dashboard/index'),
       meta: { title: 'Dashboard', icon: 'dashboard' }
     },
+    // （世琪）这里是用户端的个人信息界面  之后可能需要对应到 模版的个人信息界面（模版里面是没有的 但是可以对照admin的另外一个大的框架复制粘贴到本项目中）
     {
       path: 'user',
       component: UserView,
@@ -195,6 +196,43 @@ export const constantRoutes = [
       {
         path: 'https://panjiachen.github.io/vue-element-admin-site/#/',
         meta: { title: 'External Link', icon: 'link' }
+      }
+    ]
+  },
+  // （何山）之后需要注意  不要和蒋世琪的用户个人信息的path重合混淆了
+  {
+    path: '/user-con',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/admin/user-con'),
+        name: '用户管理',
+        meta: { title: '用户管理', icon: 'el-icon-user' }
+      }
+    ]
+  },
+  {
+    path: '/launch-varn',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/admin/launch-varn'),
+        name: '发布预警',
+        meta: { title: '发布预警', icon: 'el-icon-bell' }
+      }
+    ]
+  },
+  {
+    path: '/deal-feedback',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/admin/deal-feedback'),
+        name: '处理反馈',
+        meta: { title: '处理反馈', icon: 'el-icon-edit-outline' }
       }
     ]
   },
