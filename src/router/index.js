@@ -60,6 +60,7 @@ export const constantRoutes = [
       component: () => import('@/views/dashboard/index'),
       meta: { title: 'Dashboard', icon: 'dashboard' }
     },
+    // （世琪）这里是用户端的个人信息界面  之后可能需要对应到 模版的个人信息界面（模版里面是没有的 但是可以对照admin的另外一个大的框架复制粘贴到本项目中）
     {
       path: 'user',
       component: UserView,
@@ -198,6 +199,7 @@ export const constantRoutes = [
       }
     ]
   },
+  // （何山）之后需要注意  不要和蒋世琪的用户个人信息的path重合混淆了
   {
     path: '/user-con',
     component: Layout,
@@ -229,7 +231,7 @@ export const constantRoutes = [
       {
         path: 'index',
         component: () => import('@/views/admin/deal-feedback'),
-        name: '发布预警',
+        name: '处理反馈',
         meta: { title: '处理反馈', icon: 'el-icon-edit-outline' }
       }
     ]
