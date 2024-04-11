@@ -49,16 +49,16 @@ export const constantRoutes = [
     component: () => import('@/views/404'),
     hidden: true
   },
-
+  // 此处对应面包屑的注释？  中文 改成dashboard
   {
     path: '/',
     component: Layout,
     redirect: '/dashboard',
     children: [{
       path: 'dashboard',
-      name: 'Dashboard',
+      name: '仪表盘',
       component: () => import('@/views/dashboard/index'),
-      meta: { title: 'Dashboard', icon: 'dashboard' }
+      meta: { title: '仪表盘', icon: 'dashboard' }
     },
     // （世琪）这里是用户端的个人信息界面  之后可能需要对应到 模版的个人信息界面（模版里面是没有的 但是可以对照admin的另外一个大的框架复制粘贴到本项目中）
     {
@@ -78,7 +78,8 @@ export const constantRoutes = [
           path: 'citySubscribe',
           component: CitySubsribe
         }
-      ]
+      ],
+      hidden: true
     }]
   },
 
@@ -87,7 +88,7 @@ export const constantRoutes = [
     component: Layout,
     // redirect: '/form/index',
     name: 'Example',
-    meta: { title: 'Example', icon: 'el-icon-s-help' }
+    meta: { title: '示例', icon: 'el-icon-s-help' }
     // children: [
     //   {
     //     path: 'table',
@@ -111,7 +112,7 @@ export const constantRoutes = [
         path: 'index',
         component: () => import('@/views/map/MapView'),
         name: 'Map',
-        meta: { title: 'Map', icon: 'map' }
+        meta: { title: '地图', icon: 'el-icon-map-location' }
       }
     ]
   },
@@ -124,7 +125,7 @@ export const constantRoutes = [
         path: 'index',
         name: 'Form',
         component: () => import('@/views/form/index'),
-        meta: { title: 'Form', icon: 'form' }
+        meta: { title: '表格', icon: 'form' }
       }
     ]
   },
