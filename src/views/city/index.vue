@@ -46,7 +46,7 @@ export default {
         y: 250,
         radius: 218
       },
-      title: ['数据1:456,789', '数据2:123,12', '数据3:134,23', '数据4:234,234', '数据5:123,123', '数据6:678,123'],
+      title: ['关于时间日期的数据可以切换'],
       // 模块一面积图数据
       cnfigData1: {
         color: '#5CB1C1',
@@ -334,7 +334,7 @@ export default {
       context.closePath()
       context.fill()
       // 内圆
-      const nowRange = 36
+      const nowRange = 24
       context.save()
       this.drawCircle(context)
       this.drawSin(this.xOffset, context, nowRange)
@@ -399,7 +399,7 @@ export default {
       ctx.font = size + 'px Microsoft Yahei'
       ctx.textAlign = 'center'
       ctx.fillStyle = '#95EFFF'
-      ctx.fillText(nowRange + '%', 120, 120 - size / 2)
+      ctx.fillText(nowRange + '℃', 120, 120 - size / 2)
       ctx.restore()
       ctx.save()
       size = 25
@@ -407,7 +407,7 @@ export default {
       ctx.font = size + 'px Microsoft Yahei'
       ctx.textAlign = 'center'
       ctx.fillStyle = '#95EFFF'
-      ctx.fillText('平均值', 120, 120 + size)
+      ctx.fillText('温度', 120, 120 + size)
       ctx.restore()
     },
     // 旋转的文字
