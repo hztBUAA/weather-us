@@ -1,21 +1,42 @@
-
 <template>
   <div class="page2">
-    <h1>
-      城市的气象地质数据可视化图片
-    </h1>
+    hello
     <div class="content">
+
       <div id="circlePie" class="circlePie">
         <canvas id="main" width="500" height="500" />
         <canvas id="dot" />
       </div>
-    </div>
 
+    </div>
   </div>
 </template>
 
 <script>
+// const chart1 = () => import('./components/page2/chart1')
+// const chart2 = () => import('./components/page2/chart2')
+// const chart3 = () => import('./components/page2/chart3')
+// const chart4 = () => import('./components/page2/chart4')
+// const chart5 = () => import('./components/page2/chart5')
+// const chart6 = () => import('./components/page2/chart6')
+// const chart7 = () => import('./components/page2/chart7')
+// const areaChart = () => import('./components/areaChart')
+// const radarChart = () => import('./components/radar')
+
 export default {
+  name: 'Page2',
+  components: {
+    // areaChart,
+    // radarChart,
+    // chart1,
+    // chart2,
+    // chart3,
+    // chart4,
+    // chart5,
+    // chart6,
+    // chart7
+  },
+  props: ['selectRangeDate'],
   data() {
     return {
       everyPer: 0,
@@ -25,6 +46,120 @@ export default {
         y: 250,
         radius: 218
       },
+      title: ['数据1:456,789', '数据2:123,12', '数据3:134,23', '数据4:234,234', '数据5:123,123', '数据6:678,123'],
+      // 模块一面积图数据
+      cnfigData1: {
+        color: '#5CB1C1',
+        name: ['（次）', '（人）'],
+        data: [
+          {
+            name: '次数',
+            color: ['#9e70ff', '#6e5eff'],
+            data: [200, 12, 21, 54, 260, 130, 210]
+          },
+          {
+            name: '人数',
+            color: ['#48cefd', '#5356f1'],
+            data: [50, 182, 234, 191, 190, 30, 10]
+          }
+        ]
+      },
+      configData2: {
+        data: [213, 190, 137, 99, 63, 196, 248, 212, 248, 112]
+      },
+      // 模块一雷达图数据
+      chatRadarData: {
+        title: '标题',
+        position: ['center', '85%'],
+        center: ['50%', '50%'],
+        indicator: [
+          { text: '分类1' },
+          { text: '分类2' },
+          { text: '分类3' },
+          { text: '分类4' },
+          { text: '分类5' },
+          { text: '分类6' }
+        ],
+        data: [
+          {
+            name: '次数',
+            color: '#0DF5F8',
+            value: [100, 8, 0.40, -80, 2000, 332]
+          },
+          {
+            name: '人数',
+            color: '#ffffff',
+            value: [60, 5, 0.30, -100, 1500, 221]
+          }
+        ]
+      },
+      // 模块二雷达图数据
+      officeRadarData: {
+        title: '标题',
+        position: ['center', '85%'],
+        center: ['50%', '50%'],
+        indicator: [
+          { text: '分类1' },
+          { text: '分类2' },
+          { text: '分类3' },
+          { text: '分类4' },
+          { text: '分类5' },
+          { text: '分类6' },
+          { text: '分类7' },
+          { text: '分类8' },
+          { text: '分类9' },
+          { text: '分类10' }
+        ],
+        data: [
+          {
+            name: '数据',
+            color: '#55D35B',
+            value: [213, 190, 137, 99, 63, 196, 248, 212, 248, 112]
+          }
+        ]
+      },
+      // 模块三雷达图数据
+      friendRadarData: {
+        title: '分类标题',
+        position: ['center', '85%'],
+        center: ['50%', '50%'],
+        indicator: [
+          { text: '分类1' },
+          { text: '分类2' },
+          { text: '分类3' },
+          { text: '分类4' },
+          { text: '分类5' },
+          { text: '分类6' }
+        ],
+        data: [
+          {
+            name: '数据',
+            color: '#FA8486',
+            value: [100, 8, 0.40, -80, 2000, 332]
+          }
+        ]
+      },
+      // 模块四雷达图数据
+      momentsRadarData: {
+        title: '标题',
+        position: ['center', '85%'],
+        center: ['50%', '50%'],
+        indicator: [
+          { text: '分类1' },
+          { text: '分类2' },
+          { text: '分类3' },
+          { text: '分类4' },
+          { text: '分类5' },
+          { text: '分类6' }
+        ],
+        data: [
+          {
+            name: '个数',
+            color: '#D91748',
+            value: [100, 8, 0.40, -80, 2000, 332]
+          }
+        ]
+      },
       warea: { x: 250, y: 250, max: 700 },
       dots: [],
       resizeFn: null,
@@ -33,8 +168,7 @@ export default {
       centerBox: {
         width: 0,
         height: 0
-      },
-      title: ['数据1:456,789', '数据2:123,12', '数据3:134,23', '数据4:234,234', '数据5:123,123', '数据6:678,123']
+      }
     }
   },
   mounted() {
@@ -59,16 +193,16 @@ export default {
     }
     this.act()
     this.drawDot()
-    // this.resizeFn = this.$debounce(() => {
-    //   // 通过捕获系统的onresize事件触发我们需要执行的事件
-    //   this.centerBox = {
-    //     width: document.querySelector('#circlePie').offsetWidth,
-    //     height: document.querySelector('#circlePie').offsetHeight
-    //   }
-    // //   for (let i = 1; i < 13; i++) {
-    // //     this.$refs['chart' + i].setChart()
-    // //   }
-    // }, 500)
+    this.resizeFn = this.$debounce(() => {
+      // 通过捕获系统的onresize事件触发我们需要执行的事件
+      this.centerBox = {
+        width: document.querySelector('#circlePie').offsetWidth,
+        height: document.querySelector('#circlePie').offsetHeight
+      }
+      for (let i = 1; i < 13; i++) {
+        this.$refs['chart' + i].setChart()
+      }
+    }, 500)
     window.addEventListener('resize', this.resizeFn)
   },
   beforeDestroy() {
@@ -200,7 +334,7 @@ export default {
       context.closePath()
       context.fill()
       // 内圆
-      const nowRange = 35
+      const nowRange = 36
       context.save()
       this.drawCircle(context)
       this.drawSin(this.xOffset, context, nowRange)
@@ -343,7 +477,7 @@ export default {
 
 <style lang="less" scoped>
 .page2 {
-    height: 100%;
+    height: 800px;
     width: 100%;
     padding: 14px 20px 20px;
     background: #03044A;
@@ -363,14 +497,18 @@ export default {
             position: relative;
 
             canvas {
-                position: absolute;
-                left: 50%;
-                top: 0;
-                transform: translate(-50%, 0);
+              position: absolute;
+              left: 50%;
+              top: 0;
+              transform: translate(-50%, 0);
+              // width: 400px; /* 设置一个具体的宽度 */
+              height: 500px; /* 设置一个具体的高度 */
             }
 
             #dot {
                 background: rgba(0, 0, 0, 0);
+                height: 100%;
+                // height:500px
             }
         }
 
@@ -442,4 +580,4 @@ export default {
     }
 
 }
-
+</style>
