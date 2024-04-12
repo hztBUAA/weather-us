@@ -2,9 +2,12 @@
   <div>
     <h1>这里会处理用户管理</h1>
     <el-table :data="tableData" height="250" border class="tabel">
-      <el-table-column prop="date" label="日期" width="180" />
-      <el-table-column prop="name" label="姓名" width="180" />
-      <el-table-column prop="address" label="地址" />
+      <el-table-column prop="date" label="日期" width="180">
+      </el-table-column>
+      <el-table-column prop="name" label="姓名" width="180">
+      </el-table-column>
+      <el-table-column prop="address" label="地址">
+      </el-table-column>
     </el-table>
   </div>
 </template>
@@ -46,11 +49,10 @@ export default {
 }
 </script>
 <style>
-.tabel{
-    margin-top: 30px;
-    margin-left: 30px;
-    margin-right: 30px;
-    width: 70%;
+.tabel {
+  margin-top: 30px;
+  margin-left: 30px;
+  margin-right: 30px;
+  width: 70%;
 }
-
 </style>
