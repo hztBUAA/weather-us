@@ -58,7 +58,7 @@ export const constantRoutes = [
       path: 'dashboard',
       name: '仪表盘',
       component: () => import('@/views/dashboard/index'),
-      meta: { title: '仪表盘', icon: 'dashboard' }
+      meta: { title: '首页', icon: 'dashboard' }
     },
     // （世琪）这里是用户端的个人信息界面  之后可能需要对应到 模版的个人信息界面（模版里面是没有的 但是可以对照admin的另外一个大的框架复制粘贴到本项目中）
     {
@@ -82,7 +82,18 @@ export const constantRoutes = [
       hidden: true
     }]
   },
-
+  {
+    path: '/city',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/city/index'),
+        name: 'City',
+        meta: { title: '城市', icon: 'el-icon-location' }
+      }
+    ]
+  },
   {
     path: '/example',
     component: Layout,
