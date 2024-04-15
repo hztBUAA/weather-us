@@ -7,8 +7,14 @@
         <canvas id="main" width="500" height="500" />
         <canvas id="dot" />
       </div>
-
+      <div class="chart-32">
+        <radar-chart id="right_3" ref="chart7" :data="momentsRadarData" />
+      </div>
     </div>
+
+    <!-- <div class="chart-32">
+
+    </div> -->
   </div>
 </template>
 
@@ -21,13 +27,13 @@
 // const chart6 = () => import('./components/page2/chart6')
 // const chart7 = () => import('./components/page2/chart7')
 // const areaChart = () => import('./components/areaChart')
-// const radarChart = () => import('./components/radar')
+const radarChart = () => import('./components/radar')
 
 export default {
   name: 'Page2',
   components: {
     // areaChart,
-    // radarChart,
+    radarChart
     // chart1,
     // chart2,
     // chart3,
@@ -37,6 +43,7 @@ export default {
     // chart7
   },
   props: ['selectRangeDate'],
+
   data() {
     return {
       everyPer: 0,
@@ -480,7 +487,7 @@ export default {
     height: 800px;
     width: 100%;
     padding: 14px 20px 20px;
-    background: #03044A;
+    background: #ffffff;
     overflow: hidden;
 
     .content {
