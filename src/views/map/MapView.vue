@@ -1,6 +1,24 @@
 <template>
   <div>
-    <div ref="charts" style="width: 100vw; height: 100vh" />
+    <div ref="charts" style="width: 100%; height: 100vh" />
+    <el-menu default-active="1" style="top: 0%; right: 0%; width: 60px; height: 100vh; background-color: rgba(0, 0, 0, 0)" class="float" @select="selectMode" :collapse="true">
+        <el-menu-item index="1">
+          <i class="el-icon-location"></i>
+          <span slot="title">导航一</span>
+        </el-menu-item>
+        <el-menu-item index="2">
+          <i class="el-icon-menu"></i>
+          <span slot="title">导航二</span>
+        </el-menu-item>
+        <el-menu-item index="3">
+          <i class="el-icon-document"></i>
+          <span slot="title">导航三</span>
+        </el-menu-item>
+        <el-menu-item index="4">
+          <i class="el-icon-setting"></i>
+          <span slot="title">导航四</span>
+        </el-menu-item>
+    </el-menu>
     <div class="float" style="top: 3%; left: 3%; display: flex; align-items: center; justify-content: center; height: 42px">
       <el-button
         plain
@@ -24,12 +42,6 @@
         :predefine="predefineColors"
         @active-change="colorChange"
       />
-    </div>
-    <div class="float" style="top: 5%; right: 3%; display: grid; width: 40px">
-      <el-button id="b1" circle size="medium" style="margin-bottom: 25px" @click="changeInfo"> 1 </el-button>
-      <el-button id="b2" circle size="medium" style="margin-bottom: 25px; margin-left: 0px" @click="changeInfo"> 2 </el-button>
-      <el-button id="b3" circle size="medium" style="margin-bottom: 25px; margin-left: 0px" @click="changeInfo"> 3 </el-button>
-      <el-button id="b4" circle size="medium" style="margin-bottom: 25px; margin-left: 0px" @click="changeInfo"> 4 </el-button>
     </div>
   </div>
 </template>
@@ -126,6 +138,9 @@ export default {
     })
   },
   methods: {
+    selectMode(index) {
+      console.log(index)
+    },
     changeInfo(p) {
       console.log(p)
       this.showData('test')
@@ -133,7 +148,7 @@ export default {
     initCities() {
       const that = this
       mapData.features.forEach(function(feature) {
-        if (feature.properties.adcode !== 100000) {
+        if (feature.properties.adcode != 100000) {
           const pro = { value: feature.properties.adcode, label: feature.properties.name, children: [] }
           getCityJson(feature.properties.adcode).then((res) => {
             res.data.features.forEach(function(childFeature) {
@@ -192,7 +207,7 @@ export default {
       const data = []
       cityData.features.forEach(function(feature) {
         getCityData(feature.properties.adcode, type).then((res) => {
-          data.push({ name: feature.properties.name, value: res })
+          data.push([ feature.properties.center[0], feature.properties.center[1], res])
         })
       })
       return data
@@ -200,6 +215,7 @@ export default {
     showData(type) {
       var option = this.charts.getOption()
       this.getAllData(type).then((res) => {
+        console.log(res)
         option = { ...option, ...{
           visualMap: {
             type: 'continuous',
@@ -216,9 +232,12 @@ export default {
           },
           series: [
             {
-              type: 'map',
+              type: 'heatmap',
               geoIndex: 0,
-              data: res
+              data: res,
+              coordinateSystem: 'geo',
+              pointSize: 1,
+              blurSize: 1,
             }
           ]
         }}
