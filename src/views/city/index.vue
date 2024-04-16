@@ -1,27 +1,53 @@
 <template>
   <el-container>
     <el-main>
-      <div class="time-menu">
-        <el-radio-group v-model="selectedTimeUnit" @change="changeTimeUnit">
-          <el-radio label="月">月</el-radio>
-          <el-radio label="季度">季度</el-radio>
-          <el-radio label="年">年</el-radio>
-        </el-radio-group>
-      </div>
-      <div class="figure-container">
-        <div id="figure" class="chart" />
-        <!-- 时间粒度切换菜单内容 -->
-      </div>
+
+      <el-radio-group v-model="selectedTimeUnit" style="text-align:center" @change="changeTimeUnit">
+        <el-radio label="月">月</el-radio>
+        <el-radio label="季度">季度</el-radio>
+        <el-radio label="年">年</el-radio>
+      </el-radio-group>
+      <panel-group @handleSetLineChartData="handleSetLineChartData" />
+      <el-row style="background:#fff;padding:16px 16px 0;margin-bottom:32px;">
+        <line-chart :chart-data="lineChartData" />
+      </el-row>
     </el-main>
-    <el-aside />
+    <el-aside>
+      AI Analysis
+    </el-aside>
+    
   </el-container>
 </template>
 
 <script>
 // from 'echarts' import *  as echarts
+import LineChart from './components/LineChart'
+import PanelGroup from './components/PanelGroup'
+const lineChartData = {
+  newVisitis: {
+    expectedData: [100, 120, 161, 134, 105, 160, 165],
+    actualData: [120, 82, 91, 154, 162, 140, 145]
+  },
+  messages: {
+    expectedData: [200, 192, 120, 144, 160, 130, 140],
+    actualData: [180, 160, 151, 106, 145, 150, 130]
+  },
+  purchases: {
+    expectedData: [80, 100, 121, 104, 105, 90, 100],
+    actualData: [120, 90, 100, 138, 142, 130, 130]
+  },
+  shoppings: {
+    expectedData: [130, 140, 141, 142, 145, 150, 160],
+    actualData: [120, 82, 91, 154, 162, 140, 130]
+  }
+}
 
 export default {
   name: 'City',
+  components: {
+    LineChart,
+    PanelGroup
+  },
   data() {
     return {
       // echart数据部分
@@ -30,6 +56,7 @@ export default {
       rainData: [],
       windData: [],
       earthData: [],
+      lineChartData: lineChartData.newVisitis,
       // displayAttributeList: [],  echart直接集成了点击不同图标的显示
       eventProbabilityList: [],
       // x轴的时间选项  希望可以切换时间粒度的展示
@@ -44,7 +71,7 @@ export default {
     }
   },
   mounted() {
-    this.initChart()
+    // this.initChart()
   },
   methods: {
     initChart() {
@@ -162,25 +189,11 @@ export default {
 
 <style lang="less" scoped>
 .el-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-}
-
-.time-menu {
-  flex: 0 0 auto; /* 不要随着容器的大小改变而改变 */
-  margin-right: 20px; /* 间距调整 */
-}
-
-.figure-container {
-  flex: 1; /* 填充剩余空间 */
-  display: flex;
-  justify-content: space-around;
-  align-items: flex-start;
+  background: #f0f0f0;
 }
 
 .chart {
-  width: 60%;
+  width: 80%;
   height: 500px;
 }
 
@@ -192,9 +205,14 @@ export default {
 .el-aside {
   flex: 0 0 auto; /* 不要随着容器的大小改变而改变 */
   width: 200px;
-  background-color: #D3DCE6;
-  color: #333;
+  background-color: #f0f0f0;
+  color: #120f0f;
   text-align: center;
   line-height: 200px;
+}
+.el-main{
+    position: relative;
+  padding: 32px;
+  background-color: rgb(240, 242, 245);
 }
 </style>
