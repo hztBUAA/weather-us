@@ -54,6 +54,7 @@
 
 <script>
 import { validUsername } from '@/utils/validate'
+import { getInfo } from '@/api/user'
 
 export default {
   name: 'Login',

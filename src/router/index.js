@@ -7,9 +7,8 @@ Vue.use(Router)
 import Layout from '@/layout'
 // import LayoutView from "@/views/LayoutView.vue";
 import ChangePassword from '@/views/user/ChangePassword.vue'
-import CitySubsribe from '@/views/user/CitySubsribe.vue'
+import CitySubscribe from '@/views/user/CitySubscribe.vue'
 import ProfileView from '@/views/user/ProfileView.vue'
-import UserView from '@/views/user/UserView.vue'
 
 // 路由 和 sidebar这一块 以及显示的时候有关系   children？？？
 
@@ -59,28 +58,31 @@ export const constantRoutes = [
       name: '仪表盘',
       component: () => import('@/views/dashboard/index'),
       meta: { title: '首页', icon: 'dashboard' }
-    },
-    // （世琪）这里是用户端的个人信息界面  之后可能需要对应到 模版的个人信息界面（模版里面是没有的 但是可以对照admin的另外一个大的框架复制粘贴到本项目中）
-    {
-      path: 'user',
-      component: UserView,
-      children: [
-        {
-          path: 'profile',
-          component: ProfileView,
-          alias: ''
-        },
-        {
-          path: 'changePassword',
-          component: ChangePassword
-        },
-        {
-          path: 'citySubscribe',
-          component: CitySubsribe
-        }
-      ],
-      hidden: true
     }]
+  },
+  // （蒋世祺）这里是用户端的个人信息界面  之后可能需要对应到 模版的个人信息界面（模版里面是没有的 但是可以对照admin的另外一个大的框架复制粘贴到本项目中）
+  {
+    path: '/user',
+    component: Layout,
+    meta: { title: '个人信息管理', icon: 'el-icon-s-check' },
+    children: [
+      {
+        path: 'profile',
+        component: ProfileView,
+        alias: '',
+        meta: { title: '用户信息', icon: 'el-icon-s-custom' }
+      },
+      {
+        path: 'changePassword',
+        component: ChangePassword,
+        meta: { title: '修改密码', icon: 'el-icon-setting' }
+      },
+      {
+        path: 'citySubscribe',
+        component: CitySubscribe,
+        meta: { title: '订阅城市', icon: 'el-icon-location-outline' }
+      }
+    ]
   },
   {
     path: '/city',
