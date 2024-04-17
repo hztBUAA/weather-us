@@ -78,6 +78,7 @@ export default {
       :rules="rules"
       size="medium"
       style="width: 400px"
+      status-icon
     >
       <el-form-item label="旧密码" prop="oldPassword">
         <el-input v-model="form.oldPassword" show-password placeholder="请输入旧密码" />
@@ -86,7 +87,12 @@ export default {
         <el-input v-model="form.newPassword" show-password placeholder="请输入新密码" />
       </el-form-item>
       <el-form-item label="确认新密码" prop="rePassword">
-        <el-input v-model="form.rePassword" show-password placeholder="请重复新密码" />
+        <el-input
+          v-model="form.rePassword"
+          show-password
+          placeholder="请重复新密码"
+          @keyup.enter.native="submit"
+        />
       </el-form-item>
       <el-form-item>
         <el-button type="primary" style="width: 100%" @click="submit">修改密码</el-button>

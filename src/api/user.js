@@ -1,18 +1,20 @@
 import request from '@/utils/request'
 
+const formUrlEncoded = {
+  contentType: 'application/x-www-form-urlencoded'
+}
+
 export function login(data) {
-  return request({
-    url: '/user/login',
-    method: 'post',
-    data
-  })
+  return request.post('/user/login', data,
+    {
+      headers: {
+        formUrlEncoded
+      }
+    })
 }
 
 export function getInfo() {
-  return request({
-    url: '/user/info',
-    method: 'get'
-  })
+  return request.get('/user/info')
 }
 
 export function changePasswordService(form) {
@@ -21,15 +23,16 @@ export function changePasswordService(form) {
     form,
     {
       headers: {
-        contentType: 'application/x-www-form-urlencoded'
+        formUrlEncoded
       }
     }
   )
 }
 
+export function registerService(form) {
+  return request.post('/user/register', form)
+}
+
 export function logout() {
-  return request({
-    url: '/user/logout',
-    method: 'post'
-  })
+  return request.post('/user/logout')
 }
