@@ -1,38 +1,39 @@
 import request from '@/utils/request'
 
 const formUrlEncoded = {
-  contentType: 'application/x-www-form-urlencoded'
+  headers: {
+    'content-type': 'application/x-www-form-urlencoded'
+  }
 }
 
 export function login(data) {
-  return request.post('/user/login', data,
-    {
-      headers: {
-        formUrlEncoded
-      }
-    })
+  return request.post('/user/login', data, formUrlEncoded)
 }
 
 export function getInfo() {
   return request.get('/user/info')
 }
 
-export function changePasswordService(form) {
-  return request.patch(
-    '/user/changePassword',
-    form,
-    {
-      headers: {
-        formUrlEncoded
-      }
-    }
-  )
+export function changePasswordService(data) {
+  return request.patch('/user/changePassword', data, formUrlEncoded)
 }
 
-export function registerService(form) {
-  return request.post('/user/register', form)
+export function registerService(data) {
+  return request.post('/user/register', data)
 }
 
 export function logout() {
   return request.post('/user/logout')
+}
+
+export function getCitySubscribeService() {
+  return request.get('/user/citySubscribe')
+}
+
+export function addCitySubscribeService(data) {
+  return request.post('/user/citySubscribe', data, formUrlEncoded)
+}
+
+export function deleteCitySubscribeService(id) {
+  return request.delete('/user/citySubscribe', { params: { id }})
 }

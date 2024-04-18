@@ -142,11 +142,10 @@ export default {
       immediate: true
     },
     isRegister(newValue) {
+      this.userData = {}
       if (newValue) {
-        this.registerData = {}
         this.$refs.registerForm.clearValidate()
       } else {
-        this.userData = {}
         this.$refs.loginForm.clearValidate()
       }
     }
