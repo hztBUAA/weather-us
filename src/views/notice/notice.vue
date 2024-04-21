@@ -17,7 +17,7 @@
                             scope.row.state }}</el-tag>
                     </template>
                 </el-table-column>
-                <el-table-column label="反馈标题" width="360">
+                <el-table-column label="公告标题" width="360">
                     <template slot-scope="scope">
                         <span style="font-weight: bolder;">{{ scope.row.title }}</span>
                     </template>
