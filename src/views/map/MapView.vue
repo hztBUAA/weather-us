@@ -1,23 +1,17 @@
 <template>
   <div>
     <div ref="charts" style="width: 100%; height: 100vh" />
-    <el-menu default-active="1" style="top: 0%; right: 0%; width: 60px; height: 100vh; background-color: rgba(0, 0, 0, 0)" class="float" @select="selectMode" :collapse="true">
-        <el-menu-item index="1">
-          <i class="el-icon-location"></i>
-          <span slot="title">导航一</span>
+    <el-menu default-active="0" style="top: 50%; right: 0%; width: 60px; background-color: rgba(0, 0, 0, 0)" class="float" @select="selectMode" :collapse="true">
+      <div v-for="(item, i) in dataTypes.slice(0, 4)" :key="i">
+        <el-menu-item :index="String(i)">
+          <i class="el-icon-sunny"></i>
+          <span slot="title">{{ item.type }}</span>
         </el-menu-item>
-        <el-menu-item index="2">
-          <i class="el-icon-menu"></i>
-          <span slot="title">导航二</span>
-        </el-menu-item>
-        <el-menu-item index="3">
-          <i class="el-icon-document"></i>
-          <span slot="title">导航三</span>
-        </el-menu-item>
-        <el-menu-item index="4">
-          <i class="el-icon-setting"></i>
-          <span slot="title">导航四</span>
-        </el-menu-item>
+      </div>
+      <el-menu-item index="4">
+        <i class="el-icon-menu"></i>
+        <span slot="title">更多选项</span>
+      </el-menu-item>
     </el-menu>
     <div class="float" style="top: 3%; left: 3%; display: flex; align-items: center; justify-content: center; height: 42px">
       <el-button
@@ -33,7 +27,8 @@
         placeholder="搜索城市"
         :options="cities"
         filterable
-        :props="{ expandTrigger: 'hover' }"
+        :props="{ expandTrigger: 'hover', checkStrictly: true }"
+        v-model="chosenCity"
         @change="chooseCity"
       />
       <el-color-picker
@@ -49,9 +44,10 @@
 <script>
 import * as echarts from 'echarts'
 import mapData from '../../assets/jsonData/china.json'
-import cityData from '../../assets/jsonData/city.json'
+//import cityData from '../../assets/jsonData/city.json'
+import citiesData from '../../assets/jsonData/cities.json'
 import { getCityJson } from '../../api/staticApi'
-import { getCityData } from '../../api/dataApi'
+import { getCityData, getDataTypes } from '../../api/dataApi'
 const predefineColors = ['#ff4500',
   '#ff8c00',
   '#ffd700',
@@ -68,8 +64,8 @@ const emphasis = {
   },
   itemStyle: {
     areaColor: '#rgb(147, 235, 248)',
-    opacity: 0.2,
-    borderWidth: 0
+    //opacity: 0.2,
+    //borderWidth: 0
   }
 }
 const geoOption = {
@@ -83,12 +79,16 @@ const geoOption = {
     }
   },
   itemStyle: {
-    borderWidth: 0,
+    //borderWidth: 0,
+    areaColor: '#rgb(147, 235, 248)',
+    //opacity: 0.1,
+    /*
     areaColor: {
       type: 'radial',
       x: 0.5,
       y: 0.5,
       r: 0.8,
+      
       colorStops: [
         {
           offset: 0,
@@ -99,6 +99,7 @@ const geoOption = {
           color: 'rgba(147, 235, 248, 0.2)'
         }
       ],
+      
       globalCoord: false
     }
     /*
@@ -125,40 +126,59 @@ export default {
       option: option,
       charts: null,
       layer: 0,
-      map1: null,
-      geo1: null,
       glabalBounding: [],
-      cities: []
+      glabalBounding2: [],
+      maps: [mapData, null, null],
+      cities: [],
+      chosenCity: [],
+      dataTypes: [],
+      typeIndex: 0
     }
   },
   created() {
     this.$nextTick(() => {
-      this.initMap()
-      this.initCities()
+      getDataTypes().then((res) => {
+        this.dataTypes = res.data
+        this.initMap()
+        this.initCities()
+      })
     })
   },
   methods: {
-    selectMode(index) {
-      console.log(index)
+    getJson(json) {
+      const stringData = JSON.stringify(json, null, 2)
+      const blob = new Blob([stringData], {
+        type: 'application/json'
+      })
+      const objectURL = URL.createObjectURL(blob)
+      const aTag = document.createElement('a')
+      aTag.href = objectURL
+      aTag.download = "centers.json"
+      aTag.click()
+      URL.revokeObjectURL(objectURL)
     },
-    changeInfo(p) {
-      console.log(p)
-      this.showData('test')
+    selectMode(index) {
+      if (index == this.typeIndex) {
+        return
+      }
+      if (index == 4) {
+
+      } else {
+        this.typeIndex = index
+        this.changeMode()
+      }
+    },
+    changeMode() {
+      this.showData(0);
+      if (this.maps[1] != null && this.maps[1] != undefined) {
+        this.showData(1);
+      }
+      if (this.maps[2] != null && this.maps[2] != undefined) {
+        this.showData(2);
+      }
     },
     initCities() {
-      const that = this
-      mapData.features.forEach(function(feature) {
-        if (feature.properties.adcode != 100000) {
-          const pro = { value: feature.properties.adcode, label: feature.properties.name, children: [] }
-          getCityJson(feature.properties.adcode).then((res) => {
-            res.data.features.forEach(function(childFeature) {
-              const city = { value: childFeature.properties.adcode, label: childFeature.properties.name }
-              pro.children.push(city)
-            })
-          })
-          that.cities.push(pro)
-        }
-      })
+      this.cities = citiesData
     },
     colorChange(color) {
       const option = this.charts.getOption()
@@ -166,24 +186,29 @@ export default {
       this.charts.setOption(option)
     },
     back() {
-      const option = this.charts.getOption()
-      if (this.layer === 1) {
-        this.layer = 0
-        this.map1 = null
-        this.geo1 = null
-        option.geo[2] = null
-        option.geo[0].boundingCoords = this.glabalBounding
-        option.geo[1].boundingCoords = this.glabalBounding
-        this.charts.setOption(option, true)
-      }/* else if (this.layer == 2) {
-                this.layer = 1;
-                const newBoundingCoords = this.calBounding(this.map1);
-                option.geo[1] = this.geo1;
-                echarts.registerMap(this.geo1.map, this.map1);
-                option.geo[0].boundingCoords = newBoundingCoords;
-                option.geo[1].boundingCoords = newBoundingCoords;
-                this.charts.setOption(option, true);
-            }*/
+      const option = this.charts.getOption();
+      if (this.layer == 1) {
+          this.layer = 0
+          this.maps[1] = null
+          option.series[1] = null
+          option.geo[1] = null
+          option.geo[0].boundingCoords = this.glabalBounding
+          option.geo[0].silent = false
+          option.geo[0].label.show = true
+          this.charts.setOption(option, true)
+          this.chosenCity = []
+      } else if (this.layer == 2) {
+          this.layer = 1;
+          this.maps[2] = null
+          option.series[2] = null
+          option.geo[2] = null
+          option.geo[0].boundingCoords = this.glabalBounding2
+          option.geo[1].boundingCoords = this.glabalBounding2
+          option.geo[1].silent = false
+          option.geo[1].label.show = true
+          this.charts.setOption(option, true)
+          this.chosenCity = [this.chosenCity[0]]
+      }
     },
     calBounding(geoJsonData) {
       const boundingCoords = [
@@ -203,67 +228,117 @@ export default {
       })
       return boundingCoords
     },
-    async getAllData(type) {
+    async getAllData(type, geoIndex) {
       const data = []
-      cityData.features.forEach(function(feature) {
-        getCityData(feature.properties.adcode, type).then((res) => {
-          data.push([ feature.properties.center[0], feature.properties.center[1], res])
+      const adcodes = []
+      this.maps[geoIndex].features.forEach(function(feature) {
+        adcodes.push(feature.properties.adcode)
+      })
+      getCityData(adcodes, type).then((res) => {
+        this.maps[geoIndex].features.forEach(function(feature) {
+          data.push({ name: feature.properties.name, value: res.get(feature.properties.adcode) })
         })
       })
       return data
     },
-    showData(type) {
+    showData(geoIndex) {
       var option = this.charts.getOption()
-      this.getAllData(type).then((res) => {
-        console.log(res)
+      this.getAllData(this.dataTypes[this.typeIndex].type, geoIndex).then((res) => {
+        const series = option.series
+        series[geoIndex] = {
+          type: 'map',
+          geoIndex: geoIndex,
+          data: res,
+          select: {
+            disabled: true
+          }
+        }
         option = { ...option, ...{
           visualMap: {
             type: 'continuous',
-            min: 0,
-            max: 100,
+            min: this.dataTypes[this.typeIndex].valueRange[0],
+            max: this.dataTypes[this.typeIndex].valueRange[1],
             left: '6%',
             bottom: '5%',
             itemWidth: 30,
             itemHeight: 180,
             inRange: {
-              color: ['#fff', '#415325']
+              color: this.dataTypes[this.typeIndex].colorRange
             },
-            text: ['100', '0']
+            text: [this.dataTypes[this.typeIndex].valueRange[1], this.dataTypes[this.typeIndex].valueRange[0]],
+            zlevel: 3
           },
-          series: [
-            {
-              type: 'heatmap',
-              geoIndex: 0,
-              data: res,
-              coordinateSystem: 'geo',
-              pointSize: 1,
-              blurSize: 1,
-            }
-          ]
+          series: series
         }}
         this.charts.setOption(option, true)
       })
     },
     chooseCity(city) {
+      this.showCity(city[0], city[1])
+    },
+    showCity2(name) {
       const option = this.charts.getOption()
-      mapData.features.forEach((feature) => {
-        if (feature.properties.adcode === city[0]) {
+      this.maps[1].features.forEach((feature) => {
+        if (feature.properties.name === name) {
           getCityJson(feature.properties.adcode).then((res) => {
-            const newBoundingCoords = this.calBounding(res.data)
+            if (res.data.features.length <= 1) {
+              //route
+              return
+            }
+            const newBoundingCoords = this.calBounding(res.data);
             const newGeo = {
-              ...{ map: feature.properties.name, boundingCoords: this.glabalBounding, zlevel: 1 },
+              ...{map: feature.properties.name, boundingCoords: this.glabalBounding, zlevel: 2},
               ...this.geoOption
             }
+            //newGeo.itemStyle.borderWidth = 3
             option.geo[2] = newGeo
             echarts.registerMap(feature.properties.name, res.data)
             this.charts.setOption(option)
             option.geo[0].boundingCoords = newBoundingCoords
             option.geo[1].boundingCoords = newBoundingCoords
             option.geo[2].boundingCoords = newBoundingCoords
+            option.geo[1].silent = true
+            option.geo[1].label.show = false
             this.charts.setOption(option)
-            this.layer = 1
-            this.map1 = res.data
-            this.geo1 = newGeo
+            this.layer = 2
+            this.maps[2] = res.data
+            this.showData(2)
+          })
+        }
+      })
+    },
+    showCity(name1, name2) {
+      const option = this.charts.getOption()
+      mapData.features.forEach((feature) => {
+        if (feature.properties.name === name1) {
+          getCityJson(feature.properties.adcode).then((res) => {
+            if (res.data.features.length <= 1) {
+              //route
+              return
+            }
+            const newBoundingCoords = this.calBounding(res.data);
+            const newGeo = {
+              ...{map: feature.properties.name, boundingCoords: this.glabalBounding, zlevel: 1},
+              ...this.geoOption
+            }
+            if (option.geo[1] == null || option.geo[1].map != newGeo.map) {
+              option.geo[1] = newGeo
+              echarts.registerMap(feature.properties.name, res.data)
+              this.charts.setOption(option)
+              option.geo[0].boundingCoords = newBoundingCoords
+              option.geo[1].boundingCoords = newBoundingCoords
+              option.geo[0].silent = true
+              option.geo[0].label.show = false
+              this.charts.setOption(option)
+              this.glabalBounding2 = newBoundingCoords
+              this.maps[1] = res.data
+              this.maps[2] = null
+              this.showData(1)
+            }
+            this.layer = 1;
+            if (name2 != null && name2 != undefined) {
+              this.showCity2(name2)
+            }
           })
         }
       })
@@ -273,91 +348,30 @@ export default {
       const boundingCoords = this.calBounding(mapData)
       this.glabalBounding = [[boundingCoords[0][0] + 20, boundingCoords[0][1] - 2], [boundingCoords[1][0] - 20, boundingCoords[1][1] + 17]]
       this.option.geo = [
-        { ...{ map: 'china_second',
+        { ...{ map: 'china',
           boundingCoords: this.glabalBounding,
           zlevel: 0,
           roam: false,
           show: true,
-          emphasis: this.emphasis,
           scaleLimit: {
             min: 1,
             max: 13
-          }}},
-        { ...{ map: 'china',
-          boundingCoords: this.glabalBounding,
-          zlevel: 1,
-          roam: false,
-          show: true,
-          scaleLimit: {
-            min: 1,
-            max: 13
-          }}, ...this.geoOption }]
+          }}, ...this.geoOption }, null, null]
       echarts.registerMap('china', mapData)
-      echarts.registerMap('china_second', cityData)
       this.charts.setOption(this.option)
-      this.showData('test')
+      this.showData(0)
       const that = this
       this.charts.on('click', function(param) {
-        if (that.layer === 0) {
-          mapData.features.forEach((feature) => {
-            if (feature.properties.name === param.name) {
-              getCityJson(feature.properties.adcode).then((res) => {
-                const newBoundingCoords = that.calBounding(res.data)
-                const newGeo = {
-                  ...{ map: param.name, boundingCoords: that.glabalBounding, zlevel: 1 },
-                  ... that.geoOption
-                }
-                that.option.geo[2] = newGeo
-                echarts.registerMap(param.name, res.data)
-                that.charts.setOption(that.option)
-                that.option.geo[0].boundingCoords = newBoundingCoords
-                that.option.geo[1].boundingCoords = newBoundingCoords
-                that.option.geo[2].boundingCoords = newBoundingCoords
-                that.charts.setOption(that.option)
-                that.layer = 1
-                that.map1 = res.data
-                that.geo1 = newGeo
-              })
-            }
-          })
-        }/* else if (that.layer == 1) {
-                    that.map1.features.forEach((feature) => {
-                        if (feature.properties.name === param.name) {
-                            getCityJson(feature.properties.adcode).then((res) => {
-                                const newBoundingCoords = that.calBounding(res.data);
-                                const newGeo = {
-                                    ...{map: param.name, boundingCoords: boundingCoords, zlevel: 1},
-                                    ... geoOption
-                                }
-                                option.geo[1] = newGeo;
-                                echarts.registerMap(param.name, res.data);
-                                that.charts.setOption(option);
-                                option.geo[0].boundingCoords = newBoundingCoords;
-                                option.geo[1].boundingCoords = newBoundingCoords;
-                                that.charts.setOption(option);
-                                that.layer = 2;
-                            })
-                        }
-                    })
-                }*/
+        if (that.layer == 0) {
+          that.chosenCity = [param.name]
+          that.showCity(param.name, null)
+        } else if (that.layer == 1) {
+          that.chosenCity = [that.chosenCity[0], param.name]
+          that.showCity2(param.name)
+        } else {
+          //route
+        }
       })
-      /*
-            this.charts.on('geoRoam', function(params) {
-                var newOption = that.charts.getOption()
-                if (that.layer == 0) {
-                    if (params.zoom != null && params.zoom != undefined) {
-                        newOption.geo[0].zoom = newOption.geo[1].zoom
-                    }
-                    newOption.geo[0].center = newOption.geo[1].center
-                } else {
-                    if (params.zoom != null && params.zoom != undefined) {
-                        newOption.geo[1].zoom = newOption.geo[0].zoom
-                    }
-                    newOption.geo[1].center = newOption.geo[0].center
-                }
-                that.charts.setOption(newOption)
-            });
-            */
     }
   }
 }
