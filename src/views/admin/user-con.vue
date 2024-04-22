@@ -3,10 +3,11 @@
     <div style="margin-left: 20px;margin-top: 20px;">
       <!-- 添加用户名搜索框 -->
       <span>用户名</span>
-      <el-input placeholder="搜索用户名" v-model="searchUsername" clearable style="width: 300px;margin-left: 20px;"></el-input>
+      <el-input placeholder="搜索用户名" v-model="searchUsername" clearable
+        style="width: 300px;margin-left: 20px;"></el-input>
       <!-- 添加账号搜索框 -->
       <span style="margin-left: 20px;">账号</span>
-      <el-input placeholder="搜索账号" v-model="searchCount" clearable style="width: 300px;margin-left: 20px;"></el-input>
+      <el-input placeholder="搜索账号" v-model="searchAccount" clearable style="width: 300px;margin-left: 20px;"></el-input>
       <el-divider></el-divider>
       <el-table :data="filteredTableData" style="width: 100%;margin-top: 30px;" border>
         <el-table-column label="用户名" width="180">
@@ -22,7 +23,7 @@
         </el-table-column>
         <el-table-column label="账号" width="180">
           <template slot-scope="scope">
-            <span>{{ scope.row.count }}</span>
+            <span>{{ scope.row.account }}</span>
           </template>
         </el-table-column>
         <el-table-column label="邮箱" width="360">
@@ -59,47 +60,15 @@ export default {
   data() {
     return {
       tableData: [{
-        date: '2016-05-02',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄',
-        title: '页面显示Bug',
-        count: '123456',
-        tag: '管理员',
-        email:'237@shanhe.com',
-      }, {
-        date: '2016-05-04',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1517 弄',
-        title: '页面显示Bug',
-        count: '1234567',
-        tag: '管理员',
-        email:'3112@heshan.com',
-      }, {
-        date: '2016-05-01',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1519 弄',
-        title: '页面显示Bug',
-        count: '1234568',
-        tag: '用户',
-        email:'2370994112@heshan.com',
-      }, {
-        date: '2016-05-03',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1516 弄',
-        title: '页面显示Bug',
-        count: '1234569',
-        tag: '用户',
-        email:'2370994112@heshan.com',
-      }, {
         name: 'heshan',
-        count: '1234569',
-        email:'2370994112@heshan.com',
+        account: '1234569',
+        email: '2370994112@heshan.com',
         tag: '用户',
       }],
       currentPage: 1,
       pageSize: 10,
       searchUsername: '', // 新增用户名搜索关键词状态
-      searchCount: '', // 新增账号搜索关键词状态
+      searchAccount: '', // 新增账号搜索关键词状态
     }
   },
   methods: {
@@ -131,7 +100,7 @@ export default {
       return this.tableData.filter((row) => {
         return (
           (!this.searchUsername || row.name.toLowerCase().includes(this.searchUsername.trim().toLowerCase())) && // 搜索用户名（可选）
-          (!this.searchCount || row.count.toLowerCase().includes(this.searchCount.trim().toLowerCase())) // 搜索账号（可选）
+          (!this.searchAccount || row.account.toLowerCase().includes(this.searchAccount.trim().toLowerCase())) // 搜索账号（可选）
         );
       });
     },
