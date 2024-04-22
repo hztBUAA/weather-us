@@ -1,7 +1,15 @@
 <template>
     <div class="app-container">
+        <el-input v-model="title" placeholder="请输入标题" style="margin-top: 10px;margin-bottom: 10px;"></el-input>
+        <div style="margin-bottom: 10px;">
+            <el-radio-group v-model="tag">
+                <el-radio-button label="BUG修复"></el-radio-button>
+                <el-radio-button label="新特性发布"></el-radio-button>
+                <el-radio-button label="日常事务"></el-radio-button>
+            </el-radio-group>
+        </div>
         <tinymce :height="300" v-model="content" />
-        <el-button @click="handle_submit">上传</el-button>
+        <el-button @click="handle_submit" style="margin-top: 10px;" type="primary">上传</el-button>
     </div>
 </template>
 
@@ -14,7 +22,9 @@ export default {
     },
     data() {
         return {
-            content: ""
+            title: "",
+            content: "",
+            tag: '',
         }
     },
     methods: {

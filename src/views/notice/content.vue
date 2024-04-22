@@ -1,5 +1,5 @@
 <template>
-    <div v-html="content"></div>
+    <div v-html="content" class="content"></div>
 </template>
 
 <script>
@@ -31,3 +31,9 @@ export default {
     }
 };
 </script>
+<style>
+.content {
+    margin-top: 30px;
+    margin-left: 30px;
+}
+</style>
