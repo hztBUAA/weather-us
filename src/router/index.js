@@ -9,6 +9,7 @@ import Layout from '@/layout'
 import ChangePassword from '@/views/user/ChangePassword.vue'
 import CitySubscribe from '@/views/user/CitySubscribe.vue'
 import ProfileView from '@/views/user/ProfileView.vue'
+import Feedback from '@/views/user/Feedback.vue'
 
 // 路由 和 sidebar这一块 以及显示的时候有关系   children？？？
 
@@ -81,6 +82,11 @@ export const constantRoutes = [
         path: 'citySubscribe',
         component: CitySubscribe,
         meta: { title: '订阅城市', icon: 'el-icon-location-outline' }
+      },
+      {
+        path: 'feedback',
+        component: Feedback,
+        meta: { title: '反馈', icon: 'el-icon-s-promotion' }
       }
     ]
   },

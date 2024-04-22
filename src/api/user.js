@@ -37,3 +37,7 @@ export function addCitySubscribeService(data) {
 export function deleteCitySubscribeService(id) {
   return request.delete('/user/citySubscribe', { params: { id }})
 }
+
+export function getUserFeedbackService() {
+  return request.get('/user/feedback')
+}
