@@ -47,10 +47,17 @@
                 layout="total, sizes, prev, pager, next, jumper" :total="tableData.length">
             </el-pagination>
         </div>
+        <el-dialog :visible.sync="dialogVisible" width="50%" :before-close="handleDialogClose"
+            style="max-height: 700px;overflow:auto;">
+            <h1>{{ selectedRow.title }}</h1>
+            <el-divider />
+            <div class="dialog-content" v-html="content"></div>
+        </el-dialog>
     </div>
 </template>
 
 <script>
+import { getNoticeCont } from '@/api/notice'
 export default {
     data() {
         return {
@@ -59,25 +66,32 @@ export default {
                 title: '页面显示Bug',
                 tag: 'BUG修复',
                 state: '已读',
+                id: '1',
             }, {
                 date: '2016-05-04',
                 title: '页面显示Bug',
                 tag: '新特性发布',
                 state: '未读',
+                id: '2',
             }, {
                 date: '2016-05-01',
                 title: '页面显示Bug',
                 tag: '日常事务',
                 state: '已读',
+                id: '3',
             }, {
                 date: '2016-05-03',
                 title: '页面显示Bug',
                 tag: '日常事务',
                 state: '已读',
+                id: '4',
             }],
             currentPage: 1,
             pageSize: 10,
             isAdmin: true,
+            dialogVisible: false, // 控制对话框显示的变量
+            content: null, // 用于存储被点击行的数据
+            selectedRow: {},
         }
     },
     methods: {
@@ -105,15 +119,31 @@ export default {
         handleCurrentChange(newCurrentPage) {
             this.currentPage = newCurrentPage;
         },
-        handleRowClick(row, event, column) {
+        async handleRowClick(row, event, column) {
             row.state = '已读';
-            this.$router.push('/notice/content')
+            // this.$router.push('/notice/content')
             // 如果有后端接口，可以在此处发送请求更新数据库中的状态
             // axios.put(`/api/notifications/${row.id}/mark-as-read`).then(() => {
             //   console.log('已读状态更新成功');
             // }).catch(error => {
             //   console.error('更新已读状态失败:', error);
             // });
+            try {
+                const response = await getNoticeCont(row.id);//帖子id
+                this.selectedRow = row
+                this.content = response.data.data.content;
+                console.log('Data fetched successfully:', this.responseData);
+                this.dialogVisible = true;
+            } catch (error) {
+                // 处理错误
+                console.error('Failed to fetch data:', error);
+                alert('Failed to fetch data, please try again.');
+            }
+        },
+        handleDialogClose() {
+            this.dialogVisible = false
+            this.selectedRow = {}
+            this.content = null
         },
         tableRowClassName({ row, rowIndex }) {
             if (row.state === '已读') {
