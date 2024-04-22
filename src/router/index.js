@@ -60,6 +60,57 @@ export const constantRoutes = [
       meta: { title: '首页', icon: 'dashboard' }
     }]
   },
+  // （何山）之后需要注意  不要和蒋世琪的用户个人信息的path重合混淆了
+  {
+    path: '/admin',
+    component: Layout,
+    meta: { title: '管理员功能', icon: 'el-icon-view' },
+    children: [
+      {
+        path: 'user-con',
+        component: () => import('@/views/admin/user-con'),
+        name: '用户管理',
+        meta: { title: '用户管理', icon: 'el-icon-user' }
+      },
+      {
+        path: 'launch-varn',
+        component: () => import('@/views/admin/launch-varn'),
+        name: '发布预警',
+        meta: { title: '发布预警', icon: 'el-icon-bell' }
+      },
+      {
+        path: 'deal-feedback',
+        component: () => import('@/views/admin/deal-feedback'),
+        name: '处理反馈',
+        meta: { title: '处理反馈', icon: 'el-icon-edit-outline' }
+      },
+      {
+        path: 'launch-notice',
+        component: () => import('@/views/admin/launch-notice'),
+        name: '发布公告',
+        meta: { title: '发布公告', icon: 'el-icon-s-opportunity' }
+      }
+    ]
+  },
+  {
+    path: '/notice',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/notice/notice'),
+        name: '公告',
+        meta: { title: '公告', icon: 'el-icon-chat-dot-square' },
+      },
+      {
+        path: 'content',
+        component: () => import('@/views/notice/content'),
+        hidden: 'true',
+        name: '帖子详情',
+        meta: { title: '帖子详情' },
+      }
+    ]
+  },
   // （蒋世祺）这里是用户端的个人信息界面  之后可能需要对应到 模版的个人信息界面（模版里面是没有的 但是可以对照admin的另外一个大的框架复制粘贴到本项目中）
   {
     path: '/user',
@@ -210,43 +261,6 @@ export const constantRoutes = [
       {
         path: 'https://panjiachen.github.io/vue-element-admin-site/#/',
         meta: { title: 'External Link', icon: 'link' }
-      }
-    ]
-  },
-  // （何山）之后需要注意  不要和蒋世琪的用户个人信息的path重合混淆了
-  {
-    path: '/user-con',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/admin/user-con'),
-        name: '用户管理',
-        meta: { title: '用户管理', icon: 'el-icon-user' }
-      }
-    ]
-  },
-  {
-    path: '/launch-varn',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/admin/launch-varn'),
-        name: '发布预警',
-        meta: { title: '发布预警', icon: 'el-icon-bell' }
-      }
-    ]
-  },
-  {
-    path: '/deal-feedback',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/admin/deal-feedback'),
-        name: '处理反馈',
-        meta: { title: '处理反馈', icon: 'el-icon-edit-outline' }
       }
     ]
   },

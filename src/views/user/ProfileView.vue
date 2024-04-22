@@ -1,6 +1,6 @@
 <script>
-// import { getInfo } from '@/api/user'
-// import { getToken } from '@/utils/auth'
+import { getInfo } from '@/api/user'
+import { Message } from 'element-ui'
 
 export default {
   data() {
@@ -13,8 +13,10 @@ export default {
       usernameReadOnly: true
     }
   },
-  mounted() {
-    // this.user = getInfo(getToken())
+  async mounted() {
+    const result = await getInfo()
+    this.user = result.data
+    Message.success(result.msg)
   }
 }
 </script>
@@ -28,7 +30,7 @@ export default {
       <el-form-item label="头像">
         <!-- todo: 调用上传文件接口, 对文件的校验 -->
         <el-upload class="avatar-uploader" :show-file-list="false" action="">
-          <img :src="user.avatar" class="avatar" alt="">
+          <img :src="user.avatar" class="avatar" alt="" />
         </el-upload>
       </el-form-item>
     </el-form>
@@ -44,9 +46,11 @@ export default {
     position: relative;
     overflow: hidden;
   }
+
   .avatar-uploader .el-upload:hover {
-    border-color: #409EFF;
+    border-color: #409eff;
   }
+
   .avatar-uploader-icon {
     font-size: 28px;
     color: #8c939d;
@@ -55,6 +59,7 @@ export default {
     line-height: 178px;
     text-align: center;
   }
+
   .avatar {
     width: 178px;
     height: 178px;

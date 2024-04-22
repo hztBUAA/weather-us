@@ -10,11 +10,14 @@ const service = axios.create({
   timeout: 5000 // request timeout
 })
 
+if (process.env.NODE_ENV === 'development') {
+  service.defaults.headers['apifoxToken'] = process.env.VUE_APP_MOCK_TOKEN
+}
+
 // request interceptor
 service.interceptors.request.use(
   config => {
     // do something before request is sent
-
     if (store.getters.token) {
       // let each request carry token
       // ['X-Token'] is a custom headers key
