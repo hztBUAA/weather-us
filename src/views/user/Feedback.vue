@@ -1,6 +1,7 @@
 <script >
 
-import { getUserFeedbackService } from '@/api/user'
+import { addFeedbackService, getUserFeedbackService } from '@/api/user'
+import { Message } from 'element-ui'
 
 export default {
   data() {
@@ -10,6 +11,7 @@ export default {
       feedbacks: [],
       filterFeedbacks: [],
       dialogVisible: false,
+      formVisible: false,
       feedback: {}
     }
   },
@@ -41,6 +43,22 @@ export default {
         status: row.status,
         updateTime: row.updateTime
       }
+    },
+    showForm() {
+      this.formVisible = true
+      this.feedback = {}
+      this.$nextTick(() => {
+        this.$refs.feedbackForm.clearValidate()
+      })
+    },
+    submit() {
+      this.$refs.feedbackForm.validate(async valid => {
+        if (valid) {
+          const result = await addFeedbackService(this.feedback)
+          this.formVisible = false
+          Message.success(result.msg)
+        }
+      })
     }
   }
 }
@@ -49,6 +67,12 @@ export default {
 
 <template>
   <el-card>
+    <template v-slot:header>
+      <div style="display: flex; align-items: center; justify-content: space-between;">
+        <span> 反馈</span>
+        <el-button type="primary" @click="showForm">新增订阅</el-button>
+      </div>
+    </template>
     <el-table
       :data="pageFeedbacks"
       style="width: 100%;"
@@ -94,6 +118,21 @@ export default {
       @size-change="(val) => pageSize = val"
       @current-change="(val) => pageNum = val"
     />
+    <el-dialog :visible.sync="formVisible" title="新增反馈" width="40%">
+      <el-form ref="feedbackForm" :model="feedback" label-position="left" label-width="50px">
+        <el-form-item label="标题" prop="title" :rules="[{required:true, message: '请输入标题', trigger: 'blur'}]">
+          <el-input v-model="feedback.title" />
+        </el-form-item>
+        <el-form-item label="内容" prop="content" :rules="[{required:true, message: '请输入内容', trigger: 'blur'}]">
+          <el-input v-model="feedback.content" type="textarea" :autosize="{minRows: 2}" />
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="submit">
+            提交反馈
+          </el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
     <el-dialog :visible.sync="dialogVisible" width="40%">
       <template slot="title">
         <div style="display: flex;justify-content: space-between">

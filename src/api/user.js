@@ -41,3 +41,7 @@ export function deleteCitySubscribeService(id) {
 export function getUserFeedbackService() {
   return request.get('/user/feedback')
 }
+
+export function addFeedbackService(data) {
+  return request.post('/user/feedback', data, formUrlEncoded)
+}
