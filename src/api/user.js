@@ -34,8 +34,8 @@ export function addCitySubscribeService(data) {
   return request.post('/user/citySubscribe', data, formUrlEncoded)
 }
 
-export function deleteCitySubscribeService(id) {
-  return request.delete('/user/citySubscribe', { params: { id }})
+export function deleteCitySubscribeService(city) {
+  return request.delete('/user/citySubscribe', { params: { city }})
 }
 
 export function getUserFeedbackService() {

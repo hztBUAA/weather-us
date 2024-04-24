@@ -57,6 +57,8 @@ export default {
           const result = await addFeedbackService(this.feedback)
           this.formVisible = false
           Message.success(result.msg)
+          this.$refs.feedbackTable.clearFilter()
+          this.loadFeedbacks()
         }
       })
     }
@@ -74,6 +76,7 @@ export default {
       </div>
     </template>
     <el-table
+      ref="feedbackTable"
       :data="pageFeedbacks"
       style="width: 100%;"
       border
@@ -137,7 +140,6 @@ export default {
       <template slot="title">
         <div style="display: flex;justify-content: space-between">
           <h3 style="align-self: center;">
-
             {{ feedback.title }}
           </h3>
           <el-tag :type="feedback.status === '已处理' ? 'primary' : 'success'" disable-transitions style="margin-right: 20px;align-self: center">{{
