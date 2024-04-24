@@ -1,6 +1,11 @@
-import { getData } from './api'
+import request from '@/utils/request'
 
-export async function getNoticeCont(id) {
-    const url = 'https://mock.apifox.com/m1/4334156-3977343-default/notice/digests?apifoxApiId=167533893&apifoxToken=kBmcKryyUxBSwSWfUSCxu2AhVpYxNrwO'
-    return getData(url, id)
+export function getNoticeContent(id) {
+    return request({
+        url: '/notice/content',
+        method: 'get',
+        params: {
+            id
+        }
+    })
 }

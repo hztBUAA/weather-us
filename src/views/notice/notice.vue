@@ -57,7 +57,7 @@
 </template>
 
 <script>
-import { getNoticeCont } from '@/api/notice'
+import { getNoticeContent } from '@/api/notice'
 export default {
     data() {
         return {
@@ -121,24 +121,11 @@ export default {
         },
         async handleRowClick(row, event, column) {
             row.state = '已读';
-            // this.$router.push('/notice/content')
-            // 如果有后端接口，可以在此处发送请求更新数据库中的状态
-            // axios.put(`/api/notifications/${row.id}/mark-as-read`).then(() => {
-            //   console.log('已读状态更新成功');
-            // }).catch(error => {
-            //   console.error('更新已读状态失败:', error);
-            // });
-            try {
-                const response = await getNoticeCont(row.id);//帖子id
-                this.selectedRow = row
-                this.content = response.data.data.content;
-                console.log('Data fetched successfully:', this.responseData);
-                this.dialogVisible = true;
-            } catch (error) {
-                // 处理错误
-                console.error('Failed to fetch data:', error);
-                alert('Failed to fetch data, please try again.');
-            }
+            const response = await getNoticeContent(row.id);//帖子id
+            this.selectedRow = row
+            this.content = response.data.content
+            console.log('Data fetched successfully:', this.content);
+            this.dialogVisible = true;
         },
         handleDialogClose() {
             this.dialogVisible = false

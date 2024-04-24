@@ -102,13 +102,6 @@ export const constantRoutes = [
         name: '公告',
         meta: { title: '公告', icon: 'el-icon-chat-dot-square' },
       },
-      // {
-      //   path: 'content',
-      //   component: () => import('@/views/notice/content'),
-      //   hidden: 'true',
-      //   name: '帖子详情',
-      //   meta: { title: '帖子详情' },
-      // }
     ]
   },
   // （蒋世祺）这里是用户端的个人信息界面  之后可能需要对应到 模版的个人信息界面（模版里面是没有的 但是可以对照admin的另外一个大的框架复制粘贴到本项目中）
