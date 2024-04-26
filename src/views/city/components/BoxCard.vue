@@ -5,23 +5,26 @@
     </div>
     <div style="position:relative;">
       <pan-thumb :image="avatar" class="panThumb" />
+      <i class="el-icon-light-rain" />
       <mallki class-name="mallki-text" text="vue-element-admin" />
+
       <div style="padding-top:35px;" class="progress-item">
-        <span>Vue</span>
+        <span>温度</span>
         <el-progress :percentage="70" />
       </div>
       <div class="progress-item">
-        <span>JavaScript</span>
+        <span>湿度</span>
+        <el-progress :percentage="50" />
+      </div>
+      <div class="progress-item">
+        <span>气压</span>
         <el-progress :percentage="18" />
       </div>
       <div class="progress-item">
-        <span>CSS</span>
+        <span>风向</span>
         <el-progress :percentage="12" />
       </div>
-      <div class="progress-item">
-        <span>ESLint</span>
-        <el-progress :percentage="100" status="success" />
-      </div>
+
     </div>
   </el-card>
 </template>
