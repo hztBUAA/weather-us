@@ -43,7 +43,7 @@
                 </el-table-column>
             </el-table>
             <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange"
-                :current-page="currentPage" :page-sizes="[1, 10, 20, 50]" :page-size="pageSize"
+                :current-page="currentPage" :page-sizes="[10, 20, 50]" :page-size="pageSize"
                 layout="total, sizes, prev, pager, next, jumper" :total="tableData.length">
             </el-pagination>
         </div>
@@ -57,35 +57,11 @@
 </template>
 
 <script>
-import { getNoticeContent } from '@/api/notice'
+import { getNoticeContent, getNoticeDigests, setNoticeState } from '@/api/notice'
 export default {
     data() {
         return {
-            tableData: [{
-                date: '2016-05-02',
-                title: '页面显示Bug',
-                tag: 'BUG修复',
-                state: '已读',
-                id: '1',
-            }, {
-                date: '2016-05-04',
-                title: '页面显示Bug',
-                tag: '新特性发布',
-                state: '未读',
-                id: '2',
-            }, {
-                date: '2016-05-01',
-                title: '页面显示Bug',
-                tag: '日常事务',
-                state: '已读',
-                id: '3',
-            }, {
-                date: '2016-05-03',
-                title: '页面显示Bug',
-                tag: '日常事务',
-                state: '已读',
-                id: '4',
-            }],
+            tableData: [],
             currentPage: 1,
             pageSize: 10,
             isAdmin: true,
@@ -94,7 +70,14 @@ export default {
             selectedRow: {},
         }
     },
+    created() {
+        this.fetchData()
+    },
     methods: {
+        async fetchData() {
+            const res = await getNoticeDigests()
+            this.tableData = res.data
+        },
         handleEdit(index, row) {
             console.log(index, row);
         },
@@ -120,11 +103,13 @@ export default {
             this.currentPage = newCurrentPage;
         },
         async handleRowClick(row, event, column) {
-            row.state = '已读';
+            if (row.state !== '已读') {
+                row.state = '已读';
+                setNoticeState(row.id, row.state)
+            }
             const response = await getNoticeContent(row.id);//帖子id
             this.selectedRow = row
             this.content = response.data.content
-            console.log('Data fetched successfully:', this.content);
             this.dialogVisible = true;
         },
         handleDialogClose() {
@@ -141,7 +126,10 @@ export default {
         },
         handleUnread(index, row) {
             // 更新点击行的状态为未读
-            row.state = '未读';
+            if (row.state !== '未读') {
+                row.state = '未读'
+                setNoticeState(row.id, row.state)
+            }
         },
         readDetail() {
             alert('fuck')
