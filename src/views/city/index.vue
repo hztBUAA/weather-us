@@ -109,6 +109,12 @@
       <h1>
         城市灾害预警通知
       </h1>
+      <div>
+        <h1>test for api:</h1>
+        <p>
+          {{ wt_data.code }}
+        </p>
+      </div>
       <!-- 可以放置进度图 表示可能性   以及饼状图 -->
     </div>
 
@@ -117,6 +123,7 @@
 </template>
 
 <script>
+import Axios from 'axios'
 // import BoxCard from './components/BoxCard.vue'
 // from 'echarts' import *  as echarts
 // import LineChart from './components/LineChart'
@@ -181,6 +188,7 @@ export default {
   },
   data() {
     return {
+      wt_data: [],
       // echart数据部分
       temperatureData: [],
       pressureData: [],
@@ -206,8 +214,25 @@ export default {
   },
   mounted() {
     // this.initChart()
+    this.getApi1()
   },
   methods: {
+    getApi1() {
+      const url = 'https://geoapi.qweather.com/v2/city/lookup?location=beij&key=3ca6d5e357a5470abf168dbcd8fe0fd7'
+      const object = {
+        location: 'beij',
+        key: '3ca6d5e357a5470abf168dbcd8fe0fd7'
+      }
+      var _this = this
+      Axios.get(url, object).then(
+        function(res) {
+          var result = res.data
+          _this.wt_data = result
+          console.log(result)
+        }
+      )
+    },
+
     initChart() {
       // 使用 echarts 初始化图表
       const chartDom = document.getElementById('figure')
