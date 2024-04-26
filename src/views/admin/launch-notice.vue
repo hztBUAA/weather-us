@@ -15,7 +15,8 @@
 
 <script>
 import Tinymce from "@/components/Tinymce"
-import { request } from "@/api/api";
+import { launchNotice } from "@/api/notice";
+import { title } from "@/settings";
 export default {
     components: {
         Tinymce
@@ -28,20 +29,23 @@ export default {
         }
     },
     methods: {
-        async handle_submit() {
-            try {
-                const url = 'https://mock.apifox.com/m1/4334156-3977343-default/admin/launch-notice?apifoxToken=kBmcKryyUxBSwSWfUSCxu2AhVpYxNrwO'
-                // 使用封装的request函数发送POST请求
-                const response = await request(url, 'post', { content: this.content });
-                // 处理响应
-                this.responseData = response.data;
-                alert('内容发送成功！');
-            } catch (error) {
-                // 处理错误
-                console.error('发送内容失败:', error);
-                alert('内容发送失败，请重试！');
+        handle_submit() {
+            if (!this.title || !this.content || !this.tag) {
+                this.$message.error('标题、内容和标签不能为空');
+                return;
             }
-        },
+            launchNotice(this.title, this.tag, this.content).then(() => {
+                this.$message.success('发布成功')
+                setTimeout(() => {
+                    tinymce.activeEditor.isNotDirty = true;
+                    window.location.reload()
+                }, 1000); // 等待2秒后刷新页面
+            }).catch((error) => {
+                // 处理发布失败的情况（可选）
+                console.error('发布公告失败:', error);
+                this.$message.error('发布公告时发生错误，请稍后再试');
+            });
+        }
     },
 }
 </script>
