@@ -24,6 +24,10 @@ export default {
     height: {
       type: String,
       default: '200px'
+    },
+    hourly: {
+      type: Array,
+      required: true
     }
   },
   data() {
@@ -31,7 +35,8 @@ export default {
       chart: null,
       temperatureData: [],
       rainData: [],
-      airPressure: []
+      airPressure: [],
+      x_times: []
     }
   },
   mounted() {
@@ -46,12 +51,28 @@ export default {
   },
   methods: {
     genData() {
-      const new_t = [12, 13, 23, 34, 23, 25, 19, 20, 17, 14, 16, 11]
-      const new_p = [2, 3, 3, 4, 2, 5, 9, 2, 7, 4, 6, 1]
-      const new_r = [12, 13, 23, 34, 23, 25, 19, 20, 17, 14, 16, 11]
-      this.temperatureData = new_t
-      this.rainData = new_r
-      this.airPressure = new_p
+      // const new_t = [12, 13, 23, 34, 23, 25, 19, 20, 17, 14, 16, 11]
+      // const new_p = [2, 3, 3, 4, 2, 5, 9, 2, 7, 4, 6, 1]
+      // const new_r = [12, 13, 23, 34, 23, 25, 19, 20, 17, 14, 16, 11]
+      this.temperatureData = this.hourly.map(data => data.temp)
+      this.rainData = this.hourly.map(data => data.humidity)
+      this.airPressure = this.hourly.map(data => data.pressure)
+      this.x_times = this.hourly.map((item) => {
+        const fxTime = new Date(item.fxTime)
+        const hours = fxTime.getHours()
+        const timeStr = `${hours}:00`
+        return timeStr
+      })
+      // const formattedData = hourlyData.map( => {
+      //   const fxTime = new Date(item.fxTime)
+      //   const hours = fxTime.getHours()
+      //   const minutes = fxTime.getMinutes()
+      //   const timeStr = `${hours}:${minutes < 10 ? '0' + minutes : minutes}`
+      //   return {
+      //     ...item,
+      //     fxTime: timeStr
+      //   }
+      // })
     },
     initChart() {
       this.chart = this.$echarts.init(document.getElementById(this.id))
@@ -82,7 +103,7 @@ export default {
           itemWidth: 14,
           itemHeight: 5,
           itemGap: 13,
-          data: ['气温', '降水', '气压'],
+          data: ['气温', '湿度', '气压'],
           right: '4%',
           textStyle: {
             fontSize: 12,
@@ -104,7 +125,7 @@ export default {
               color: '#57617B'
             }
           },
-          data: ['0:00', '3:00', '6:00', '9:00', '12:00', '15:00', '18:00', '21:00', '24:00']
+          data: this.x_times
         }],
         yAxis: [{
           type: 'value',
@@ -164,7 +185,7 @@ export default {
           },
           data: this.temperatureData
         }, {
-          name: '降水',
+          name: '湿度',
           type: 'line',
           smooth: true,
           symbol: 'circle',

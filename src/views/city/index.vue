@@ -1,5 +1,10 @@
 <template>
+
   <div class="forecast-table">
+    <div>
+      <input v-model="location" type="text">
+      <button @click="submitLocation">搜索</button>
+    </div>
     <div class="container">
       <h1>
         七日预报信息
@@ -7,92 +12,111 @@
       <div class="forecast-container">
         <div class="today forecast">
           <div class="forecast-header">
-            <div class="day">Monday</div>
-            <div class="date">6 Oct</div>
+            <!-- 应该是模版渲染时 没有weekday！ -->
+            <!-- 应该是模版渲染时 没有大小   现在还有有点疑惑关于  then  awit async的使用方法！ -->
+            <div v-if="days_7.length>0" class="day"> {{ days_7[0].weekday }}</div>
+            <div v-if="days_7.length>0" class="date">{{ days_7[0].fxDate }}</div>
           </div> <!-- .forecast-header -->
           <div class="forecast-content">
-            <div class="location">New York</div>
-            <div class="degree">
-              <div class="num">23<sup>o</sup>C</div>
+            <div class="location center mb-4">{{ location }}</div>
+            <div class="center mb-4">{{ days_7[0].textDay }}</div>
+            <div class="degree center">
+              <div class="degree mb-4"> {{ days_7[0].tempMin }} ~{{ days_7[0].tempMax }}<sup>o</sup>C</div>
               <div class="forecast-icon">
-                <img src="./images/icons/icon-1.svg" alt="" width="90">
+                <i :class="'qi-' + days_7[0].iconDay" />
+                <!-- <img src="./images/icons/icon-1.svg" alt="" width="90"> -->
               </div>
             </div>
-            <span><img src="./images/icon-umberella.png" alt="">20%</span>
-            <span><img src="./images/icon-wind.png" alt="">18km/h</span>
-            <span><img src="./images/icon-compass.png" alt="">East</span>
+            <dir class="center">
+              <span v-if="days_7.length>0"><img src="./images/icon-umberella.png" alt="">{{ days_7[0].humidity }}%</span>
+              <span v-if="days_7.length>0"><img src="./images/icon-wind.png" alt="">{{ days_7[0].windSpeedDay }}km/h</span>
+              <span v-if="days_7.length>0"><img src="./images/icon-compass.png" alt="">{{ days_7[0].windDirDay }}</span>
+            </dir>
           </div>
         </div>
         <div class="forecast">
           <div class="forecast-header">
-            <div class="day">Tuesday</div>
+            <div v-if="days_7.length>0" class="day">{{ days_7[1].weekday }}</div>
           </div> <!-- .forecast-header -->
           <div class="forecast-content">
             <div class="forecast-icon">
-              <img src="./images/icons/icon-3.svg" alt="" width="48">
+              <!-- <img src="./images/icons/icon-3.svg" alt="" width="48"> -->
+              <i :class="'qi-' + days_7[1].iconDay" />
             </div>
-            <div class="degree">23<sup>o</sup>C</div>
-            <small>18<sup>o</sup></small>
+            <div class="mb-4">{{ days_7[1].textDay }}</div>
+            <div class="degree mb-4">{{ days_7[1].tempMax }}<sup>o</sup>C</div>
+            <!-- <div class="degree mb-4">{{ days_7[1].tempMin }}<sup>o</sup>C</div> -->
+            <small>{{ days_7[1].tempMin }}<sup>o</sup></small>
           </div>
         </div>
         <div class="forecast">
           <div class="forecast-header">
-            <div class="day">Wednesday</div>
+            <div v-if="days_7.length>0" class="day">{{ days_7[2].weekday }}</div>
           </div> <!-- .forecast-header -->
           <div class="forecast-content">
             <div class="forecast-icon">
-              <img src="./images/icons/icon-5.svg" alt="" width="48">
+              <i :class="'qi-' + days_7[2].iconDay" />
+              <!-- <img src="./images/icons/icon-5.svg" alt="" width="48"> -->
             </div>
-            <div class="degree">23<sup>o</sup>C</div>
-            <small>18<sup>o</sup></small>
+            <div class="mb-4">{{ days_7[2].textDay }}</div>
+            <div class="degree mb-4">{{ days_7[2].tempMax }}<sup>o</sup>C</div>
+            <small>{{ days_7[2].tempMin }}<sup>o</sup></small>
           </div>
         </div>
         <div class="forecast">
           <div class="forecast-header">
-            <div class="day">Thursday</div>
+            <div v-if="days_7.length>0" class="day">{{ days_7[3].weekday }}</div>
           </div> <!-- .forecast-header -->
           <div class="forecast-content">
             <div class="forecast-icon">
-              <img src="./images/icons/icon-7.svg" alt="" width="48">
+              <!-- <img src="./images/icons/icon-7.svg" alt="" width="48"> -->
+              <i :class="'qi-' + days_7[1].iconDay" />
             </div>
-            <div class="degree">23<sup>o</sup>C</div>
-            <small>18<sup>o</sup></small>
+            <div class="mb-4">{{ days_7[3].textDay }}</div>
+            <div class="degree mb-4">{{ days_7[3].tempMax }}<sup>o</sup>C</div>
+            <small>{{ days_7[3].tempMin }}<sup>o</sup></small>
           </div>
         </div>
         <div class="forecast">
           <div class="forecast-header">
-            <div class="day">Friday</div>
+            <div v-if="days_7.length>0" class="day">{{ days_7[4].weekday }}</div>
           </div> <!-- .forecast-header -->
           <div class="forecast-content">
             <div class="forecast-icon">
-              <img src="./images/icons/icon-12.svg" alt="" width="48">
+              <!-- <img src="./images/icons/icon-12.svg" alt="" width="48"> -->
+              <i :class="'qi-' + days_7[4].iconDay" />
             </div>
-            <div class="degree">23<sup>o</sup>C</div>
-            <small>18<sup>o</sup></small>
+            <div class="mb-4">{{ days_7[4].textDay }}</div>
+            <div class="degree mb-4">{{ days_7[4].tempMax }}<sup>o</sup>C</div>
+            <small>{{ days_7[4].tempMin }}<sup>o</sup></small>
           </div>
         </div>
         <div class="forecast">
           <div class="forecast-header">
-            <div class="day">Saturday</div>
+            <div v-if="days_7.length>0" class="day">{{ days_7[5].weekday }}</div>
           </div> <!-- .forecast-header -->
           <div class="forecast-content">
             <div class="forecast-icon">
-              <img src="./images/icons/icon-13.svg" alt="" width="48">
+              <i :class="'qi-' + days_7[5].iconDay" />
+              <!-- <img src="./images/icons/icon-13.svg" alt="" width="48"> -->
             </div>
-            <div class="degree">23<sup>o</sup>C</div>
-            <small>18<sup>o</sup></small>
+            <div class="mb-4">{{ days_7[5].textDay }}</div>
+            <div class="degree mb-4">{{ days_7[5].tempMax }}<sup>o</sup>C</div>
+            <small>{{ days_7[5].tempMin }}<sup>o</sup></small>
           </div>
         </div>
         <div class="forecast">
           <div class="forecast-header">
-            <div class="day">Sunday</div>
+            <div v-if="days_7.length>0" class="day">{{ days_7[6].weekday }}</div>
           </div> <!-- .forecast-header -->
           <div class="forecast-content">
             <div class="forecast-icon">
-              <img src="./images/icons/icon-14.svg" alt="" width="48">
+              <i :class="'qi-' + days_7[6].iconDay" />
+              <!-- <img src="./images/icons/icon-14.svg" alt="" width="48"> -->
             </div>
-            <div class="degree">23<sup>o</sup>C</div>
-            <small>18<sup>o</sup></small>
+            <div class="mb-4">{{ days_7[6].textDay }}</div>
+            <div class="degree mb-4">{{ days_7[6].tempMax }}<sup>o</sup>C</div>
+            <small>{{ days_7[6].tempMin }}<sup>o</sup></small>
           </div>
         </div>
       </div>
@@ -102,7 +126,7 @@
         逐三小时信息
       </h1>
       <div class="chart-container">
-        <chart height="100%" width="100%" />
+        <chart height="100%" width="100%" :hourly="hourly" />
       </div>
     </div>
     <div class="event-info">
@@ -111,8 +135,9 @@
       </h1>
       <div>
         <h1>test for api:</h1>
+        <h1>{{ location }}</h1>
         <p>
-          {{ wt_data.code }}
+          {{ wt_data }}
         </p>
       </div>
       <!-- 可以放置进度图 表示可能性   以及饼状图 -->
@@ -124,58 +149,7 @@
 
 <script>
 import Axios from 'axios'
-// import BoxCard from './components/BoxCard.vue'
-// from 'echarts' import *  as echarts
-// import LineChart from './components/LineChart'
-// import PanelGroup from './components/PanelGroup'
-// import TodayWeather from './components/todayWeather'
 import Chart from './components/Charts/LineMarker.vue'
-const lineChartData = {
-  newVisitis: {
-    expectedData: [100, 120, 161, 134, 105, 160, 165],
-    actualData: [120, 82, 91, 154, 162, 140, 145]
-  },
-  messages: {
-    expectedData: [200, 192, 120, 144, 160, 130, 140],
-    actualData: [180, 160, 151, 106, 145, 150, 130]
-  },
-  purchases: {
-    expectedData: [80, 100, 121, 104, 105, 90, 100],
-    actualData: [120, 90, 100, 138, 142, 130, 130]
-  },
-  shoppings: {
-    expectedData: [130, 140, 141, 142, 145, 150, 160],
-    actualData: [120, 82, 91, 154, 162, 140, 130]
-  }
-}
-const we = {
-  hourly: [
-    { time: '00:00', temp: 20, img: 'sunny' },
-    { time: '01:00', temp: 21, img: 'cloudy' }
-    // 添加更多的小时数据...
-  ],
-  index: [
-    { name: '舒适度', value: '舒适' },
-    { name: '紫外线指数', value: '强' }
-    // 添加更多的指数数据...
-  ],
-  daily: [
-    { date: '2024-04-25', tempMax: 25, tempMin: 15, imgDay: 'sunny', imgNight: 'clear-night' },
-    { date: '2024-04-26', tempMax: 28, tempMin: 18, imgDay: 'partly-cloudy-day', imgNight: 'partly-cloudy-night' }
-    // 添加更多的未来天气数据...
-  ]
-}
-
-// const mockData = {
-//   temp: 25,
-//   pm25: 35,
-//   quality: '优',
-//   level: '良',
-//   weatherImg: 'sun',
-//   weather: '晴',
-//   winddirect: '东风',
-//   humidity: 50
-// }
 
 export default {
   name: 'City',
@@ -188,159 +162,89 @@ export default {
   },
   data() {
     return {
-      wt_data: [],
-      // echart数据部分
-      temperatureData: [],
-      pressureData: [],
-      rainData: [],
-      windData: [],
-      earthData: [],
-      lineChartData: lineChartData.newVisitis,
-      // displayAttributeList: [],  echart直接集成了点击不同图标的显示
-      eventProbabilityList: [],
-      // x轴的时间选项  希望可以切换时间粒度的展示
-      timeOps: [],
-      selectedTimeUnit: ' ',
+      location: '北京',
+      days_7: [1, 2, 3],
+      hourly: [],
+      wt_data: []
 
       // 灾害分析部分
-      like: true,
-      value1: 4154.564,
-      value2: 1314,
-      title: '增长人数',
-
-      // weather api data
-      we: we
+      // like: true,
+      // value1: 4154.564,
+      // value2: 1314,
+      // title: '增长人数',
     }
   },
   mounted() {
-    // this.initChart()
-    this.getApi1()
+    this.requestForData().then(() => {
+      console.log(this.days_7)
+      console.log(this.hourly)
+    })
   },
+
   methods: {
-    getApi1() {
-      const url = 'https://geoapi.qweather.com/v2/city/lookup?location=beij&key=3ca6d5e357a5470abf168dbcd8fe0fd7'
-      const object = {
-        location: 'beij',
+    async requestForData() {
+      // 问题解决  需要把getApi的异步进行阻塞  否则 js会先执行后面的  导致location没有数组索引！！
+      // 关于异步  js运行的单线程  需要进一步有时间了解一下！
+
+      // 七日天气
+      await this.getApi1()
+      const url = 'https://devapi.qweather.com/v7/weather/7d'
+      const locationId = this.wt_data.location[0].id
+      const key = '3ca6d5e357a5470abf168dbcd8fe0fd7'
+      const params = { location: locationId, key: key }
+      // console.log(params)
+      Axios.get(url, { params })
+        .then(res => {
+          this.days_7 = res.data.daily
+          this.days_7.forEach(item => {
+            const weekday = this.getWeekday(item.fxDate)
+            this.$set(item, 'weekday', weekday)
+          })
+        })
+        .then(this.$forceUpdate())
+        .catch(err => {
+          console.error(err)
+        })
+      const url_h = 'https://devapi.qweather.com/v7/weather/24h'
+      // 小时天气
+      Axios.get(url_h, { params })
+        .then(res => {
+          this.hourly = res.data.hourly
+        })
+        .then(this.$forceUpdate())
+        .catch(err => {
+          console.error(err)
+        })
+      setTimeout(() => {
+        console.log('hourly', this.hourly)
+      }, 1000)
+    },
+    async submitLocation() {
+      this.requestForData()
+      console.log(this.days_7)
+    },
+
+    getWeekday(dateString) {
+      const days = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
+      const date = new Date(dateString)
+      const weekday = days[date.getDay()]
+      return weekday
+    },
+    async getApi1() {
+      const url = 'https://geoapi.qweather.com/v2/city/lookup'
+      const params = {
+        location: this.location,
         key: '3ca6d5e357a5470abf168dbcd8fe0fd7'
       }
-      var _this = this
-      Axios.get(url, object).then(
-        function(res) {
-          var result = res.data
-          _this.wt_data = result
-          console.log(result)
-        }
-      )
-    },
-
-    initChart() {
-      // 使用 echarts 初始化图表
-      const chartDom = document.getElementById('figure')
-      const myChart = this.$echarts.init(chartDom)
-      // 使用 this.displayAttributeList 和 this.temperatureData 等数据设置图表
-      this.genData()// 数据在option的键值对赋值时就已经挂载 所以需要提前准备数据
-      const option = {
-        title: {
-          // text: '城市气象数据可视化',
-          // subtext: '示例图表'
-        },
-        tooltip: {
-          trigger: 'axis'
-        },
-        legend: {
-          data: ['气温', '压力', '降雨', '风速']
-        },
-        xAxis: {
-          type: 'category',
-          data: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月']
-        },
-        yAxis: {
-          type: 'value'
-        },
-        series: [
-          {
-            name: '气温',
-            type: 'line',
-            data: this.temperatureData
-          },
-          {
-            name: '压力',
-            type: 'line',
-            data: this.pressureData
-          },
-          {
-            name: '降雨',
-            type: 'line',
-            data: this.rainData
-          },
-          {
-            name: '风速',
-            type: 'line',
-            data: this.windData
-          }
-        ]
-      }
-
-      myChart.setOption(option)
-    },
-    changeTimeUnit() {
-      this.updateXAxisData()
-      this.genData() // 根据新的 x 轴长度生成新的随机数据
-      this.$echarts.init(document.getElementById('figure')).setOption({
-        xAxis: {
-          data: this.timeOps
-        },
-        series: [
-          {
-            name: '气温',
-            type: 'line',
-            data: this.temperatureData
-          },
-          {
-            name: '压力',
-            type: 'line',
-            data: this.pressureData
-          },
-          {
-            name: '降雨',
-            type: 'line',
-            data: this.rainData
-          },
-          {
-            name: '风速',
-            type: 'line',
-            data: this.windData
-          }
-        ]
-      })
-    },
-    updateXAxisData() {
-      // 根据选中的时间粒度更新 x 轴数据
-      switch (this.selectedTimeUnit) {
-        case '月':
-          this.timeOps = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月']
-          break
-        case '季度':
-          this.timeOps = ['第一季度', '第二季度', '第三季度', '第四季度']
-          break
-        case '年':
-          this.timeOps = ['2019年', '2020年', '2021年', '2022年', '2023年']
-          break
-        default:
-          break
-      }
-    },
-    genData() {
-      // 生成与时间粒度相匹配的新随机数据
-      const getRandomData = () => {
-        return Array.from({ length: this.timeOps.length }, () => Math.floor(Math.random() * 100))
-      }
-
-      this.temperatureData = getRandomData()
-      this.pressureData = getRandomData()
-      this.rainData = getRandomData()
-      this.windData = getRandomData()
-      this.earthData = getRandomData()
+      const _this = this
+      await Axios.get(url, { params })
+        .then(res => {
+          _this.wt_data = res.data
+          // console.log(res.d)
+        })
+        .catch(err => {
+          console.error(err)
+        })
     }
   }
 }
@@ -523,4 +427,13 @@ export default {
   height: calc(100vh - 84px);
 }
 
+i{
+  font-size: 48px;
+}
+.center{
+  text-align: center;
+}
+.mb-4{
+  margin-bottom: 16px;
+}
 </style>
