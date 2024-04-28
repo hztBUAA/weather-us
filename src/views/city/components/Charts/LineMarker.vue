@@ -39,8 +39,42 @@ export default {
       x_times: []
     }
   },
+  computed: {
+    fix_hourly() {
+      return this.hourly
+    }
+  },
+  watch: {
+    hourly: {
+      handler(newVal, oldVal) {
+        // this.initChart()
+        this.chart.setOption({
+          xAxis: {
+            data: this.x_times
+          },
+          series: [
+            {
+              // name: '气温',
+              data: this.temperatureData
+            },
+            {
+              // name: '湿度',
+              data: this.rainData
+            },
+            {
+              // name: '气压',
+              data: this.airPressure
+            }
+          ]
+        })
+      },
+      deep: true // Watch changes deeply in the array
+    }
+  },
   mounted() {
-    this.initChart()
+    setTimeout(() => {
+      this.initChart()
+    }, 1000)
   },
   beforeDestroy() {
     if (!this.chart) {
@@ -51,9 +85,6 @@ export default {
   },
   methods: {
     genData() {
-      // const new_t = [12, 13, 23, 34, 23, 25, 19, 20, 17, 14, 16, 11]
-      // const new_p = [2, 3, 3, 4, 2, 5, 9, 2, 7, 4, 6, 1]
-      // const new_r = [12, 13, 23, 34, 23, 25, 19, 20, 17, 14, 16, 11]
       this.temperatureData = this.hourly.map(data => data.temp)
       this.rainData = this.hourly.map(data => data.humidity)
       this.airPressure = this.hourly.map(data => data.pressure)
@@ -63,16 +94,29 @@ export default {
         const timeStr = `${hours}:00`
         return timeStr
       })
-      // const formattedData = hourlyData.map( => {
-      //   const fxTime = new Date(item.fxTime)
-      //   const hours = fxTime.getHours()
-      //   const minutes = fxTime.getMinutes()
-      //   const timeStr = `${hours}:${minutes < 10 ? '0' + minutes : minutes}`
-      //   return {
-      //     ...item,
-      //     fxTime: timeStr
-      //   }
-      // })
+
+      // Update the chart data after updating the component data
+      // if (this.chart) {
+      //   this.chart.setOption({
+      //     xAxis: {
+      //       data: this.x_times
+      //     },
+      //     series: [
+      //       {
+      //         name: '气温',
+      //         data: this.temperatureData
+      //       },
+      //       {
+      //         name: '湿度',
+      //         data: this.rainData
+      //       },
+      //       {
+      //         name: '气压',
+      //         data: this.airPressure
+      //       }
+      //     ]
+      //   })
+      // }
     },
     initChart() {
       this.chart = this.$echarts.init(document.getElementById(this.id))
