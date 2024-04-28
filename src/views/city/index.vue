@@ -5,6 +5,30 @@
       <input v-model="location" type="text">
       <button @click="submitLocation">搜索</button>
     </div>
+    <!-- <div class="current-weather">
+      <current-info />
+    </div> -->
+    <div class="current-weather center">
+      <h1>当前天气</h1>
+      <div class="current-panel mb-4">
+        <h1 class="c">
+          {{ location }}
+        </h1>
+        <div>
+          {{ cur.temp }}
+        </div>
+        <div>
+          {{ cur.text }}
+        </div>
+        <div>
+          {{ cur.windDir }}
+        </div>
+        <div>
+          {{ cur.humidity }}
+        </div>
+        <div />
+      </div>
+    </div>
     <div class="container">
       <h1>
         七日预报信息
@@ -150,11 +174,12 @@
 <script>
 import Axios from 'axios'
 import Chart from './components/Charts/LineMarker.vue'
-
+// import CurrentInfo from './components/CurrentInfo.vue'
 export default {
   name: 'City',
   components: {
     Chart
+    // CurrentInfo
     // LineChart,
     // PanelGroup,
     // BoxCard
@@ -165,6 +190,7 @@ export default {
       location: '北京',
       days_7: [1, 2, 3],
       hourly: [],
+      cur: {},
       wt_data: []
 
       // 灾害分析部分
@@ -186,10 +212,23 @@ export default {
       // 问题解决  需要把getApi的异步进行阻塞  否则 js会先执行后面的  导致location没有数组索引！！
       // 关于异步  js运行的单线程  需要进一步有时间了解一下！
 
-      // 七日天气
       await this.getApi1()
-      const url = 'https://devapi.qweather.com/v7/weather/7d'
       const locationId = this.wt_data.location[0].id
+      // 当前实时天气
+      const res = await Axios.get(
+        `https://devapi.qweather.com/v7/weather/now?location=${locationId}&key=3ca6d5e357a5470abf168dbcd8fe0fd7`
+      )
+      console.log('res', res)
+      this.cur = res.data.now
+      console.log('cur', this.cur)
+      // res => {
+      //   this.cur = res.data.now
+      // },
+      this.$forceUpdate() // 强制更新组件
+
+      // 七日天气
+      const url = 'https://devapi.qweather.com/v7/weather/7d'
+
       const key = '3ca6d5e357a5470abf168dbcd8fe0fd7'
       const params = { location: locationId, key: key }
       // console.log(params)
@@ -435,5 +474,18 @@ i{
 }
 .mb-4{
   margin-bottom: 16px;
+}
+.current-weather {
+  background-color: #f0f0f0;
+  padding: 20px;
+  border-radius: 5px;
+  text-align: center;
+}
+
+.current-panel {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 </style>
