@@ -10,29 +10,34 @@
     </div> -->
     <div class="current-weather center">
       <h1>当前天气</h1>
+      <hr>
+      <!-- <img src="./images/sunny.png" alt=""> -->
       <div class="current-panel mb-4">
-        <h1 class="c">
+        <h1 class="" style="font-size:48px;left:150px;position:absolute">
           {{ location }}
         </h1>
-        <div>
-          {{ cur.temp }}
+        <div class="mb-4">
+          {{ cur.temp }}<sup>o</sup>C
         </div>
-        <div>
+        <div class="mb-4">
           {{ cur.text }}
         </div>
-        <div>
-          {{ cur.windDir }}
+        <div class="mb-4">
+          <!-- <img src="./images/icon-compass.png" alt=""> -->
+          <i class="qi-2208" style="font-size:16px;margin-right:4px" />{{ cur.windDir }}
         </div>
-        <div>
-          {{ cur.humidity }}
+        <div class="mb-4">
+          <i class="qi-2120" style="font-size:16px;margin-right:4px" />{{ cur.humidity }}%
         </div>
         <div />
       </div>
+
     </div>
     <div class="container">
       <h1>
         七日预报信息
       </h1>
+      <hr>
       <div class="forecast-container">
         <div class="today forecast">
           <div class="forecast-header">
@@ -149,6 +154,7 @@
       <h1>
         逐三小时信息
       </h1>
+      <hr>
       <div class="chart-container">
         <chart height="100%" width="100%" :hourly="hourly" />
       </div>
@@ -157,6 +163,7 @@
       <h1>
         城市灾害预警通知
       </h1>
+      <hr>
       <div>
         <h1>test for api:</h1>
         <h1>{{ location }}</h1>
@@ -483,9 +490,24 @@ i{
 }
 
 .current-panel {
-  background-color: #fff;
+  // background-color: #fff;
+  background-image: url(./images/sunny.png);
+  background-size: 100%;
   padding: 20px;
   border-radius: 5px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgba(26, 12, 12, 0.1);
+}
+
+hr {
+    border: 0;
+    padding-top: 10px;
+    color: #d0d0d5;
+    border-top: 1px solid rgba(0,0,0,.1);
+    box-shadow: inset 0 10px 10px -10px;
+}
+
+h1{
+  text-align: left;
+  font-size: 16px;
 }
 </style>
