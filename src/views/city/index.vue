@@ -13,26 +13,182 @@
       <h1>当前天气</h1>
       <hr>
       <!-- <img src="./images/sunny.png" alt=""> -->
-      <div class="current-panel mb-4">
-        <h1 class="" style="font-size:48px;left:150px;position:absolute">
-          {{ fixed_location }}
-        </h1>
-        <div class="mb-4">
-          {{ cur.temp }}<sup>o</sup>C
+      <div
+        class="current-panel mb-4"
+        :style="{
+          backgroundImage: 'url(' + getWeatherImage(cur.icon) + ')',
+          color: isNight() ? 'white' : 'black'
+        }"
+      >
+        <h1 class="" style="font-size:48px;left:150px;position:absolute">{{ fixed_location }}</h1>
+        <div class="mb-4 current-time">
+          当前时间: {{ currentTime }}
         </div>
-        <div class="mb-4">
-          {{ cur.text }}
-        </div>
-        <div class="mb-4">
-          <!-- <img src="./images/icon-compass.png" alt=""> -->
-          <i class="qi-2208" style="font-size:16px;margin-right:4px" />{{ cur.windDir }}
-        </div>
-        <div class="mb-4">
-          <i class="qi-2120" style="font-size:16px;margin-right:4px" />{{ cur.humidity }}%
-        </div>
-        <div />
+        <div class="mb-4">{{ cur.temp }}<sup>o</sup>C</div>
+        <div class="mb-4">{{ cur.text }}</div>
+        <div class="mb-4"><i class="qi-2208" style="font-size:16px;margin-right:4px" />{{ cur.windDir }}</div>
+        <div class="mb-4"><i class="qi-2120" style="font-size:16px;margin-right:4px" />{{ cur.humidity }}%</div>
       </div>
 
+    </div>
+
+    <div class="container">
+      <h1>
+        七日预报信息
+      </h1>
+      <hr>
+      <div class="forecast-container">
+        <div class="today forecast">
+          <div class="forecast-header">
+            <!-- 应该是模版渲染时 没有weekday！ -->
+            <!-- 应该是模版渲染时 没有大小   现在还有有点疑惑关于  then  awit async的使用方法！ -->
+            <div v-if="days_7.length>0" class="day"> {{ days_7[0].weekday }}</div>
+            <div v-if="days_7.length>0" class="date">{{ days_7[0].fxDate }}</div>
+          </div> <!-- .forecast-header -->
+          <div class="forecast-content">
+            <div class="location center mb-4">{{ fixed_location }}</div>
+            <div class="center mb-4">{{ days_7[0].textDay }}</div>
+            <div class="degree center">
+              <div class="degree mb-4"> {{ days_7[0].tempMin }} ~{{ days_7[0].tempMax }}<sup>o</sup>C</div>
+              <div class="forecast-icon">
+                <i :class="'qi-' + days_7[0].iconDay" />
+              <!-- <img src="./images/icons/icon-1.svg" alt="" width="90"> -->
+              </div>
+            </div>
+            <dir class="center">
+              <span v-if="days_7.length>0"><img src="./images/icon-umberella.png" alt="">{{ days_7[0].humidity }}%</span>
+              <span v-if="days_7.length>0"><img src="./images/icon-wind.png" alt="">{{ days_7[0].windSpeedDay }}km/h</span>
+              <span v-if="days_7.length>0"><img src="./images/icon-compass.png" alt="">{{ days_7[0].windDirDay }}</span>
+            </dir>
+          </div>
+        </div>
+        <div class="forecast">
+          <div class="forecast-header">
+            <div v-if="days_7.length>0" class="day">{{ days_7[1].weekday }}</div>
+          </div> <!-- .forecast-header -->
+          <div class="forecast-content">
+            <div class="forecast-icon">
+              <!-- <img src="./images/icons/icon-3.svg" alt="" width="48"> -->
+              <i :class="'qi-' + days_7[1].iconDay" />
+            </div>
+            <div class="mb-4">{{ days_7[1].textDay }}</div>
+            <div class="degree mb-4">{{ days_7[1].tempMax }}<sup>o</sup>C</div>
+            <!-- <div class="degree mb-4">{{ days_7[1].tempMin }}<sup>o</sup>C</div> -->
+            <small>{{ days_7[1].tempMin }}<sup>o</sup></small>
+          </div>
+        </div>
+        <div class="forecast">
+          <div class="forecast-header">
+            <div v-if="days_7.length>0" class="day">{{ days_7[2].weekday }}</div>
+          </div> <!-- .forecast-header -->
+          <div class="forecast-content">
+            <div class="forecast-icon">
+              <i :class="'qi-' + days_7[2].iconDay" />
+            <!-- <img src="./images/icons/icon-5.svg" alt="" width="48"> -->
+            </div>
+            <div class="mb-4">{{ days_7[2].textDay }}</div>
+            <div class="degree mb-4">{{ days_7[2].tempMax }}<sup>o</sup>C</div>
+            <small>{{ days_7[2].tempMin }}<sup>o</sup></small>
+          </div>
+        </div>
+        <div class="forecast">
+          <div class="forecast-header">
+            <div v-if="days_7.length>0" class="day">{{ days_7[3].weekday }}</div>
+          </div> <!-- .forecast-header -->
+          <div class="forecast-content">
+            <div class="forecast-icon">
+              <!-- <img src="./images/icons/icon-7.svg" alt="" width="48"> -->
+              <i :class="'qi-' + days_7[1].iconDay" />
+            </div>
+            <div class="mb-4">{{ days_7[3].textDay }}</div>
+            <div class="degree mb-4">{{ days_7[3].tempMax }}<sup>o</sup>C</div>
+            <small>{{ days_7[3].tempMin }}<sup>o</sup></small>
+          </div>
+        </div>
+        <div class="forecast">
+          <div class="forecast-header">
+            <div v-if="days_7.length>0" class="day">{{ days_7[4].weekday }}</div>
+          </div> <!-- .forecast-header -->
+          <div class="forecast-content">
+            <div class="forecast-icon">
+              <!-- <img src="./images/icons/icon-12.svg" alt="" width="48"> -->
+              <i :class="'qi-' + days_7[4].iconDay" />
+            </div>
+            <div class="mb-4">{{ days_7[4].textDay }}</div>
+            <div class="degree mb-4">{{ days_7[4].tempMax }}<sup>o</sup>C</div>
+            <small>{{ days_7[4].tempMin }}<sup>o</sup></small>
+          </div>
+        </div>
+        <div class="forecast">
+          <div class="forecast-header">
+            <div v-if="days_7.length>0" class="day">{{ days_7[5].weekday }}</div>
+          </div> <!-- .forecast-header -->
+          <div class="forecast-content">
+            <div class="forecast-icon">
+              <i :class="'qi-' + days_7[5].iconDay" />
+            <!-- <img src="./images/icons/icon-13.svg" alt="" width="48"> -->
+            </div>
+            <div class="mb-4">{{ days_7[5].textDay }}</div>
+            <div class="degree mb-4">{{ days_7[5].tempMax }}<sup>o</sup>C</div>
+            <small>{{ days_7[5].tempMin }}<sup>o</sup></small>
+          </div>
+        </div>
+        <div class="forecast">
+          <div class="forecast-header">
+            <div v-if="days_7.length>0" class="day">{{ days_7[6].weekday }}</div>
+          </div> <!-- .forecast-header -->
+          <div class="forecast-content">
+            <div class="forecast-icon">
+              <i :class="'qi-' + days_7[6].iconDay" />
+            <!-- <img src="./images/icons/icon-14.svg" alt="" width="48"> -->
+            </div>
+            <div class="mb-4">{{ days_7[6].textDay }}</div>
+            <div class="degree mb-4">{{ days_7[6].tempMax }}<sup>o</sup>C</div>
+            <small>{{ days_7[6].tempMin }}<sup>o</sup></small>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- <div v-else>
+      Loading
+    </div> -->
+    <div class="hourly-info">
+      <h1>
+        逐小时数据
+      </h1>
+      <hr>
+      <div class="chart-container">
+        <chart height="100%" width="100%" :hourly="hourly" />
+      </div>
+    </div>
+    <div class="event-info">
+      <h1>
+        灾害预警通知
+      </h1>
+      <hr>
+      <el-alert
+        :title="warning_title"
+        :type="warning_type"
+      />
+      <el-card class="box-card">
+        <div slot="header">
+          <span v-if="events.length>0" class="event-title">{{ events[0].title }}</span>
+          <span v-else>暂无可能的灾害 </span>
+        </div>
+        <div>
+          <span v-if="events.length>0" class="event-text">{{ events[0].text }}</span>
+          <span v-else>您所在的地区很安全！您可以放心写软工了哦！</span>
+        </div>
+
+      </el-card>
+    <!-- <div>
+        <h1>test for api:</h1>
+        <h1>{{ location }}</h1>
+        <p>
+          {{ wt_data }}
+        </p>
+      </div> -->
+    <!-- 可以放置进度图 表示可能性   以及饼状图 -->
     </div>
 
   </div>
@@ -64,7 +220,8 @@ export default {
       events: {},
       warning_title: '',
       warning_type: '',
-      show_days_7: false
+      show_days_7: false,
+      currentTime: ''
       // 灾害分析部分
       // like: true,
       // value1: 4154.564,
@@ -98,8 +255,21 @@ export default {
       console.log(this.days_7)
       console.log(this.hourly)
     })
+    this.updateTime()
+    setInterval(this.updateTime, 1000) // 每秒更新一次时间
   },
   methods: {
+    isNight() {
+      const hour = new Date().getHours()
+      return hour >= 18 || hour < 6 // 晚上定义为18:00到次日06:00
+    },
+    updateTime() {
+      const now = new Date()
+      const hours = now.getHours().toString().padStart(2, '0')
+      const minutes = now.getMinutes().toString().padStart(2, '0')
+      const seconds = now.getSeconds().toString().padStart(2, '0')
+      this.currentTime = `${hours}:${minutes}:${seconds}`
+    },
     async requestForData() {
       // 问题解决  需要把getApi的异步进行阻塞  否则 js会先执行后面的  导致location没有数组索引！！
       // 关于异步  js运行的单线程  需要进一步有时间了解一下！
@@ -114,6 +284,11 @@ export default {
       // 当前实时天气
       const res = await Axios.get(
         `https://devapi.qweather.com/v7/weather/now?location=${locationId}&key=3ca6d5e357a5470abf168dbcd8fe0fd7`
+        , {
+          headers: {
+            // 这里不设置任何请求头，即空对象
+          }
+        }
       )
       this.cur = res.data.now
       // res => {
@@ -154,6 +329,28 @@ export default {
       this.requestForData()
       console.log(this.days_7)
     },
+    // 根据当前天气状况返回对应的图片路径
+    getWeatherImage(weather) {
+      const hour = new Date().getHours()
+      console.log('hour', hour, weather, 'weather')
+      if (hour >= 18 && weather === '150') {
+        return require('@/assets/night-sunny.png') // 使用@表示src目录
+      }
+
+      switch (weather) {
+        case '100':
+          return require('@/assets/sunny.png')
+        case '101':
+          return require('@/assets/cloudy.png')
+        case '152':
+          return require('@/assets/rainy.png')
+        case '400':
+          return require('@/assets/snowy.png')
+        default:
+          // return require('@/assets/sunny.png')
+          return require('@/assets/snowy.png')
+      }
+    },
 
     getWeekday(dateString) {
       const days = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
@@ -162,21 +359,30 @@ export default {
       return weekday
     },
     async getApi1() {
-      const url = 'https://geoapi.qweather.com/v2/city/lookup'
-      const params = {
-        location: this.location,
-        key: '3ca6d5e357a5470abf168dbcd8fe0fd7'
-      }
-      const _this = this
-      await Axios.get(url, { params })
-        .then(res => {
-          _this.wt_data = res.data
-          // console.log(res.d)
-        })
-        .catch(err => {
-          console.error(err)
-        })
+      // 创建一个新的请求头对象，不包含 Apifoxtoken 请求头
+      const headers = Object.assign({}, Axios.defaults.headers.common)
+      delete headers['Apifoxtoken']
+      const res = await Axios.get(
+        `https://geoapi.qweather.com/v2/city/lookup?location=${this.location}&key=3ca6d5e357a5470abf168dbcd8fe0fd7`
+        ,
+        headers)
+      // const url = 'https://geoapi.qweather.com/v2/city/lookup'
+      // const params = {
+      //   location: this.location,
+      //   key: '3ca6d5e357a5470abf168dbcd8fe0fd7'
+      // }
+      // const _this = this
+      this.wt_data = res.data
       this.fixed_location = this.wt_data.location[0].name
+      // await Axios.get(url, { params, headers: {}}) // 设置 headers 为空对象
+      //   .then(res => {
+      //     _this.wt_data = res.data
+      //     // console.log(res.d)
+      //   })
+      //   .catch(err => {
+      //     console.error(err)
+      //   })
+      // this.fixed_location = this.wt_data.location[0].name
     }
   }
 }
@@ -376,8 +582,9 @@ i{
 
 .current-panel {
   // background-color: #fff;
-  background-image: url(./images/sunny.png);
+  // background-image: url(./images/sunny.png);
   background-size: 100%;
+  height: 250px;
   padding: 20px;
   border-radius: 5px;
   box-shadow: 0 2px 4px rgba(26, 12, 12, 0.1);
@@ -439,5 +646,13 @@ h1{
 /* 按钮悬停样式 */
 .search-button:hover {
   background-color: #0077cc; /* 悬停时的背景色 */
+}
+
+.current-time {
+  font-size: 1.5rem;
+  // position: absolute;
+  // bottom: 10px;
+  // left: 50%;
+  // transform: translateX(-50%);
 }
 </style>
