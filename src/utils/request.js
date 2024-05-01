@@ -10,10 +10,6 @@ const service = axios.create({
   timeout: 5000 // request timeout
 })
 
-if (process.env.NODE_ENV === 'development') {
-  service.defaults.headers['apifoxToken'] = process.env.VUE_APP_MOCK_TOKEN
-}
-
 // request interceptor
 service.interceptors.request.use(
   config => {
@@ -23,6 +19,9 @@ service.interceptors.request.use(
       // ['X-Token'] is a custom headers key
       // please modify it according to the actual situation
       config.headers['X-Token'] = getToken()
+    }
+    if (process.env.NODE_ENV === 'development') {
+      config.headers['apifoxToken'] = process.env.VUE_APP_MOCK_TOKEN
     }
     return config
   },
