@@ -1,10 +1,11 @@
 <template>
 
   <div class="forecast-table">
-    <div>
-      <input v-model="location" type="text">
-      <button @click="submitLocation">搜索</button>
+    <div style="display: flex; width: 100%;">
+      <input v-model="location" type="text" class="search-input" style="flex: 1;">
+      <button class="search-button" style="flex: 0 0 auto;" @click="submitLocation">搜索</button>
     </div>
+
     <!-- <div class="current-weather">
       <current-info />
     </div> -->
@@ -14,7 +15,7 @@
       <!-- <img src="./images/sunny.png" alt=""> -->
       <div class="current-panel mb-4">
         <h1 class="" style="font-size:48px;left:150px;position:absolute">
-          {{ location }}
+          {{ fixed_location }}
         </h1>
         <div class="mb-4">
           {{ cur.temp }}<sup>o</sup>C
@@ -47,7 +48,7 @@
             <div v-if="days_7.length>0" class="date">{{ days_7[0].fxDate }}</div>
           </div> <!-- .forecast-header -->
           <div class="forecast-content">
-            <div class="location center mb-4">{{ location }}</div>
+            <div class="location center mb-4">{{ fixed_location }}</div>
             <div class="center mb-4">{{ days_7[0].textDay }}</div>
             <div class="degree center">
               <div class="degree mb-4"> {{ days_7[0].tempMin }} ~{{ days_7[0].tempMax }}<sup>o</sup>C</div>
@@ -150,9 +151,12 @@
         </div>
       </div>
     </div>
+    <!-- <div v-else>
+      Loading
+    </div> -->
     <div class="hourly-info">
       <h1>
-        逐三小时信息
+        逐小时数据
       </h1>
       <hr>
       <div class="chart-container">
@@ -161,16 +165,31 @@
     </div>
     <div class="event-info">
       <h1>
-        城市灾害预警通知
+        灾害预警通知
       </h1>
       <hr>
-      <div>
+      <el-alert
+        :title="warning_title"
+        :type="warning_type"
+      />
+      <el-card class="box-card">
+        <div slot="header">
+          <span v-if="events.length>0" class="event-title">{{ events[0].title }}</span>
+          <span v-else>暂无可能的灾害 </span>
+        </div>
+        <div>
+          <span v-if="events.length>0" class="event-text">{{ events[0].text }}</span>
+          <span v-else>您所在的地区很安全！您可以放心写软工了哦！</span>
+        </div>
+
+      </el-card>
+      <!-- <div>
         <h1>test for api:</h1>
         <h1>{{ location }}</h1>
         <p>
           {{ wt_data }}
         </p>
-      </div>
+      </div> -->
       <!-- 可以放置进度图 表示可能性   以及饼状图 -->
     </div>
 
@@ -195,11 +214,15 @@ export default {
   data() {
     return {
       location: '北京',
+      fixed_location: '北京',
       days_7: [1, 2, 3],
       hourly: [],
       cur: {},
-      wt_data: []
-
+      wt_data: [],
+      events: {},
+      warning_title: '',
+      warning_type: '',
+      show_days_7: false
       // 灾害分析部分
       // like: true,
       // value1: 4154.564,
@@ -207,63 +230,83 @@ export default {
       // title: '增长人数',
     }
   },
+  watch: {
+    hourly: {
+      handler(newVal) {
+        this.$forceUpdate()
+      },
+      deep: true // 深度监听hourly对象内部属性的变化
+    },
+    days_7: {
+      handler(oldVal, newVal) {
+        if (newVal !== oldVal) {
+          this.show_days_7 = false
+          // this.showdom = true
+        } else {
+          this.show_days_7 = true
+        }
+      },
+      deep: true
+    }
+
+  },
+
   mounted() {
     this.requestForData().then(() => {
       console.log(this.days_7)
       console.log(this.hourly)
     })
   },
-
   methods: {
     async requestForData() {
       // 问题解决  需要把getApi的异步进行阻塞  否则 js会先执行后面的  导致location没有数组索引！！
       // 关于异步  js运行的单线程  需要进一步有时间了解一下！
+      let locationId
+      // !箭头函数的问题
+      await this.getApi1().then(() => {
+        locationId = this.wt_data.location[0].id
+      }
+      )
+      console.log(locationId, 'locationId')
 
-      await this.getApi1()
-      const locationId = this.wt_data.location[0].id
       // 当前实时天气
       const res = await Axios.get(
         `https://devapi.qweather.com/v7/weather/now?location=${locationId}&key=3ca6d5e357a5470abf168dbcd8fe0fd7`
       )
-      console.log('res', res)
       this.cur = res.data.now
-      console.log('cur', this.cur)
       // res => {
       //   this.cur = res.data.now
       // },
       this.$forceUpdate() // 强制更新组件
 
       // 七日天气
-      const url = 'https://devapi.qweather.com/v7/weather/7d'
-
-      const key = '3ca6d5e357a5470abf168dbcd8fe0fd7'
-      const params = { location: locationId, key: key }
+      console.log(locationId, 'locationID')
       // console.log(params)
-      Axios.get(url, { params })
-        .then(res => {
-          this.days_7 = res.data.daily
-          this.days_7.forEach(item => {
-            const weekday = this.getWeekday(item.fxDate)
-            this.$set(item, 'weekday', weekday)
-          })
-        })
-        .then(this.$forceUpdate())
-        .catch(err => {
-          console.error(err)
-        })
-      const url_h = 'https://devapi.qweather.com/v7/weather/24h'
+      const res_location = await Axios.get(
+        `https://devapi.qweather.com/v7/weather/7d?location=${locationId}&key=3ca6d5e357a5470abf168dbcd8fe0fd7`
+      )
+      // this.days_7 = res_location.data.daily
+      this.days_7 = res_location.data.daily
+      this.days_7.forEach(item => {
+        const weekday = this.getWeekday(item.fxDate)
+        this.$set(item, 'weekday', weekday)
+        this.$forceUpdate()
+      })
+      // this.$forceUpdate()
       // 小时天气
-      Axios.get(url_h, { params })
-        .then(res => {
-          this.hourly = res.data.hourly
-        })
-        .then(this.$forceUpdate())
-        .catch(err => {
-          console.error(err)
-        })
-      setTimeout(() => {
-        console.log('hourly', this.hourly)
-      }, 1000)
+      const res_hourly = await Axios.get(
+        `https://devapi.qweather.com/v7/weather/24h?location=${locationId}&key=3ca6d5e357a5470abf168dbcd8fe0fd7`)
+      this.hourly = res_hourly.data.hourly
+      // 灾害预警
+      const res_event = await Axios.get(
+        `https://devapi.qweather.com/v7/warning/now?location=${locationId}&key=3ca6d5e357a5470abf168dbcd8fe0fd7`
+      )
+      this.events = res_event.data.warning
+      console.log('events', this.events)
+      this.warning_title = this.events.length > 0 ? '！有灾害' : '一切正常'
+      this.warning_type = this.events.length > 0 ? 'warning' : 'success'
+      console.log(this.warning_title, this.warning_type, 'warning')
+      this.$forceUpdate()
     },
     async submitLocation() {
       this.requestForData()
@@ -291,6 +334,7 @@ export default {
         .catch(err => {
           console.error(err)
         })
+      this.fixed_location = this.wt_data.location[0].name
     }
   }
 }
@@ -348,7 +392,7 @@ export default {
 
 .forecast-container {
 	width: 100%;
-	background: #323544;
+	background: #F6F5F2;
 	display: table;
 	table-layout: fixed;
 	width: 100%;
@@ -364,7 +408,7 @@ export default {
 }
 
 .forecast-container .forecast:nth-child(even) {
-	background-color: #262936;
+	background-color: #FEFBF6;
 }
 
 @media screen and (max-width: 990px) {
@@ -458,7 +502,7 @@ export default {
 .forecast-container .forecast .forecast-content .degree {
 	font-size: 24px;
 	font-size: 1.7142857143em;
-	color: white;
+	// color: #5BBCFF;
 	font-weight: 700;
 }
 
@@ -484,7 +528,6 @@ i{
 }
 .current-weather {
   background-color: #f0f0f0;
-  padding: 20px;
   border-radius: 5px;
   text-align: center;
 }
@@ -509,5 +552,50 @@ hr {
 h1{
   text-align: left;
   font-size: 16px;
+}
+
+.forecast-table{
+  padding: 20px;
+}
+
+.event-title{
+  border-radius: 9px;
+  background: #c3c6cb;
+}
+.event-text{
+  border-radius: 9px;
+  background: #FFE4CF;
+  opacity: 50%;
+
+}
+
+.search-input {
+  padding: 8px 12px; /* 内边距 */
+  font-size: 16px; /* 字体大小 */
+  border: 1px solid #ccc; /* 边框 */
+  border-radius: 4px; /* 圆角 */
+  outline: none; /* 去掉默认的焦点样式 */
+}
+
+/* 输入框聚焦样式 */
+.search-input:focus {
+  border-color: dodgerblue; /* 聚焦时的边框颜色 */
+  box-shadow: 0 0 5px dodgerblue; /* 聚焦时的阴影效果 */
+}
+
+/* 按钮样式 */
+.search-button {
+  padding: 8px 16px; /* 内边距 */
+  font-size: 16px; /* 字体大小 */
+  background-color: dodgerblue; /* 背景色 */
+  color: white; /* 文字颜色 */
+  border: none; /* 去掉边框 */
+  border-radius: 4px; /* 圆角 */
+  cursor: pointer; /* 鼠标悬停时显示手型 */
+}
+
+/* 按钮悬停样式 */
+.search-button:hover {
+  background-color: #0077cc; /* 悬停时的背景色 */
 }
 </style>
