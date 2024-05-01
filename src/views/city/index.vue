@@ -344,13 +344,33 @@ export default {
         // case '152':
         // case '101':
         //   return require('@/assets/cloudy.png')
-        case '352':
-          return require('@/assets/rainy.png')
         case '4':
           return require('@/assets/snowy.png')
         default:
           // return require('@/assets/sunny.png')
           return require('@/assets/cloudy.png')
+      }
+    },
+    // 根据当前天气状况返回对应的图片路径
+    getWeatherImage(weather) {
+      const hour = new Date().getHours()
+      console.log('hour', hour, weather, 'weather')
+      if (hour >= 18 && weather === '150') {
+        return require('@/assets/night-sunny.png') // 使用@表示src目录
+      }
+
+      switch (weather) {
+        case '100':
+          return require('@/assets/sunny.png')
+        case '101':
+          return require('@/assets/cloudy.png')
+        case '152':
+          return require('@/assets/rainy.png')
+        case '400':
+          return require('@/assets/snowy.png')
+        default:
+          // return require('@/assets/sunny.png')
+          return require('@/assets/snowy.png')
       }
     },
 
