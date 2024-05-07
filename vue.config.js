@@ -30,6 +30,10 @@ module.exports = {
   lintOnSave: process.env.NODE_ENV === 'development',
   productionSourceMap: false,
   devServer: {
+    allowedHosts: [
+      'judger2003.cn',
+      'www.judger2003.cn'
+    ],
     port: port,
     open: true,
     overlay: {
@@ -53,6 +57,7 @@ module.exports = {
     resolve: {
       alias: {
         '@': resolve('src')
+        // 'lodash': 'lodash'
       }
     }
   },
