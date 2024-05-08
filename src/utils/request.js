@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { MessageBox, Message } from 'element-ui'
 import store from '@/store'
+import { getCSRFToken } from '@/utils/auth'
 
 // create an axios instance
 const service = axios.create({
@@ -15,6 +16,10 @@ service.interceptors.request.use(
     // do something before request is sent
     if (process.env.NODE_ENV === 'development') {
       config.headers['apifoxToken'] = process.env.VUE_APP_MOCK_TOKEN
+    } else {
+      if (config.method !== 'GET') {
+        config.headers['X-CSRFToken'] = getCSRFToken()
+      }
     }
     return config
   },

@@ -80,7 +80,7 @@
 </template>
 
 <script>
-import { registerService } from '@/api/user'
+import { getCSRFTokenService, registerService } from '@/api/user'
 import { Message } from 'element-ui'
 
 export default {
@@ -150,12 +150,15 @@ export default {
       }
     }
   },
+  mounted() {
+    console.log(process.env['VUE_APP_TARGET_API'])
+  },
   methods: {
     handleLogin() {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
           this.loading = true
-          this.$store.dispatch('user/login', this.userData).then(() => {
+          this.$store.dispatch('user/login', this.userData).then(async() => {
             this.$router.push({ path: this.redirect || '/' })
             this.loading = false
           }).catch(() => {
@@ -168,10 +171,12 @@ export default {
       })
     },
     handleRegister() {
-      this.$refs.registerForm.validate((valid) => {
+      this.$refs.registerForm.validate(async(valid) => {
         if (valid) {
           this.loading = true
-          registerService(this.userData).then((result) => {
+          const result = await getCSRFTokenService()
+          console.log(result)
+          registerService(this.userData, result.csrf_token).then((result) => {
             Message.success(result.msg)
             this.loading = false
             this.isRegister = false

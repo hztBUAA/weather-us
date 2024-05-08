@@ -37,7 +37,6 @@ export default {
       'sidebar'
     ]),
     routes() {
-      console.log(this.$router.options.routes)
       return this.$router.options.routes.filter((route) => {
         if (route.meta && route.meta.roles) {
           return route.meta.roles.includes(this.role)
