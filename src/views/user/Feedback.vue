@@ -40,6 +40,7 @@ export default {
       this.feedback = {
         title: row.title,
         content: row.content,
+        reply: row.reply,
         status: row.status,
         updateTime: row.updateTime
       }
@@ -147,9 +148,17 @@ export default {
         </div>
         <hr style="margin: 0">
       </template>
-      <p style="font-size: 17px;color: #606266;text-indent: 2em">
-        {{ feedback.content }}
-      </p>
+      <template slot="default">
+        <p style="font-size: 17px;color: #606266;text-indent: 2em">
+          {{ feedback.content }}
+        </p>
+
+        <hr>
+        <h4>回复</h4>
+        <p style="font-size: 17px;color: #606266;text-indent: 2em">
+          {{ feedback.reply }}
+        </p>
+      </template>
 
       <template slot="footer">
         <span style="color: #606266;font-size: 14px">
