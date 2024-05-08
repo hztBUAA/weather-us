@@ -5,30 +5,22 @@
             <el-divider></el-divider>
         </div>
         <el-form ref="form" :model="form" label-width="80px">
-            <el-form-item label="预警名称" style="width: 500px;">
-                <el-input v-model="form.name"></el-input>
+            <el-form-item label="预警标题" style="width: 500px;" :rules="rules.title" prop="title">
+                <el-input v-model="form.title" />
             </el-form-item>
-            <el-form-item label="预警区域">
-                <el-select v-model="form.region" placeholder="请选择预警区域">
-                    <el-option label="区域一" value="shanghai"></el-option>
-                    <el-option label="区域二" value="beijing"></el-option>
-                </el-select>
+
+            <el-form-item :rules="rules.addr" prop="address" label="预警区域">
+                <el-cascader v-model="form.address" :options="options" clearable filterable placeholder="选择城市"
+                    separator="" />
             </el-form-item>
-            <el-form-item label="预警时间">
-                <el-row :gutter="8">
-                    <el-col :span="4">
-                        <el-date-picker type="date" placeholder="选择日期" v-model="form.date1"
-                            style="width: 100%;"></el-date-picker>
-                    </el-col>
-                    <el-col :span="1" style="text-align: center;">
-                        <span>-</span>
-                    </el-col>
-                    <el-col :span="4">
-                        <el-time-picker placeholder="选择时间" v-model="form.date2" style="width: 100%;"></el-time-picker>
-                    </el-col>
-                </el-row>
+
+            <el-form-item label="预警时间" :rules="rules.warningTime" prop="warningTime">
+                <div class="block">
+                    <el-date-picker v-model="form.warningTime" type="datetime" placeholder="选择日期时间"
+                        value-format="yyyy-MM-dd HH:mm:ss" />
+                </div>
             </el-form-item>
-            <el-form-item label="预警性质">
+            <el-form-item label="预警类型" :rules="rules.type" prop="type">
                 <el-checkbox-group v-model="form.type">
                     <el-checkbox label="地震" name="type"></el-checkbox>
                     <el-checkbox label="飓风" name="type"></el-checkbox>
@@ -52,8 +44,8 @@
                 <span style="margin-left: 40px;color: #409EFF;cursor: pointer;" @click="send_message">
                     测试发送<i class="el-icon-search el-icon--right"></i></span>
             </el-form-item>
-            <el-form-item label="预警信息" style="width: 500px;">
-                <el-input type="textarea" v-model="form.desc"></el-input>
+            <el-form-item label="预警信息" style="width: 500px;" :rules="rules.content" prop="content">
+                <el-input type="textarea" v-model="form.content"></el-input>
             </el-form-item>
             <el-form-item>
                 <el-button type="primary" @click="onSubmit">立即创建</el-button>
@@ -63,26 +55,45 @@
     </div>
 </template>
 <script>
+import options from '@/assets/jsonData/cities.json'
+import { launch_varn } from '@/api/admin'
 export default {
     data() {
         return {
             form: {
-                name: '',
-                region: '',
-                date1: '',
-                date2: '',
-                delivery: false,
+                title: '',
+                address: '',
+                warningTime: '',
                 type: [],
-                resource: '',
-                desc: '',
             },
+            options: [],
             selectedEmail: '',
             emailList: ['123@qq.com', '456@qq.com', '789@qq.com', '123@aa.com', '123@bb.com'],
+            rules: {
+                title: [{ required: true, trigger: 'blur', message: '请输入预警标题' }],
+                addr: [{ required: true, trigger: 'blur', message: '请选择预警城市' }],
+                warningTime: [{ required: true, trigger: ['blur', 'change'], message: '请选择预警时间' }],
+                type: [{ required: true, trigger: ['blur', 'change'], message: '请选择预警类型' }],
+                content: [{ required: true, trigger: 'blur', message: '请输入预警信息' }],
+                selectedEmail: [{ required: true, trigger: 'blur', message: '请选择预警发送邮箱' }]
+            }
         }
     },
     methods: {
         onSubmit() {
-            console.log('submit!');
+            this.$refs.form.validate(async (valid) => {
+                if (valid) {
+                    launch_varn(this.form.title, this.form.address.join(''),
+                        this.form.warningTime, this.form.type, this.form.content).then(() => {
+                            this.$message.success('发布成功')
+                            setTimeout(() => {
+                                window.location.reload()
+                            }, 1000); // 等待1秒后刷新页面
+                        }).catch((error) => {
+                            this.$message.error('发生未知错误，请稍后再试');
+                        });
+                }
+            })
         },
         handleDropdownCommand(email) {
             this.selectedEmail = email;
@@ -90,7 +101,10 @@ export default {
         send_message() {
             alert('发送成功！')
         }
-    }
+    },
+    created() {
+        this.options = options
+    },
 }
 </script>
 <style>

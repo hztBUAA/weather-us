@@ -16,11 +16,14 @@
               Home
             </el-dropdown-item>
           </router-link>
-          <a target="_blank" href="https://github.com/PanJiaChen/vue-admin-template/">
+            <el-dropdown-item @click.native="goToUserProfile">
+    个人信息管理
+  </el-dropdown-item>
+    <el-dropdown-item @click.native="goToFeedback">
+    反馈
+  </el-dropdown-item>
+          <a target="_blank" href="https://github.com/hztBUAA/weather-us">
             <el-dropdown-item>Github</el-dropdown-item>
-          </a>
-          <a target="_blank" href="https://panjiachen.github.io/vue-element-admin-site/#/">
-            <el-dropdown-item>Docs</el-dropdown-item>
           </a>
           <el-dropdown-item divided @click.native="logout">
             <span style="display:block;">Log Out</span>
@@ -48,13 +51,21 @@ export default {
     ])
   },
   methods: {
+      goToUserProfile() {
+    // 导航到个人信息管理的路由
+    this.$router.push('/user/profile');
+  },
     toggleSideBar() {
       this.$store.dispatch('app/toggleSideBar')
     },
     async logout() {
       await this.$store.dispatch('user/logout')
       this.$router.push(`/login?redirect=${this.$route.fullPath}`)
-    }
+    },
+      goToFeedback() {
+    // 导航到反馈界面的路由
+    this.$router.push('/user/feedback');
+  }
   }
 }
 </script>

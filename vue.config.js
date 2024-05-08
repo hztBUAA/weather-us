@@ -6,7 +6,7 @@ function resolve(dir) {
   return path.join(__dirname, dir)
 }
 
-const name = defaultSettings.title || 'vue Admin Template' // page title
+const name = 'WeathdefaultSettings.title || er-us' // page title
 
 // If your port is set to 80,
 // use administrator privileges to execute the command line.
@@ -30,6 +30,10 @@ module.exports = {
   lintOnSave: process.env.NODE_ENV === 'development',
   productionSourceMap: false,
   devServer: {
+    allowedHosts: [
+      'judger2003.cn',
+      'www.judger2003.cn'
+    ],
     port: port,
     open: true,
     overlay: {
@@ -53,6 +57,7 @@ module.exports = {
     resolve: {
       alias: {
         '@': resolve('src')
+        // 'lodash': 'lodash'
       }
     }
   },

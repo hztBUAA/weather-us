@@ -1,106 +1,83 @@
 <template>
   <div class="dashboard-container">
-    <div>
-      <div id="myChart" :style="{width: '100%', height: '400px'}" />
+
+    <div class="loader" />
+
+    <h1>Welcome to the Weather Platform</h1>
+    <div class="explore-button">
+      <router-link to="map/index">探索</router-link>
     </div>
-    <!-- <el-button icon="el-icon-edit" type="success" circle size="medium" @click="changeLoading" />
-    <el-button type="success" round size="mini" @click="loading=!loading">
-      click {{ !loading }}
-    </el-button>
-    <el-button type="success" circle size="big">
-      click
-    </el-button>
-    <el-button type="success" circle size="larger">
-      click
-    </el-button> -->
-    <!-- <p v-loading="loading">
-      <el-alert
-        title="menu 1"
-        type="success"
-        :closable="true"
-        description="hello"
-      />
-    </p> -->
-    <!-- <ul v-infinite-scroll="load" class="infinite-list" style="overflow:auto">
-      <li v-for="i in count" :key="i" class="infinite-list-item">{{ i }}</li>
-    </ul> -->
-    <!-- <div class="dashboard-text">name: {{ name }}</div> -->
+
   </div>
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
 export default {
-  name: 'Dashboard',
-  data() {
-    return {
-      count: 100,
-      loading: false
-    }
-  },
-  computed: {
-    ...mapGetters([
-      'name'
-    ])
-  },
-  mounted() {
-    this.drawLine()
-  },
-  methods: {
-    drawLine() {
-      // console("2");
-      console.log(myChart)
-      const myChart = this.$echarts.init(document.getElementById('myChart'))
-      myChart.setOption({
-        title: { text: '在Vue中使用echarts' },
-        tooltip: {},
-        xAxis: {
-          // 我希望data的标签名能够间隔宽一些
-          data: ['衬衫', '羊毛衫', '雪纺衫', '裤子', '高跟鞋', '袜子']
-        },
-        yAxis: {},
-        series: [{
-          name: '销量',
-          type: 'scatter',
-          data: [5, 20, 36, 10, 10, 20]
-        }]
-      })
-    },
-    load() {
-      if (this.count > 10) {
-        // alert("sorry too much!");
-        // console("sorry too much!");
-        // return;
-      }
-      this.count += 1
-    },
-    changeLoading() {
-      this.loading = !this.loading
-    }
-
-  }
+  name: 'Dashboard'
 }
 </script>
 
 <style lang="scss" scoped>
-
-p::before {
-    content: "➤";
-    margin-right: 10px;
+.dashboard-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
 }
 
-p::after {
-    content: "➤@";
-    margin-left: 51px;
+.not-hit{
+  overflow: hidden;
 }
 
-.dashboard {
-  &-container {
-    margin: 30px;
-  }
-  &-text {
-    font-size: 30px;
-    line-height: 46px;
-  }
+h1 {
+  font-size: 30px;
+  color: #333;
+}
+
+.explore-button {
+  margin-top: 20px;
+  padding: 10px 20px;
+  background-color: #150416;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+  position: relative;
+}
+
+.explore-button::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-color: transparent transparent transparent white;
+
+}
+
+.explore-button:hover {
+  transform: translateY(-5px); /* 鼠标悬浮时向上浮动5px */
+}
+
+.loader {
+    top: 60px;
+    position: absolute; /* 添加相对定位，使其成为绝对定位元素的参考点 */
+    width: 40px;
+    height: 40px;
+    --c:no-repeat linear-gradient(orange 0 0);
+    background: var(--c),var(--c),var(--c),var(--c);
+    background-size: 21px 21px;
+    animation: l5 1.5s infinite cubic-bezier(0.3,1,0,1);
+    margin-bottom: 40px;
+}
+@keyframes l5 {
+   0%   {background-position: 0    0,100% 0   ,100% 100%,0 100%}
+   33%  {background-position: 0    0,100% 0   ,100% 100%,0 100%;width:60px;height: 60px}
+   66%  {background-position: 100% 0,100% 100%,0    100%,0 0   ;width:60px;height: 60px}
+   100% {background-position: 100% 0,100% 100%,0    100%,0 0   }
 }
 </style>

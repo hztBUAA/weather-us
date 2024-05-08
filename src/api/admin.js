@@ -36,3 +36,32 @@ export function reset_password(username) {
         }
     })
 }
+export function launch_varn(title, address, warningTime, type, content) {
+    return request({
+        url: '/admin/launch-warn',
+        method: 'post',
+        params: {
+            title: title,
+            address: address,
+            warningTime: warningTime,
+            type: type,
+            content: content,
+        }
+    })
+}
+export function fetch_feedback() {
+    return request({
+        url: '/admin/fetch-feedback',
+        method: 'get',
+    })
+}
+export function reply_feedback(username, reply) {
+    return request({
+        url: '/admin/reply-feedback',
+        method: 'post',
+        params: {
+            username: username,
+            reply: reply,
+        }
+    })
+}

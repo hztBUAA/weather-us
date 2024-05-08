@@ -2,14 +2,28 @@
 
   <div class="forecast-table">
     <div style="display: flex; width: 100%;">
-      <input v-model="location" type="text" class="search-input" style="flex: 1;">
+      <input v-model="location" type="text" class="search-input" style="flex: 1;" @input="search">
       <button class="search-button" style="flex: 0 0 auto;" @click="submitLocation">搜索</button>
+      <!-- {{ showOptions }}
+      {{ options }} -->
     </div>
+    <ul v-if="showOptions" class="options-list">
+      <template v-if="options.length && options.length > 0">
+        <li v-for="(option, index) in options" :key="index" @click="select(option)">
+          {{ option }}
+        </li>
+      </template>
+      <template v-else-if="options.length && options.length === 0">
+        <li>
+          暂时找不到哦
+        </li>
+      </template>
+    </ul>
 
     <!-- <div class="current-weather">
       <current-info />
     </div> -->
-    <div class="current-weather center">
+    <div class=" center">
       <h1>当前天气</h1>
       <hr>
       <!-- <img src="./images/sunny.png" alt=""> -->
@@ -152,6 +166,9 @@
     <!-- <div v-else>
       Loading
     </div> -->
+    <!-- <div class="container">
+
+    </div> -->
     <div class="hourly-info">
       <h1>
         逐小时数据
@@ -159,6 +176,15 @@
       <hr>
       <div class="chart-container">
         <chart height="100%" width="100%" :hourly="hourly" />
+      </div>
+    </div>
+    <div class="hourly-info">
+      <h1>
+        历史数据
+      </h1>
+      <hr>
+      <div class="chart-container">
+        <mix-chart height="100%" width="100%" :city="fixed_location" />
       </div>
     </div>
     <div class="event-info">
@@ -181,14 +207,7 @@
         </div>
 
       </el-card>
-    <!-- <div>
-        <h1>test for api:</h1>
-        <h1>{{ location }}</h1>
-        <p>
-          {{ wt_data }}
-        </p>
-      </div> -->
-    <!-- 可以放置进度图 表示可能性   以及饼状图 -->
+
     </div>
 
   </div>
@@ -198,11 +217,13 @@
 <script>
 import Axios from 'axios'
 import Chart from './components/Charts/LineMarker.vue'
+import MixChart from './components/Charts/MixChart.vue'
 // import CurrentInfo from './components/CurrentInfo.vue'
 export default {
   name: 'City',
   components: {
-    Chart
+    Chart,
+    MixChart
     // CurrentInfo
     // LineChart,
     // PanelGroup,
@@ -221,12 +242,14 @@ export default {
       warning_title: '',
       warning_type: '',
       show_days_7: false,
-      currentTime: ''
+      currentTime: '',
       // 灾害分析部分
       // like: true,
       // value1: 4154.564,
       // value2: 1314,
       // title: '增长人数',
+      options: [],
+      showOptions: false
     }
   },
   watch: {
@@ -246,11 +269,21 @@ export default {
         }
       },
       deep: true
+    },
+    showOptions: {
+      handler(oldVal, newVal) {
+        this.showOptions = newVal
+      },
+      deep: true
     }
 
   },
 
   mounted() {
+    if (this.$route.params.c1) {
+      this.location = this.$route.params.c3 + '  ' + this.$route.params.c2 + '  ' + this.$route.params.c1
+      this.fixed_location = this.$route.params.c3 + '  ' + this.$route.params.c2 + '  ' + this.$route.params.c1
+    }
     this.requestForData().then(() => {
       console.log(this.days_7)
       console.log(this.hourly)
@@ -259,6 +292,40 @@ export default {
     setInterval(this.updateTime, 1000) // 每秒更新一次时间
   },
   methods: {
+    select(option) {
+      this.fixed_location = option
+      this.location = option.split(' ')[0]
+      this.fixed_location = option.split(' ')[0]
+      this.showOptions = false
+      this.options = []
+    },
+    async search() {
+      // 在这里使用 AJAX 获取后台数据，并将获取的数据赋值给 this.options
+      const res = await Axios.get(
+        `https://geoapi.qweather.com/v2/city/lookup?location=${this.location}&number=5&range=cn&key=3ca6d5e357a5470abf168dbcd8fe0fd7`
+      )
+      console.log('res', res)
+      if (res.data.location) {
+        this.options = res.data.location.map(city => `${city.adm2} ${city.adm1} ${city.country}`)
+      } else {
+        this.options = []
+      }
+
+      // 可以使用 debounce 或 throttle 控制 AJAX 请求的频率
+      this.showOptions = this.options.length > 0
+      console.log('search', this.showOptions, '\n', 'options\n', this.options, '\n', 'location\n', this.location)
+    },
+    async getApi1() {
+      // 创建一个新的请求头对象，不包含 Apifoxtoken 请求头
+      const headers = Object.assign({}, Axios.defaults.headers.common)
+      delete headers['Apifoxtoken']
+      const res = await Axios.get(
+        `https://geoapi.qweather.com/v2/city/lookup?location=${this.location}&number=5&range=cn&key=3ca6d5e357a5470abf168dbcd8fe0fd7`
+        ,
+        headers)
+      this.wt_data = res.data
+      this.fixed_location = this.wt_data.location[0].name
+    },
     isNight() {
       const hour = new Date().getHours()
       return hour >= 18 || hour < 6 // 晚上定义为18:00到次日06:00
@@ -352,60 +419,14 @@ export default {
       }
     },
     // 根据当前天气状况返回对应的图片路径
-    getWeatherImage(weather) {
-      const hour = new Date().getHours()
-      console.log('hour', hour, weather, 'weather')
-      if (hour >= 18 && weather === '150') {
-        return require('@/assets/night-sunny.png') // 使用@表示src目录
-      }
-
-      switch (weather) {
-        case '100':
-          return require('@/assets/sunny.png')
-        case '101':
-          return require('@/assets/cloudy.png')
-        case '152':
-          return require('@/assets/rainy.png')
-        case '400':
-          return require('@/assets/snowy.png')
-        default:
-          // return require('@/assets/sunny.png')
-          return require('@/assets/snowy.png')
-      }
-    },
 
     getWeekday(dateString) {
       const days = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
       const date = new Date(dateString)
       const weekday = days[date.getDay()]
       return weekday
-    },
-    async getApi1() {
-      // 创建一个新的请求头对象，不包含 Apifoxtoken 请求头
-      const headers = Object.assign({}, Axios.defaults.headers.common)
-      delete headers['Apifoxtoken']
-      const res = await Axios.get(
-        `https://geoapi.qweather.com/v2/city/lookup?location=${this.location}&key=3ca6d5e357a5470abf168dbcd8fe0fd7`
-        ,
-        headers)
-      // const url = 'https://geoapi.qweather.com/v2/city/lookup'
-      // const params = {
-      //   location: this.location,
-      //   key: '3ca6d5e357a5470abf168dbcd8fe0fd7'
-      // }
-      // const _this = this
-      this.wt_data = res.data
-      this.fixed_location = this.wt_data.location[0].name
-      // await Axios.get(url, { params, headers: {}}) // 设置 headers 为空对象
-      //   .then(res => {
-      //     _this.wt_data = res.data
-      //     // console.log(res.d)
-      //   })
-      //   .catch(err => {
-      //     console.error(err)
-      //   })
-      // this.fixed_location = this.wt_data.location[0].name
     }
+
   }
 }
 </script>
@@ -676,5 +697,30 @@ h1{
   // bottom: 10px;
   // left: 50%;
   // transform: translateX(-50%);
+}
+
+.options-list {
+  display: block;
+  position: relative;
+  width: 100%;
+  top: -100; /* 改变这个值以调整备选框与输入框的垂直间距 */
+  left: 0;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 1000; /* 确保备选框在其他元素上方 */
+  list-style-type: none;
+  margin: 0;
+}
+
+.options-list li {
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.options-list li:hover {
+  background-color: #f0f0f0;
 }
 </style>

@@ -4,6 +4,7 @@
       <span class="el-dropdown-link">
         {{ text }}<i class="el-icon-arrow-down el-icon--right" style="font-size:12px" />
       </span>
+
       <el-dropdown-menu slot="dropdown">
         <el-dropdown-item command="温度">温度</el-dropdown-item>
         <el-dropdown-item command="湿度">湿度</el-dropdown-item>
@@ -17,7 +18,7 @@
         <el-dropdown-item command="e" divided>蚵仔煎</el-dropdown-item> -->
       </el-dropdown-menu>
     </el-dropdown>
-
+    <br><br>
     <div :id="id" :class="className" :style="{height:height,width:width}" />
   </div>
 </template>
@@ -31,11 +32,11 @@ export default {
   props: {
     className: {
       type: String,
-      default: 'chart'
+      default: '1-chart'
     },
     id: {
       type: String,
-      default: 'chart'
+      default: '1-chart'
     },
     width: {
       type: String,
