@@ -280,16 +280,26 @@ export default {
   },
 
   mounted() {
-    if (this.$route.params.c1) {
-      this.location = this.$route.params.c3 + '  ' + this.$route.params.c2 + '  ' + this.$route.params.c1
-      this.fixed_location = this.$route.params.c3 + '  ' + this.$route.params.c2 + '  ' + this.$route.params.c1
+    if (this.$route.params.c3) {
+      // this.location = this.$route.params.c3 + '  ' + this.$route.params.c2 + '  ' + this.$route.params.c1
+      // this.fixed_location = this.$route.params.c3 + '  ' + this.$route.params.c2 + '  ' + this.$route.params.c1
+      this.location = this.$route.params.c3
+      this.fixed_location = this.$route.params.c3
     }
+
     this.requestForData().then(() => {
       console.log(this.days_7)
       console.log(this.hourly)
     })
     this.updateTime()
     setInterval(this.updateTime, 1000) // 每秒更新一次时间
+    // const c1 = this.$route.params.c1 ? this.$route.params.c1 : ''
+    // const c2 = this.$route.params.c2 ? this.$route.params.c2 : ''
+    // const c3 = this.$route.params.c3 ? this.$route.params.c3 : ''
+
+    // // const str = c3 + ' ' + c2 + ' ' + c1
+    // this.location = c3 + ' ' + c2 + ' ' + c1
+    // this.fixed_location = c3 + ' ' + c2 + ' ' + c1
   },
   methods: {
     select(option) {
