@@ -1,7 +1,7 @@
 // import { request } from "./api";
 
-export async function getCityData(adcodes, type) {
-  const params = { adcodes: adcodes, type: type }
+export async function getCityData(adcodes, type, date) {
+  const params = { adcodes: adcodes, type: type, date }
   // return request();
   console.log(params)
   const map = new Map()
@@ -12,7 +12,6 @@ export async function getCityData(adcodes, type) {
 }
 
 export async function getDataTypes() {
-  console.log("1")
   return {
     data: [
       {
@@ -26,8 +25,8 @@ export async function getDataTypes() {
         index: 1,
         type: '气温',
         dataType: 0,
-        valueRange: [0, 100],
-        colorRange: ['#d94e5d', '#50a3ba']
+        valueRange: [-40, 140],
+        colorRange: ['rgb(185, 226, 238)', 'rgb(245, 15, 15)']
       },
       {
         index: 2,
@@ -74,6 +73,27 @@ export async function getDataTypes() {
       {
         index: 8,
         type: 't6',
+        dataType:  0,
+        valueRange: [0, 100],
+        colorRange: ['#d94e5d', '#50a3ba']
+      },
+      {
+        index: 9,
+        type: 't7',
+        dataType:  0,
+        valueRange: [0, 100],
+        colorRange: ['#d94e5d', '#50a3ba']
+      },
+      {
+        index: 10,
+        type: 't8',
+        dataType:  0,
+        valueRange: [0, 100],
+        colorRange: ['#d94e5d', '#50a3ba']
+      },
+      {
+        index: 11,
+        type: 't9',
         dataType:  0,
         valueRange: [0, 100],
         colorRange: ['#d94e5d', '#50a3ba']

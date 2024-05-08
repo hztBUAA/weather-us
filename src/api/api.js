@@ -1,5 +1,5 @@
 import axios from 'axios'
-axios.defaults.timeout = 5000
+axios.defaults.timeout = 50000
 
 export async function request(url, method, params) {
   let response

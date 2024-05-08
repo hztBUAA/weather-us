@@ -1,17 +1,27 @@
 <template>
   <div>
     <div ref="charts" style="width: 100%; height: 100vh" />
-    <el-menu default-active="0" style="top: 50%; right: 0%; width: 60px; background-color: rgba(0, 0, 0, 0)" class="float" @select="selectMode" :collapse="true">
-      <div v-for="(item, i) in dataTypes.slice(0, 4)" :key="i">
-        <el-menu-item :index="String(i)">
+    <el-menu default-active="0" style="top: 40%; right: 0%; width: 60px; background-color: rgba(0, 0, 0, 0); text-align: center;" class="float" @select="selectMode" :collapse="true">
+      <div v-for="item in dataTypes.slice(0, 5)" :key="item.index">
+        <el-menu-item :index="String(item.index)">
           <i class="el-icon-sunny"></i>
           <span slot="title">{{ item.type }}</span>
         </el-menu-item>
       </div>
-      <el-menu-item index="4">
-        <i class="el-icon-menu"></i>
-        <span slot="title">更多选项</span>
-      </el-menu-item>
+      <el-submenu index="-1">
+        <template slot="title">
+          <i class="el-icon-menu"></i>
+        </template>
+        <el-menu-item-group>
+          <span slot="title">更多选项</span>
+          <div v-for="item in dataTypes.slice(5)" :key="item.index">
+            <el-menu-item :index="String(item.index)">
+              <i class="el-icon-sunny"></i>
+              <span slot="title">{{ item.type }}</span>
+            </el-menu-item>
+          </div>
+        </el-menu-item-group>
+      </el-submenu>
     </el-menu>
     <div class="float" style="top: 3%; left: 3%; display: flex; align-items: center; justify-content: center; height: 42px">
       <el-button
@@ -31,6 +41,14 @@
         v-model="chosenCity"
         @change="chooseCity"
       />
+      <el-date-picker
+        style="margin-right: 25px"
+        v-model="date"
+        type="datetime"
+        @change="chooseDate"
+        placeholder="选择日期"
+        value-format="yyyy-MM-dd-HH">
+      </el-date-picker>
       <el-color-picker
         v-model="backgroundColor"
         show-alpha
@@ -114,7 +132,7 @@ const option = {
   animation: false,
   animationDuration: 0,
   animationDurationUpdate: 0,
-  backgroundColor: '#cccccc'
+  backgroundColor: '#cccccc',
 }
 export default {
   data() {
@@ -132,7 +150,9 @@ export default {
       cities: [],
       chosenCity: [],
       dataTypes: [],
-      typeIndex: 0
+      typeIndex: 0,
+      date: null,
+      lastDate: null
     }
   },
   created() {
@@ -145,6 +165,20 @@ export default {
     })
   },
   methods: {
+    goCity() {
+      console.log(1)
+    },
+    chooseDate() {
+      if (this.date != this.lastDate) {
+        this.showData(0);
+        if (this.maps[1] != null && this.maps[1] != undefined) {
+          this.showData(1);
+        }
+        if (this.maps[2] != null && this.maps[2] != undefined) {
+          this.showData(2);
+        }
+      } 
+    },
     getJson(json) {
       const stringData = JSON.stringify(json, null, 2)
       const blob = new Blob([stringData], {
@@ -158,13 +192,23 @@ export default {
       URL.revokeObjectURL(objectURL)
     },
     selectMode(index) {
-      if (index == this.typeIndex) {
+      console.log(index)
+      if (index == this.typeIndex || index == -1) {
         return
-      }
-      if (index == 4) {
-
       } else {
         this.typeIndex = index
+        const that = this
+        const formatter = function(params, ticket, callback) {
+          //console.log(params)
+          var link = '';
+          link = '<div>' + params.name + "<br/>" + that.dataTypes[that.typeIndex].type + ' : ' + params.value + '<br/>' +
+            '<a href="#/city/index">查看详情</a>' +
+            '</div>';
+          return link;
+        }
+        var option = this.charts.getOption()
+        option.tooltip.formatter = formatter
+        this.charts.setOption(option, true)
         this.changeMode()
       }
     },
@@ -234,7 +278,7 @@ export default {
       this.maps[geoIndex].features.forEach(function(feature) {
         adcodes.push(feature.properties.adcode)
       })
-      getCityData(adcodes, type).then((res) => {
+      getCityData(adcodes, type, this.date).then((res) => {
         this.maps[geoIndex].features.forEach(function(feature) {
           data.push({ name: feature.properties.name, value: res.get(feature.properties.adcode) })
         })
@@ -344,6 +388,24 @@ export default {
       })
     },
     initMap() {
+      const that = this
+      const tooltip = {
+        show: true,
+        enterable: true,
+        position: function (pos, params, dom, rect, size) {
+          var obj = {top: pos[1] + 10, left: pos[0]};
+          return obj;
+        },
+        formatter: function(params, ticket, callback) {
+          //console.log(params)
+          var link = '';
+          link = '<div>' + params.name + "<br/>" + that.dataTypes[that.typeIndex].type + ' : ' + params.value + '<br/>' +
+            '<a href="#/city/index">查看详情</a>' +
+            '</div>';
+          return link;
+        }
+      }
+      this.option.tooltip = tooltip
       this.charts = echarts.init(this.$refs['charts'])
       const boundingCoords = this.calBounding(mapData)
       this.glabalBounding = [[boundingCoords[0][0] + 20, boundingCoords[0][1] - 2], [boundingCoords[1][0] - 20, boundingCoords[1][1] + 17]]
@@ -360,7 +422,6 @@ export default {
       echarts.registerMap('china', mapData)
       this.charts.setOption(this.option)
       this.showData(0)
-      const that = this
       this.charts.on('click', function(param) {
         if (that.layer == 0) {
           that.chosenCity = [param.name]
