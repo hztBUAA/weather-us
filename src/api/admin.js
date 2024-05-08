@@ -36,3 +36,16 @@ export function reset_password(username) {
         }
     })
 }
+export function launch_varn(title, address, warningTime, type, content) {
+    return request({
+        url: '/admin/launch-warn',
+        method: 'post',
+        params: {
+            title: title,
+            address: address,
+            warningTime: warningTime,
+            type: type,
+            content: content,
+        }
+    })
+}
