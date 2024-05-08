@@ -33,12 +33,12 @@
         <i class="el-icon-caret-left" />&nbsp;回退
       </el-button>
       <el-cascader
+        v-model="chosenCity"
         style="margin-right: 25px"
         placeholder="搜索城市"
         :options="cities"
         filterable
         :props="{ expandTrigger: 'hover', checkStrictly: true }"
-        v-model="chosenCity"
         @change="chooseCity"
       />
       <el-date-picker
@@ -62,7 +62,7 @@
 <script>
 import * as echarts from 'echarts'
 import mapData from '../../assets/jsonData/china.json'
-//import cityData from '../../assets/jsonData/city.json'
+// import cityData from '../../assets/jsonData/city.json'
 import citiesData from '../../assets/jsonData/cities.json'
 import { getCityJson } from '../../api/staticApi'
 import { getCityData, getDataTypes } from '../../api/dataApi'
@@ -81,9 +81,9 @@ const emphasis = {
     }
   },
   itemStyle: {
-    areaColor: '#rgb(147, 235, 248)',
-    //opacity: 0.2,
-    //borderWidth: 0
+    areaColor: '#rgb(147, 235, 248)'
+    // opacity: 0.2,
+    // borderWidth: 0
   }
 }
 const geoOption = {
@@ -97,16 +97,16 @@ const geoOption = {
     }
   },
   itemStyle: {
-    //borderWidth: 0,
-    areaColor: '#rgb(147, 235, 248)',
-    //opacity: 0.1,
+    // borderWidth: 0,
+    areaColor: '#rgb(147, 235, 248)'
+    // opacity: 0.1,
     /*
     areaColor: {
       type: 'radial',
       x: 0.5,
       y: 0.5,
       r: 0.8,
-      
+
       colorStops: [
         {
           offset: 0,
@@ -117,7 +117,7 @@ const geoOption = {
           color: 'rgba(147, 235, 248, 0.2)'
         }
       ],
-      
+
       globalCoord: false
     }
     /*
@@ -187,7 +187,7 @@ export default {
       const objectURL = URL.createObjectURL(blob)
       const aTag = document.createElement('a')
       aTag.href = objectURL
-      aTag.download = "centers.json"
+      aTag.download = 'centers.json'
       aTag.click()
       URL.revokeObjectURL(objectURL)
     },
@@ -213,12 +213,12 @@ export default {
       }
     },
     changeMode() {
-      this.showData(0);
+      this.showData(0)
       if (this.maps[1] != null && this.maps[1] != undefined) {
-        this.showData(1);
+        this.showData(1)
       }
       if (this.maps[2] != null && this.maps[2] != undefined) {
-        this.showData(2);
+        this.showData(2)
       }
     },
     initCities() {
@@ -230,28 +230,28 @@ export default {
       this.charts.setOption(option)
     },
     back() {
-      const option = this.charts.getOption();
+      const option = this.charts.getOption()
       if (this.layer == 1) {
-          this.layer = 0
-          this.maps[1] = null
-          option.series[1] = null
-          option.geo[1] = null
-          option.geo[0].boundingCoords = this.glabalBounding
-          option.geo[0].silent = false
-          option.geo[0].label.show = true
-          this.charts.setOption(option, true)
-          this.chosenCity = []
+        this.layer = 0
+        this.maps[1] = null
+        option.series[1] = null
+        option.geo[1] = null
+        option.geo[0].boundingCoords = this.glabalBounding
+        option.geo[0].silent = false
+        option.geo[0].label.show = true
+        this.charts.setOption(option, true)
+        this.chosenCity = []
       } else if (this.layer == 2) {
-          this.layer = 1;
-          this.maps[2] = null
-          option.series[2] = null
-          option.geo[2] = null
-          option.geo[0].boundingCoords = this.glabalBounding2
-          option.geo[1].boundingCoords = this.glabalBounding2
-          option.geo[1].silent = false
-          option.geo[1].label.show = true
-          this.charts.setOption(option, true)
-          this.chosenCity = [this.chosenCity[0]]
+        this.layer = 1
+        this.maps[2] = null
+        option.series[2] = null
+        option.geo[2] = null
+        option.geo[0].boundingCoords = this.glabalBounding2
+        option.geo[1].boundingCoords = this.glabalBounding2
+        option.geo[1].silent = false
+        option.geo[1].label.show = true
+        this.charts.setOption(option, true)
+        this.chosenCity = [this.chosenCity[0]]
       }
     },
     calBounding(geoJsonData) {
@@ -326,15 +326,15 @@ export default {
         if (feature.properties.name === name) {
           getCityJson(feature.properties.adcode).then((res) => {
             if (res.data.features.length <= 1) {
-              //route
+              // route
               return
             }
-            const newBoundingCoords = this.calBounding(res.data);
+            const newBoundingCoords = this.calBounding(res.data)
             const newGeo = {
-              ...{map: feature.properties.name, boundingCoords: this.glabalBounding, zlevel: 2},
+              ...{ map: feature.properties.name, boundingCoords: this.glabalBounding, zlevel: 2 },
               ...this.geoOption
             }
-            //newGeo.itemStyle.borderWidth = 3
+            // newGeo.itemStyle.borderWidth = 3
             option.geo[2] = newGeo
             echarts.registerMap(feature.properties.name, res.data)
             this.charts.setOption(option)
@@ -357,12 +357,12 @@ export default {
         if (feature.properties.name === name1) {
           getCityJson(feature.properties.adcode).then((res) => {
             if (res.data.features.length <= 1) {
-              //route
+              // route
               return
             }
-            const newBoundingCoords = this.calBounding(res.data);
+            const newBoundingCoords = this.calBounding(res.data)
             const newGeo = {
-              ...{map: feature.properties.name, boundingCoords: this.glabalBounding, zlevel: 1},
+              ...{ map: feature.properties.name, boundingCoords: this.glabalBounding, zlevel: 1 },
               ...this.geoOption
             }
             if (option.geo[1] == null || option.geo[1].map != newGeo.map) {
@@ -379,7 +379,7 @@ export default {
               this.maps[2] = null
               this.showData(1)
             }
-            this.layer = 1;
+            this.layer = 1
             if (name2 != null && name2 != undefined) {
               this.showCity2(name2)
             }
@@ -430,7 +430,8 @@ export default {
           that.chosenCity = [that.chosenCity[0], param.name]
           that.showCity2(param.name)
         } else {
-          //route
+          // route
+          that.$router.push({ name: 'City', params: { c1: that.chosenCity[0], c2: that.chosenCity[1], c3: param.name }})
         }
       })
     }
