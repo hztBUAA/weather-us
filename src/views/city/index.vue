@@ -152,6 +152,9 @@
     <!-- <div v-else>
       Loading
     </div> -->
+    <!-- <div class="container">
+
+    </div> -->
     <div class="hourly-info">
       <h1>
         逐小时数据
@@ -159,6 +162,15 @@
       <hr>
       <div class="chart-container">
         <chart height="100%" width="100%" :hourly="hourly" />
+      </div>
+    </div>
+    <div class="hourly-info">
+      <h1>
+        历史数据
+      </h1>
+      <hr>
+      <div class="chart-container">
+        <mix-chart height="100%" width="100%" :city="fixed_location" />
       </div>
     </div>
     <div class="event-info">
@@ -181,14 +193,7 @@
         </div>
 
       </el-card>
-    <!-- <div>
-        <h1>test for api:</h1>
-        <h1>{{ location }}</h1>
-        <p>
-          {{ wt_data }}
-        </p>
-      </div> -->
-    <!-- 可以放置进度图 表示可能性   以及饼状图 -->
+
     </div>
 
   </div>
@@ -198,11 +203,13 @@
 <script>
 import Axios from 'axios'
 import Chart from './components/Charts/LineMarker.vue'
+import MixChart from './components/Charts/MixChart.vue'
 // import CurrentInfo from './components/CurrentInfo.vue'
 export default {
   name: 'City',
   components: {
-    Chart
+    Chart,
+    MixChart
     // CurrentInfo
     // LineChart,
     // PanelGroup,
@@ -352,27 +359,6 @@ export default {
       }
     },
     // 根据当前天气状况返回对应的图片路径
-    getWeatherImage(weather) {
-      const hour = new Date().getHours()
-      console.log('hour', hour, weather, 'weather')
-      if (hour >= 18 && weather === '150') {
-        return require('@/assets/night-sunny.png') // 使用@表示src目录
-      }
-
-      switch (weather) {
-        case '100':
-          return require('@/assets/sunny.png')
-        case '101':
-          return require('@/assets/cloudy.png')
-        case '152':
-          return require('@/assets/rainy.png')
-        case '400':
-          return require('@/assets/snowy.png')
-        default:
-          // return require('@/assets/sunny.png')
-          return require('@/assets/snowy.png')
-      }
-    },
 
     getWeekday(dateString) {
       const days = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']

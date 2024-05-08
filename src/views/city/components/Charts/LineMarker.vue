@@ -31,11 +31,11 @@ export default {
   props: {
     className: {
       type: String,
-      default: 'chart'
+      default: '1-chart'
     },
     id: {
       type: String,
-      default: 'chart'
+      default: '1-chart'
     },
     width: {
       type: String,

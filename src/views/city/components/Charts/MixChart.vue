@@ -3,7 +3,6 @@
 </template>
 
 <script>
-import echarts from 'echarts'
 import resize from './mixins/resize'
 
 export default {
@@ -11,11 +10,11 @@ export default {
   props: {
     className: {
       type: String,
-      default: 'chart'
+      default: '2-chart'
     },
     id: {
       type: String,
-      default: 'chart'
+      default: '2-chart'
     },
     width: {
       type: String,
@@ -24,14 +23,53 @@ export default {
     height: {
       type: String,
       default: '200px'
+    },
+    city: {
+      type: String,
+      default: '北京'
     }
   },
   data() {
     return {
-      chart: null
+      chart: null,
+      mp: {}
     }
   },
+  watch: {
+    city(newValue, oldValue) {
+    // 当城市数据发生变化时，调用 genData 方法重新生成数据
+      this.genData()
+      console.log('change value')
+      this.initChart()
+      // this.$forceUpdate()
+      // this.chart.setOption({
+      //   series: [
+      //     {
+      //       name: '降水量',
+      //       data: this.mp['降水量']
+      //     },
+
+      //     {
+      //       name: '灾害频率',
+      //       data: this.mp['灾害频率']
+      //     }, {
+      //       name: '温度',
+      //       data: this.mp['温度']
+      //     }
+      //   ]
+      // }, true)
+    }
+    // mp: {
+    //   handler(newValue, oldValue) {
+    //   // 当 this.mp 发生变化时，调用 genData 方法重新生成数据
+    //     // this.genData()
+    //     this.$forceUpdate()
+    //   },
+    //   deep: true
+    // }
+  },
   mounted() {
+    this.genData()
     this.initChart()
   },
   beforeDestroy() {
@@ -42,8 +80,46 @@ export default {
     this.chart = null
   },
   methods: {
+    genData() {
+      const temperature = []
+      const disasterFrequency = []
+      const precipitation = []
+
+      for (let i = 0; i < 12; i++) {
+        // 生成温度数据
+        let temp = 0
+        if (i >= 5 && i <= 8) { // 夏季温度较高
+          temp = Math.round(Math.random() * 10 + 25) // 夏季平均气温在25-35摄氏度之间
+        } else { // 冬春温度较低
+          temp = Math.round(Math.random() * 10 + 5) // 冬春平均气温在5-15摄氏度之间
+        }
+        temperature.push(temp)
+
+        // 生成灾害频率数据
+        let frequency = 0
+        if (i <= 3 || i >= 11) { // 冬春季节灾害频率较高
+          frequency = Math.round(Math.random() * 3 + 1) // 冬春平均灾害次数在1-4之间
+        } else {
+          frequency = Math.round(Math.random() * 2) // 其他季节平均灾害次数在0-2之间
+        }
+        disasterFrequency.push(frequency)
+
+        // 生成降水量数据
+        let rain = 0
+        if (i >= 5 && i <= 8) { // 夏季降水量较多
+          rain = Math.round(Math.random() * 200 + 100) // 夏季降水量在100-300毫米之间
+        } else { // 冬春降水量较少
+          rain = Math.round(Math.random() * 50) // 冬春降水量在0-50毫米之间
+        }
+        precipitation.push(rain)
+      }
+      // 12个月的平均气温
+      this.mp['温度'] = temperature
+      this.mp['灾害频率'] = disasterFrequency
+      this.mp['降水量'] = precipitation
+    },
     initChart() {
-      this.chart = echarts.init(document.getElementById(this.id))
+      this.chart = this.$echarts.init(document.getElementById(this.id))
       const xData = (function() {
         const data = []
         for (let i = 1; i < 13; i++) {
@@ -54,7 +130,7 @@ export default {
       this.chart.setOption({
         backgroundColor: '#344b58',
         title: {
-          text: 'statistics',
+          text: '历史数据(2023年)',
           x: '20',
           top: '20',
           textStyle: {
@@ -72,6 +148,19 @@ export default {
             textStyle: {
               color: '#fff'
             }
+          },
+          formatter(params) {
+            let text = params[0].name + '<br/>'
+            params.forEach(param => {
+              if (param.seriesName === '降水量') {
+                text += param.marker + param.seriesName + ' : ' + param.value + ' mm<br/>'
+              } else if (param.seriesName === '灾害频率') {
+                text += param.marker + param.seriesName + ' : ' + param.value + ' 次<br/>'
+              } else if (param.seriesName === '温度') {
+                text += param.marker + param.seriesName + ' : ' + param.value + ' ℃<br/>'
+              }
+            })
+            return text
           }
         },
         grid: {
@@ -90,7 +179,7 @@ export default {
           textStyle: {
             color: '#90979c'
           },
-          data: ['female', 'male', 'average']
+          data: ['降水量', '灾害频率', '温度']
         },
         calculable: true,
         xAxis: [{
@@ -126,13 +215,13 @@ export default {
             }
           },
           axisTick: {
-            show: false
+            show: true
           },
           axisLabel: {
             interval: 0
           },
           splitArea: {
-            show: false
+            show: true
           }
         }],
         dataZoom: [{
@@ -161,108 +250,70 @@ export default {
           start: 1,
           end: 35
         }],
-        series: [{
-          name: 'female',
-          type: 'bar',
-          stack: 'total',
-          barMaxWidth: 35,
-          barGap: '10%',
-          itemStyle: {
-            normal: {
-              color: 'rgba(255,144,128,1)',
-              label: {
-                show: true,
-                textStyle: {
-                  color: '#fff'
-                },
-                position: 'insideTop',
-                formatter(p) {
-                  return p.value > 0 ? p.value : ''
+        series: [
+          {
+            name: '降水量',
+            type: 'bar',
+            // stack: 'total',
+            barMaxWidth: 35,
+            barGap: '10%',
+            itemStyle: {
+              normal: {
+                color: 'rgba(255,144,128,1)',
+                label: {
+                  show: true,
+                  textStyle: {
+                    color: '#fff'
+                  },
+                  position: 'insideTop',
+                  formatter(p) {
+                    return p.value > 0 ? p.value : ''
+                  }
                 }
               }
-            }
+            },
+            data: this.mp['降水量']
           },
-          data: [
-            709,
-            1917,
-            2455,
-            2610,
-            1719,
-            1433,
-            1544,
-            3285,
-            5208,
-            3372,
-            2484,
-            4078
-          ]
-        },
 
-        {
-          name: 'male',
-          type: 'bar',
-          stack: 'total',
-          itemStyle: {
-            normal: {
-              color: 'rgba(0,191,183,1)',
-              barBorderRadius: 0,
-              label: {
-                show: true,
-                position: 'top',
-                formatter(p) {
-                  return p.value > 0 ? p.value : ''
+          {
+            name: '灾害频率',
+            type: 'bar',
+            stack: 'total',
+            itemStyle: {
+              normal: {
+                color: 'rgba(0,191,183,1)',
+                barBorderRadius: 0,
+                label: {
+                  show: true,
+                  position: 'top',
+                  formatter(p) {
+                    return p.value > 0 ? p.value : ''
+                  }
                 }
               }
-            }
-          },
-          data: [
-            327,
-            1776,
-            507,
-            1200,
-            800,
-            482,
-            204,
-            1390,
-            1001,
-            951,
-            381,
-            220
-          ]
-        }, {
-          name: 'average',
-          type: 'line',
-          stack: 'total',
-          symbolSize: 10,
-          symbol: 'circle',
-          itemStyle: {
-            normal: {
-              color: 'rgba(252,230,48,1)',
-              barBorderRadius: 0,
-              label: {
-                show: true,
-                position: 'top',
-                formatter(p) {
-                  return p.value > 0 ? p.value : ''
+            },
+            data: this.mp['灾害频率']
+          }, {
+            name: '温度',
+            type: 'line',
+            stack: 'total',
+            symbolSize: 10,
+            symbol: 'circle',
+            itemStyle: {
+              normal: {
+                color: 'rgba(252,230,48,1)',
+                barBorderRadius: 0,
+                label: {
+                  show: true,
+                  position: 'top',
+                  formatter(p) {
+                    return p.value > 0 ? p.value : ''
+                  }
                 }
               }
-            }
-          },
-          data: [
-            1036,
-            3693,
-            2962,
-            3810,
-            2519,
-            1915,
-            1748,
-            4675,
-            6209,
-            4323,
-            2865,
-            4298
-          ]
-        }
+            },
+            data: this.mp['温度']
+          }
         ]
       })
     }
