@@ -38,10 +38,10 @@ module.exports = {
     },
     proxy: {
       [process.env.VUE_APP_BASE_API]: {
-        target: process.env.VUE_APP_MOCK_API,
+        target: process.env.VUE_APP_TARGET_API,
         logLevel: 'debug',
         changeOrigin: true,
-        pathRewrite: { '^/api': '' }
+        pathRewrite: { ['^' + process.env.VUE_APP_TARGET_API]: '' }
       }
     }
     // before: require('./mock/mock-server.js')

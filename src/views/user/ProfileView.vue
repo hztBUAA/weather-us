@@ -11,6 +11,7 @@ export default {
     }
   },
   mounted() {
+    console.log(process.env.NODE_ENV)
     this.loadInfo()
     // Message.success(result.msg)
   },
@@ -56,7 +57,6 @@ export default {
           :http-request="uploadAvatar"
           :before-upload="checkAvatar"
           accept="image/*"
-          :on-success="handleAvatarSuccess"
         >
           <img :src="user.avatar || defaultAvatar" class="avatar" title="更换头像" alt="头像">
         </el-upload>
