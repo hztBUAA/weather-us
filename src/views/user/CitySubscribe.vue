@@ -1,6 +1,11 @@
 <script>
 import options from '@/assets/jsonData/cities.json'
-import { getCitySubscribeService, addCitySubscribeService, deleteCitySubscribeService } from '@/api/user'
+import {
+  getCitySubscribeService,
+  addCitySubscribeService,
+  deleteCitySubscribeService,
+  getWarningsService
+} from '@/api/user'
 import { Message, MessageBox } from 'element-ui'
 
 export default {
@@ -9,7 +14,11 @@ export default {
       dialogVisible: false,
       cities: [],
       cascaderData: {},
-      options: []
+      options: [],
+      warnings: [],
+      labelStyle: {
+        'word-break': 'keep-all'
+      }
     }
   },
   watch: {
@@ -24,12 +33,17 @@ export default {
   },
   mounted() {
     this.options = options
-    this.loadCitySubscribe()
+    this.loadData()
   },
   methods: {
-    async loadCitySubscribe() {
-      const result = await getCitySubscribeService()
-      this.cities = result.data.cities
+    async loadData() {
+      var result = await getCitySubscribeService()
+      this.cities = result.data
+      result = await getWarningsService()
+      this.warnings = result.data
+      this.warnings.sort((a, b) => {
+        return Date.parse(b.warningTime) - Date.parse(a.warningTime)
+      })
     },
     submit() {
       this.$refs.cascaderForm.validate(async(valid) => {
@@ -37,7 +51,7 @@ export default {
           const result = await addCitySubscribeService({ city: this.cascaderData.city.join('') })
           Message.success(result.msg)
           this.dialogVisible = false
-          this.loadCitySubscribe()
+          this.loadData()
         }
       })
     },
@@ -50,7 +64,7 @@ export default {
         .then(async() => {
           const result = await deleteCitySubscribeService(city)
           Message.success(result.msg || '删除成功')
-          this.loadCitySubscribe()
+          this.loadData()
         })
         .catch(() => {
           Message.info('删除取消')
@@ -62,19 +76,17 @@ export default {
 
 <template>
   <el-card>
-    <template v-slot:header>
-      <div style="display: flex; align-items: center; justify-content: space-between;">
-        <span> 城市订阅 </span>
-        <el-button type="primary" @click="dialogVisible = true">新增订阅</el-button>
-      </div>
-    </template>
-    <el-table :data="cities" stripe border>
-      <el-table-column label="城市">
+    <div style="display: flex; align-items: center; justify-content: space-between;">
+      <h3> 城市订阅 </h3>
+      <el-button type="primary" @click="dialogVisible = true">新增订阅</el-button>
+    </div>
+    <el-table :data="cities" stripe border style="margin-top: 10px; width: 251px">
+      <el-table-column label="城市" width="150px">
         <template slot-scope="{row}">
           {{ row }}
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center">
+      <el-table-column label="操作" align="center" width="100px">
         <template slot-scope="{row}">
           <el-button type="danger" icon="el-icon-delete" circle @click="deleteSubscribe(row)" />
         </template>
@@ -90,6 +102,19 @@ export default {
         </el-button>
       </el-form>
     </el-dialog>
+
+    <hr>
+
+    <h3>预警</h3>
+    <el-card v-for="(warning, key) in warnings" :key="key" style="margin-top: 5px">
+      <el-descriptions :title="warning.title" border :label-style="labelStyle">
+        <el-descriptions-item label="类型">{{ warning.type }}</el-descriptions-item>
+        <el-descriptions-item label="地点">{{ warning.address }}</el-descriptions-item>
+        <el-descriptions-item label="时间">{{ warning.warningTime }}</el-descriptions-item>
+        <el-descriptions-item label="内容">{{ warning.content }}</el-descriptions-item>
+      </el-descriptions>
+    </el-card>
+
   </el-card>
 </template>
 

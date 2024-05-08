@@ -101,8 +101,8 @@ export const constantRoutes = [
         path: 'digests',
         component: () => import('@/views/notice/notice'),
         name: '公告',
-        meta: { title: '公告', icon: 'el-icon-chat-dot-square' },
-      },
+        meta: { title: '公告', icon: 'el-icon-chat-dot-square' }
+      }
     ]
   },
   // （蒋世祺）这里是用户端的个人信息界面  之后可能需要对应到 模版的个人信息界面（模版里面是没有的 但是可以对照admin的另外一个大的框架复制粘贴到本项目中）
@@ -125,7 +125,7 @@ export const constantRoutes = [
       {
         path: 'citySubscribe',
         component: CitySubscribe,
-        meta: { title: '订阅城市', icon: 'el-icon-location-outline' }
+        meta: { title: '灾害订阅', icon: 'el-icon-location-outline' }
       },
       {
         path: 'feedback',
