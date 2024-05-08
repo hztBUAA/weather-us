@@ -23,15 +23,27 @@ import { mapGetters } from 'vuex'
 import Logo from './Logo'
 import SidebarItem from './SidebarItem'
 import variables from '@/styles/variables.scss'
+import { getToken } from '@/utils/auth'
 
 export default {
   components: { SidebarItem, Logo },
+  data() {
+    return {
+      role: getToken() === 'true' ? 'admin' : 'user'
+    }
+  },
   computed: {
     ...mapGetters([
       'sidebar'
     ]),
     routes() {
-      return this.$router.options.routes
+      console.log(this.$router.options.routes)
+      return this.$router.options.routes.filter((route) => {
+        if (route.meta && route.meta.roles) {
+          return route.meta.roles.includes(this.role)
+        }
+        return true
+      })
     },
     activeMenu() {
       const route = this.$route

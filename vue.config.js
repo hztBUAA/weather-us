@@ -41,7 +41,7 @@ module.exports = {
         target: process.env.VUE_APP_TARGET_API,
         logLevel: 'debug',
         changeOrigin: true,
-        pathRewrite: { ['^' + process.env.VUE_APP_TARGET_API]: '' }
+        pathRewrite: { ['^' + process.env.VUE_APP_BASE_API]: '' }
       }
     }
     // before: require('./mock/mock-server.js')
