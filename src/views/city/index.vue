@@ -13,7 +13,7 @@
           {{ option }}
         </li>
       </template>
-      <template v-else>
+      <template v-else-if="options.length && options.length === 0">
         <li>
           暂时找不到哦
         </li>
@@ -23,7 +23,7 @@
     <!-- <div class="current-weather">
       <current-info />
     </div> -->
-    <div class="current-weather center">
+    <div class=" center">
       <h1>当前天气</h1>
       <hr>
       <!-- <img src="./images/sunny.png" alt=""> -->
@@ -280,6 +280,10 @@ export default {
   },
 
   mounted() {
+    if (this.$route.params.c1) {
+      this.location = this.$route.params.c3 + '  ' + this.$route.params.c2 + '  ' + this.$route.params.c1
+      this.fixed_location = this.$route.params.c3 + '  ' + this.$route.params.c2 + '  ' + this.$route.params.c1
+    }
     this.requestForData().then(() => {
       console.log(this.days_7)
       console.log(this.hourly)
