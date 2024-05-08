@@ -1,13 +1,8 @@
 import request from '@/utils/request'
-
-const formUrlEncoded = {
-  headers: {
-    'content-type': 'application/x-www-form-urlencoded'
-  }
-}
+import qs from 'qs'
 
 export function login(data) {
-  return request.post('/user/login', data, formUrlEncoded)
+  return request.post('/user/login', qs.stringify({ uid: data.username, password: data.password }))
 }
 
 export function getInfo() {
@@ -15,11 +10,16 @@ export function getInfo() {
 }
 
 export function changePasswordService(data) {
-  return request.patch('/user/changePassword', data, formUrlEncoded)
+  return request.post('/user/changePassword', qs.stringify(data))
 }
 
-export function registerService(data) {
-  return request.post('/user/register', data)
+export function registerService(data, CSRFToken) {
+  console.log(data)
+  return request.post('/user/register', qs.stringify(data), {
+    headers: {
+      'X-CSRFToken': CSRFToken
+    }
+  })
 }
 
 export function logout() {
@@ -31,7 +31,7 @@ export function getCitySubscribeService() {
 }
 
 export function addCitySubscribeService(data) {
-  return request.post('/user/citySubscribe', data, formUrlEncoded)
+  return request.post('/user/citySubscribe', qs.stringify(data))
 }
 
 export function deleteCitySubscribeService(city) {
@@ -43,7 +43,7 @@ export function getUserFeedbackService() {
 }
 
 export function addFeedbackService(data) {
-  return request.post('/user/feedback', data, formUrlEncoded)
+  return request.post('/user/feedback', qs.stringify(data))
 }
 
 export function getWarningsService() {
@@ -51,9 +51,13 @@ export function getWarningsService() {
 }
 
 export function updateAvatarService(avatar) {
-  return request.patch('/user/avatar', avatar, {
+  return request.post('/user/avatar', avatar, {
     headers: {
       'content-type': 'form-data'
     }
   })
+}
+
+export function getCSRFTokenService() {
+  return request.get('/get_csrf')
 }
