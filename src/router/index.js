@@ -146,7 +146,7 @@ export const constantRoutes = [
       }
     ]
   },
-  {
+  /* {
     path: '/example',
     component: Layout,
     // redirect: '/form/index',
@@ -166,7 +166,7 @@ export const constantRoutes = [
     //     meta: { title: 'Tree', icon: 'tree' }
     //   }
     // ]
-  },
+  }, */
   {
     path: '/map',
     component: Layout,
@@ -180,7 +180,7 @@ export const constantRoutes = [
     ]
   },
 
-  {
+  /* {
     path: '/form',
     component: Layout,
     children: [
@@ -251,9 +251,9 @@ export const constantRoutes = [
         // hidden: true
       }
     ]
-  },
+  },*/
 
-  {
+  /* {
     path: 'external-link',
     component: Layout,
     children: [
@@ -262,7 +262,7 @@ export const constantRoutes = [
         meta: { title: 'External Link', icon: 'link' }
       }
     ]
-  },
+  },*/
 
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
