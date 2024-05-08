@@ -5,6 +5,7 @@
   "author": "Pan <panfree23@gmail.com>",
   "scripts": {
     "dev": "vue-cli-service serve",
+    "build:dev": "vue-cli-service build --mode development",
     "build:prod": "vue-cli-service build",
     "build:stage": "vue-cli-service build --mode staging",
     "preview": "node build/index.js --preview",
@@ -17,7 +18,7 @@
     "axios": "0.18.1",
     "core-js": "3.6.5",
     "echarts": "^5.5.0",
-    "element-ui": "2.13.2",
+    "element-ui": "^2.15.14",
     "js-cookie": "2.2.0",
     "less-loader": "^5.0.0",
     "lodash": "^4.17.21",

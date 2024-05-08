@@ -45,3 +45,15 @@ export function getUserFeedbackService() {
 export function addFeedbackService(data) {
   return request.post('/user/feedback', data, formUrlEncoded)
 }
+
+export function getWarningsService() {
+  return request.get('/user/warnings')
+}
+
+export function updateAvatarService(avatar) {
+  return request.patch('/user/avatar', avatar, {
+    headers: {
+      'content-type': 'form-data'
+    }
+  })
+}

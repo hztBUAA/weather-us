@@ -1,5 +1,6 @@
 <script>
-import { getInfo } from '@/api/user'
+import { getInfo, updateAvatarService } from '@/api/user'
+import { Message } from 'element-ui'
 
 export default {
   data() {
@@ -9,10 +10,34 @@ export default {
       usernameReadOnly: true
     }
   },
-  async mounted() {
-    const result = await getInfo()
-    this.user = result.data
+  mounted() {
+    console.log(process.env.NODE_ENV)
+    this.loadInfo()
     // Message.success(result.msg)
+  },
+  methods: {
+    async loadInfo() {
+      const result = await getInfo()
+      this.user = result.data
+    },
+    checkAvatar(file) {
+      if (!/^image\/.+/.test(file.type)) {
+        Message.error('只接受图片')
+        return false
+      } else if (file.size / 1024 / 1024 > 2) {
+        Message.error('图片大小不应超过2MB')
+        return false
+      }
+      console.log(file.type)
+      return true
+    },
+    async uploadAvatar(upload) {
+      const avatar = upload.file
+      console.log(upload)
+      const result = await updateAvatarService(avatar)
+      Message.success(result.msg)
+      this.loadInfo()
+    }
   }
 }
 </script>
@@ -25,7 +50,14 @@ export default {
       </el-form-item>
       <el-form-item label="头像">
         <!-- todo: 调用上传文件接口, 对文件的校验 -->
-        <el-upload class="avatar-uploader" :show-file-list="false" action="">
+        <el-upload
+          class="avatar-uploader"
+          action=""
+          :show-file-list="false"
+          :http-request="uploadAvatar"
+          :before-upload="checkAvatar"
+          accept="image/*"
+        >
           <img :src="user.avatar || defaultAvatar" class="avatar" title="更换头像" alt="头像">
         </el-upload>
       </el-form-item>
