@@ -49,3 +49,19 @@ export function launch_varn(title, address, warningTime, type, content) {
         }
     })
 }
+export function fetch_feedback() {
+    return request({
+        url: '/admin/fetch-feedback',
+        method: 'get',
+    })
+}
+export function reply_feedback(username, reply) {
+    return request({
+        url: '/admin/reply-feedback',
+        method: 'post',
+        params: {
+            username: username,
+            reply: reply,
+        }
+    })
+}
