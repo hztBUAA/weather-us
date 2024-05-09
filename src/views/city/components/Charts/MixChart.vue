@@ -123,7 +123,7 @@ export default {
       const xData = (function() {
         const data = []
         for (let i = 1; i < 13; i++) {
-          data.push(i + 'month')
+          data.push(i + '月')
         }
         return data
       }())
@@ -215,7 +215,7 @@ export default {
             }
           },
           axisTick: {
-            show: true
+            show: false
           },
           axisLabel: {
             interval: 0

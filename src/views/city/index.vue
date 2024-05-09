@@ -34,15 +34,22 @@
           color: isNight() ? 'white' : 'black',
         }"
       >
-        <h1 style="font-size:4rem;left:5rem;position:absolute">{{ fixed_location }}</h1>
-        <h4 style="font-size:1rem;left:6rem;position:absolute">{{ '('+full_location +')' }}</h4>
-        <div class="mb-4 current-time">
-          当前时间: {{ currentTime }}
+        <div class="cur-left-name-container" style="position: relative;">
+          <div class="cur-left-name">
+            <h1 style="font-size: 3rem; left: 3.5rem; position: absolute;">{{ fixed_location }}</h1>
+            <h4 style="font-size: 1rem; left: 4rem; top: 5rem; position: absolute;">{{ '('+full_location +')' }}</h4>
+          </div>
         </div>
-        <div class="mb-4">{{ cur.temp }}<sup>o</sup>C</div>
-        <div class="mb-4">{{ cur.text }}</div>
-        <div class="mb-4"><i class="qi-2208" style="font-size:16px;margin-right:4px" />{{ cur.windDir }}</div>
-        <div class="mb-4"><i class="qi-2120" style="font-size:16px;margin-right:4px" />{{ cur.humidity }}%</div>
+
+        <div class="cur-list-values">
+          <div class="mb-4 current-time">
+            当前时间: {{ currentTime }}
+          </div>
+          <div class="mb-4">{{ cur.temp }}<sup>o</sup>C</div>
+          <div class="mb-4">{{ cur.text }}</div>
+          <div class="mb-4"><i class="qi-2208" style="font-size:16px;margin-right:4px" />{{ cur.windDir }}</div>
+          <div class="mb-4"><i class="qi-2120" style="font-size:16px;margin-right:4px" />{{ cur.humidity }}%</div>
+        </div>
       </div>
 
     </div>
@@ -598,15 +605,15 @@ export default {
 }
 
 .forecast-container .forecast .forecast-content .degree {
-	font-size: 24px;
-	font-size: 1.7142857143em;
+	// font-size: 24px;
+	font-size: 0.8em;
 	// color: #5BBCFF;
 	font-weight: 700;
 }
 
 .forecast-container .forecast .forecast-content small {
-	font-size: 16px;
-	font-size: 1.1428571429em;
+	// font-size: 16px;
+	font-size: 0.7em;
 }
 
 .chart-container{
@@ -634,8 +641,8 @@ i{
   // background-color: #fff;
   // background-image: url(./images/sunny.png);
   background-size: 100%;
-  height: 250px;
-  padding: 20px;
+  height: 20rem;
+  padding: 1rem;
   border-radius: 5px;
   box-shadow: 0 2px 4px rgba(26, 12, 12, 0.1);
 }
@@ -699,11 +706,8 @@ h1{
 }
 
 .current-time {
-  font-size: 1.5rem;
-  // position: absolute;
-  // bottom: 10px;
-  // left: 50%;
-  // transform: translateX(-50%);
+  font-size: 1rem;
+
 }
 
 .options-list {
@@ -734,4 +738,45 @@ h1{
 h4{
   opacity: 0.4;
 }
+
+.cur-list-values {
+  float: none; // 取消原有的浮动
+  margin-top: 2rem; // 添加顶部间距
+}
+
+@media screen and (max-width: 768px) {
+  .cur-list-values {
+    float: right; // 在小屏幕上设置为右浮动
+    margin-top: 0; // 取消顶部间距
+    margin-right: 4vw; // 添加右侧间距，防止与其他内容重叠
+  }
+
+  .cur-list-values > div {
+    margin-bottom: 2vh; // 调整每个子元素的底部间距
+  }
+  .cur-left-name{
+    margin-top: 3rem;
+  }
+  .current-panel {
+    background-size: 100%;
+    height: 44vh; // 使用相对单位
+    padding: 5vw; // 使用相对单位
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(26, 12, 12, 0.1);
+  }
+  .forecast-container .forecast .forecast-content {
+    padding: 2.5rem 10px 10px;
+    text-align: center;
+  }
+  .degree{
+    font-size: 0.8rem;
+  }
+  .mb-4{
+    margin-bottom: 4vh;
+  }
+  small{
+    font-size: 0.7rem;
+  }
+}
+
 </style>
