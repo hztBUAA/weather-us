@@ -5,7 +5,7 @@
       <div v-for="item in dataTypes.slice(0, 5)" :key="item.index">
         <el-menu-item :index="String(item.index)">
           <i class="el-icon-sunny"></i>
-          <span slot="title">{{ item.type }}</span>
+          <span slot="title">{{ item.name }}</span>
         </el-menu-item>
       </div>
       <el-submenu index="-1">
@@ -17,7 +17,7 @@
           <div v-for="item in dataTypes.slice(5)" :key="item.index">
             <el-menu-item :index="String(item.index)">
               <i class="el-icon-sunny"></i>
-              <span slot="title">{{ item.type }}</span>
+              <span slot="title">{{ item.name }}</span>
             </el-menu-item>
           </div>
         </el-menu-item-group>
@@ -66,6 +66,8 @@ import mapData from '../../assets/jsonData/china.json'
 import citiesData from '../../assets/jsonData/cities.json'
 import { getCityJson } from '../../api/staticApi'
 import { getCityData, getDataTypes } from '../../api/dataApi'
+import Tooltip from '../../views/map/tooltip.vue'
+import Vue from 'vue'
 const predefineColors = ['#ff4500',
   '#ff8c00',
   '#ffd700',
@@ -135,6 +137,9 @@ const option = {
   backgroundColor: '#cccccc',
 }
 export default {
+  components: {
+    Tooltip
+  },
   data() {
     return {
       backgroundColor: '#cccccc',
@@ -180,14 +185,14 @@ export default {
       } 
     },
     getJson(json) {
-      const stringData = JSON.stringify(json, null, 2)
-      const blob = new Blob([stringData], {
-        type: 'application/json'
+    //  const stringData = JSON.stringify(json, null, 2)
+      const blob = new Blob([json], {
+       type: 'text/plain;charset=utf-8'
       })
       const objectURL = URL.createObjectURL(blob)
       const aTag = document.createElement('a')
       aTag.href = objectURL
-      aTag.download = 'centers.json'
+      aTag.download = 'centers.txt'
       aTag.click()
       URL.revokeObjectURL(objectURL)
     },
@@ -200,11 +205,15 @@ export default {
         const that = this
         const formatter = function(params, ticket, callback) {
           //console.log(params)
-          var link = '';
-          link = '<div>' + params.name + "<br/>" + that.dataTypes[that.typeIndex].type + ' : ' + params.value + '<br/>' +
-            '<a href="#/city/index">查看详情</a>' +
-            '</div>';
-          return link;
+          const app = new Vue({
+            el: document.createElement('div'),
+            render: h => h(Tooltip, {props:
+                {name: params.name, 
+                type: that.dataTypes[that.typeIndex].type,
+                value: params.value}
+              })
+          })
+          return app.$el
         }
         var option = this.charts.getOption()
         option.tooltip.formatter = formatter
@@ -223,6 +232,35 @@ export default {
     },
     initCities() {
       this.cities = citiesData
+      /*
+      var string = ""
+      mapData.features.forEach((feature1) => {
+        if (feature1.properties.adcode != 100000) {
+          string += "adcode-" + feature1.properties.adcode + 
+          "-center-" + feature1.properties.center[0] + "-" + 
+          feature1.properties.center[1] + "\n"
+          getCityJson(feature1.properties.adcode).then((res) => {
+            res.data.features.forEach((feature2) => {
+              string += "adcode-" + feature2.properties.adcode + 
+              "-center-" + feature2.properties.center[0] + "-" + 
+              feature2.properties.center[1] + "\n"
+              getCityJson(feature2.properties.adcode).then((res1) => {
+                res1.data.features.forEach((feature3) => {
+                  string += "adcode-" + feature3.properties.adcode + 
+                  "-center-" + feature3.properties.center[0] + "-" + 
+                  feature3.properties.center[1] + "\n"
+                })
+              })
+            })
+          })
+        }
+      })
+      const that = this
+      setTimeout(() => {
+        that.getJson(string)
+        console.log('start')
+      }, 120000)
+      */
     },
     colorChange(color) {
       const option = this.charts.getOption()
@@ -318,7 +356,11 @@ export default {
       })
     },
     chooseCity(city) {
-      this.showCity(city[0], city[1])
+      if (city.lentgh < 3) {
+        this.showCity(city[0], city[1])
+      } else {
+        this.$router.push({name: 'City', params: {c1 : city[2]}})
+      }
     },
     showCity2(name) {
       const option = this.charts.getOption()
@@ -326,7 +368,7 @@ export default {
         if (feature.properties.name === name) {
           getCityJson(feature.properties.adcode).then((res) => {
             if (res.data.features.length <= 1) {
-              // route
+              this.$router.push({name: 'City', params: {c1 : name}})
               return
             }
             const newBoundingCoords = this.calBounding(res.data)
@@ -357,7 +399,7 @@ export default {
         if (feature.properties.name === name1) {
           getCityJson(feature.properties.adcode).then((res) => {
             if (res.data.features.length <= 1) {
-              // route
+              this.$router.push({name: 'City', params: {c1 : name1}})
               return
             }
             const newBoundingCoords = this.calBounding(res.data)
@@ -398,11 +440,15 @@ export default {
         },
         formatter: function(params, ticket, callback) {
           //console.log(params)
-          var link = '';
-          link = '<div>' + params.name + "<br/>" + that.dataTypes[that.typeIndex].type + ' : ' + params.value + '<br/>' +
-            '<a href="#/city/index">查看详情</a>' +
-            '</div>';
-          return link;
+          const app = new Vue({
+            el: document.createElement('div'),
+            render: h => h(Tooltip, {props:
+                {name: params.name, 
+                type: that.dataTypes[that.typeIndex].type,
+                value: params.value}
+              })
+          })
+          return app.$el;
         }
       }
       this.option.tooltip = tooltip
