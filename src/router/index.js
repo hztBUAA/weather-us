@@ -145,7 +145,7 @@ export const constantRoutes = [
         alias: '',
         component: () => import('@/views/city/index'),
         name: 'City',
-        meta: { title: '城市', icon: 'el-icon-location' }
+        meta: { title: '城市', icon: 'el-icon-school' }
       }
     ]
   },

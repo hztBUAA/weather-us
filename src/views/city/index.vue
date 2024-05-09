@@ -1,8 +1,8 @@
 <template>
-
+  <!-- todo: 加上天气指数 -->
   <div class="forecast-table">
     <div style="display: flex; width: 100%;">
-      <input v-model="location" type="text" class="search-input" style="flex: 1;" @input="search">
+      <input v-model="location" type="text" class="search-input" style="flex: 1;" @input="debounceSearch">
       <button class="search-button" style="flex: 0 0 auto;" @click="submitLocation">搜索</button>
       <!-- {{ showOptions }}
       {{ options }} -->
@@ -219,6 +219,7 @@
 import Axios from 'axios'
 import Chart from './components/Charts/LineMarker.vue'
 import MixChart from './components/Charts/MixChart.vue'
+import _ from 'lodash'
 // import CurrentInfo from './components/CurrentInfo.vue'
 export default {
   name: 'City',
@@ -276,38 +277,39 @@ export default {
   },
 
   mounted() {
-    if (this.$route.params) {
-      // this.location = this.$route.params.c3 + '  ' + this.$route.params.c2 + '  ' + this.$route.params.c1
-      // this.fixed_location = this.$route.params.c3 + '  ' + this.$route.params.c2 + '  ' + this.$route.params.c1
-      this.location = (this.$route.params.c3 ? this.$route.params.c3 : '北京')
-      this.fixed_location = (this.$route.params.c3 ? this.$route.params.c3 : '北京')
-      this.full_location = (this.$route.params.c3 ? (this.$route.params.c3 + ',') : '北京') + (this.$route.params.c2 ? (this.$route.params.c2 + ',') : '') + (this.$route.params.c1 ? (this.$route.params.c1) : ',中国')
-      console.log('params', this.$route.params, this.$route.params.c3, this.$route.params.c2, this.$route.params.c1)
+    console.log('params', this.$route.params)
+
+    if (this.$route.params.c1 || this.$route.params.c2 || this.$route.params.c3) {
+      this.full_location = (this.$route.params.c3 ? (this.$route.params.c3 + ',') : '') + (this.$route.params.c2 ? (this.$route.params.c2 + ',') : '') + (this.$route.params.c1 ? (this.$route.params.c1) : '')
+      this.location = this.full_location
+      this.search()
+      // console.log('params', this.$route.params, this.$route.params.c3, this.$route.params.c2, this.$route.params.c1)
+    } else {
+      this.full_location = '北京,中国'
+      this.location = '北京'
     }
 
     this.requestForData()
     this.updateTime()
     setInterval(this.updateTime, 1000) // 每秒更新一次时间
-    // const c1 = this.$route.params.c1 ? this.$route.params.c1 : ''
-    // const c2 = this.$route.params.c2 ? this.$route.params.c2 : ''
-    // const c3 = this.$route.params.c3 ? this.$route.params.c3 : ''
-
-    // // const str = c3 + ' ' + c2 + ' ' + c1
-    // this.location = c3 + ' ' + c2 + ' ' + c1
-    // this.fixed_location = c3 + ' ' + c2 + ' ' + c1
   },
   methods: {
+    // 在组件内部定义 debounceSearch 方法
+    debounceSearch: _.debounce(function() {
+      this.search()
+    }, 500), // 在这里设置 debounce 的延迟时间，单位为毫秒，
     select(option) {
       this.full_location = option
       this.location = option.split(',')[0]
       this.fixed_location = option.split(',')[0]
       this.showOptions = false
       this.options = []
+      this.submitLocation()
     },
     async search() {
       // 在这里使用 AJAX 获取后台数据，并将获取的数据赋值给 this.options
       const res = await Axios.get(
-        `https://geoapi.qweather.com/v2/city/lookup?location=${this.location}&number=5&range=cn&key=3ca6d5e357a5470abf168dbcd8fe0fd7`
+        `https://geoapi.qweather.com/v2/city/lookup?location=${this.location}&number=5&range=cn&key=c61a9a73e7b44964887830a15e0bbbdd`
       )
       // console.log('res', res)
       if (res.data.location) {
@@ -325,7 +327,7 @@ export default {
       const headers = Object.assign({}, Axios.defaults.headers.common)
       delete headers['Apifoxtoken']
       const res = await Axios.get(
-        `https://geoapi.qweather.com/v2/city/lookup?location=${this.location}&number=5&range=cn&key=3ca6d5e357a5470abf168dbcd8fe0fd7`
+        `https://geoapi.qweather.com/v2/city/lookup?location=${this.location}&number=5&range=cn&key=c61a9a73e7b44964887830a15e0bbbdd`
         ,
         headers)
       this.wt_data = res.data
@@ -355,7 +357,7 @@ export default {
 
       // 当前实时天气
       const res = await Axios.get(
-        `https://devapi.qweather.com/v7/weather/now?location=${locationId}&key=3ca6d5e357a5470abf168dbcd8fe0fd7`
+        `https://api.qweather.com/v7/weather/now?location=${locationId}&key=c61a9a73e7b44964887830a15e0bbbdd`
         , {
           headers: {
             // 这里不设置任何请求头，即空对象
@@ -372,7 +374,7 @@ export default {
       // console.log(locationId, 'locationID')
       // console.log(params)
       const res_location = await Axios.get(
-        `https://devapi.qweather.com/v7/weather/7d?location=${locationId}&key=3ca6d5e357a5470abf168dbcd8fe0fd7`
+        `https://api.qweather.com/v7/weather/7d?location=${locationId}&key=c61a9a73e7b44964887830a15e0bbbdd`
       )
       // this.days_7 = res_location.data.daily
       this.days_7 = res_location.data.daily
@@ -384,11 +386,11 @@ export default {
       // this.$forceUpdate()
       // 小时天气
       const res_hourly = await Axios.get(
-        `https://devapi.qweather.com/v7/weather/24h?location=${locationId}&key=3ca6d5e357a5470abf168dbcd8fe0fd7`)
+        `https://api.qweather.com/v7/weather/24h?location=${locationId}&key=c61a9a73e7b44964887830a15e0bbbdd`)
       this.hourly = res_hourly.data.hourly
       // 灾害预警
       const res_event = await Axios.get(
-        `https://devapi.qweather.com/v7/warning/now?location=${locationId}&key=3ca6d5e357a5470abf168dbcd8fe0fd7`
+        `https://api.qweather.com/v7/warning/now?location=${locationId}&key=c61a9a73e7b44964887830a15e0bbbdd`
       )
       this.events = res_event.data.warning
       // console.log('events', this.events)
