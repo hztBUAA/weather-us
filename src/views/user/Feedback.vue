@@ -153,11 +153,13 @@ export default {
           {{ feedback.content }}
         </p>
 
-        <hr>
-        <h4>回复</h4>
-        <p style="font-size: 17px;color: #606266;text-indent: 2em">
-          {{ feedback.reply }}
-        </p>
+        <template v-if="feedback.reply">
+          <hr>
+          <h4>回复</h4>
+          <p style="font-size: 17px;color: #606266;text-indent: 2em">
+            {{ feedback.reply }}
+          </p>
+        </template>
       </template>
 
       <template slot="footer">
