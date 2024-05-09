@@ -43,7 +43,7 @@
         <div class="mb-4">{{ cur.text }}</div>
         <div class="mb-4"><i class="qi-2208" style="font-size:16px;margin-right:4px" />{{ cur.windDir }}</div>
         <div class="mb-4"><i class="qi-2120" style="font-size:16px;margin-right:4px" />{{ cur.humidity }}%</div>
-        </h4></div>
+      </div>
 
     </div>
 
@@ -276,11 +276,13 @@ export default {
   },
 
   mounted() {
-    if (this.$route.params.c3) {
+    if (this.$route.params) {
       // this.location = this.$route.params.c3 + '  ' + this.$route.params.c2 + '  ' + this.$route.params.c1
       // this.fixed_location = this.$route.params.c3 + '  ' + this.$route.params.c2 + '  ' + this.$route.params.c1
-      this.location = this.$route.params.c3
-      this.fixed_location = this.$route.params.c3
+      this.location = (this.$route.params.c3 ? this.$route.params.c3 : '北京')
+      this.fixed_location = (this.$route.params.c3 ? this.$route.params.c3 : '北京')
+      this.full_location = (this.$route.params.c3 ? (this.$route.params.c3 + ',') : '北京') + (this.$route.params.c2 ? (this.$route.params.c2 + ',') : '') + (this.$route.params.c1 ? (this.$route.params.c1) : ',中国')
+      console.log('params', this.$route.params, this.$route.params.c3, this.$route.params.c2, this.$route.params.c1)
     }
 
     this.requestForData()
