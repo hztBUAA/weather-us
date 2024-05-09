@@ -43,8 +43,6 @@
             </el-link>
           </el-form-item>
         </el-form>
-        <p>测试账号：我是小丑</p>
-        <p>测试密码: iamxiaochou</p>
         <el-form v-show="!isRegister" ref="loginForm" status-icon :model="userData" :rules="rules" style="width: 50%">
           <el-form-item>
             <h1>登录</h1>
@@ -188,8 +186,13 @@ export default {
           console.log(result)
           registerService(this.userData, result.csrf_token).then((result) => {
             Message.success(result.msg)
-            this.loading = false
-            this.isRegister = false
+            this.$store.dispatch('user/login', this.userData).then(async() => {
+              this.$router.push({ path: this.redirect || '/' })
+              this.loading = false
+            }).catch(() => {
+              this.loading = false
+              this.isRegister = false
+            })
           }).catch(() => {
             this.loading = false
           })
