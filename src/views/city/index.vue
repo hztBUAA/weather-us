@@ -276,25 +276,21 @@ export default {
   },
 
   mounted() {
-    if (this.$route.params) {
-      // this.location = this.$route.params.c3 + '  ' + this.$route.params.c2 + '  ' + this.$route.params.c1
-      // this.fixed_location = this.$route.params.c3 + '  ' + this.$route.params.c2 + '  ' + this.$route.params.c1
-      this.location = (this.$route.params.c3 ? this.$route.params.c3 : '北京')
-      this.fixed_location = (this.$route.params.c3 ? this.$route.params.c3 : '北京')
-      this.full_location = (this.$route.params.c3 ? (this.$route.params.c3 + ',') : '北京') + (this.$route.params.c2 ? (this.$route.params.c2 + ',') : '') + (this.$route.params.c1 ? (this.$route.params.c1) : ',中国')
-      console.log('params', this.$route.params, this.$route.params.c3, this.$route.params.c2, this.$route.params.c1)
+    console.log('params', this.$route.params)
+
+    if (this.$route.params.c1 || this.$route.params.c2 || this.$route.params.c3) {
+      this.full_location = (this.$route.params.c3 ? (this.$route.params.c3 + ',') : '') + (this.$route.params.c2 ? (this.$route.params.c2 + ',') : '') + (this.$route.params.c1 ? (this.$route.params.c1) : '')
+      this.location = this.full_location
+      this.search()
+      // console.log('params', this.$route.params, this.$route.params.c3, this.$route.params.c2, this.$route.params.c1)
+    } else {
+      this.full_location = '北京,中国'
+      this.location = '北京'
     }
 
     this.requestForData()
     this.updateTime()
     setInterval(this.updateTime, 1000) // 每秒更新一次时间
-    // const c1 = this.$route.params.c1 ? this.$route.params.c1 : ''
-    // const c2 = this.$route.params.c2 ? this.$route.params.c2 : ''
-    // const c3 = this.$route.params.c3 ? this.$route.params.c3 : ''
-
-    // // const str = c3 + ' ' + c2 + ' ' + c1
-    // this.location = c3 + ' ' + c2 + ' ' + c1
-    // this.fixed_location = c3 + ' ' + c2 + ' ' + c1
   },
   methods: {
     select(option) {
@@ -303,6 +299,7 @@ export default {
       this.fixed_location = option.split(',')[0]
       this.showOptions = false
       this.options = []
+      this.submitLocation()
     },
     async search() {
       // 在这里使用 AJAX 获取后台数据，并将获取的数据赋值给 this.options

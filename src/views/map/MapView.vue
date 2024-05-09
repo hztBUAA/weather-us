@@ -1,22 +1,22 @@
 <template>
   <div>
     <div ref="charts" style="width: 100%; height: 100vh" />
-    <el-menu default-active="0" style="top: 40%; right: 0%; width: 60px; background-color: rgba(0, 0, 0, 0); text-align: center;" class="float" @select="selectMode" :collapse="true">
+    <el-menu default-active="0" style="top: 40%; right: 0%; width: 60px; background-color: rgba(0, 0, 0, 0); text-align: center;" class="float" :collapse="true" @select="selectMode">
       <div v-for="item in dataTypes.slice(0, 5)" :key="item.index">
         <el-menu-item :index="String(item.index)">
-          <i class="el-icon-sunny"></i>
+          <i class="el-icon-sunny" />
           <span slot="title">{{ item.name }}</span>
         </el-menu-item>
       </div>
       <el-submenu index="-1">
         <template slot="title">
-          <i class="el-icon-menu"></i>
+          <i class="el-icon-menu" />
         </template>
         <el-menu-item-group>
           <span slot="title">更多选项</span>
           <div v-for="item in dataTypes.slice(5)" :key="item.index">
             <el-menu-item :index="String(item.index)">
-              <i class="el-icon-sunny"></i>
+              <i class="el-icon-sunny" />
               <span slot="title">{{ item.name }}</span>
             </el-menu-item>
           </div>
@@ -42,13 +42,13 @@
         @change="chooseCity"
       />
       <el-date-picker
-        style="margin-right: 25px"
         v-model="date"
+        style="margin-right: 25px"
         type="datetime"
-        @change="chooseDate"
         placeholder="选择日期"
-        value-format="yyyy-MM-dd-HH">
-      </el-date-picker>
+        value-format="yyyy-MM-dd-HH"
+        @change="chooseDate"
+      />
       <el-color-picker
         v-model="backgroundColor"
         show-alpha
@@ -134,7 +134,7 @@ const option = {
   animation: false,
   animationDuration: 0,
   animationDurationUpdate: 0,
-  backgroundColor: '#cccccc',
+  backgroundColor: '#cccccc'
 }
 export default {
   components: {
@@ -175,19 +175,19 @@ export default {
     },
     chooseDate() {
       if (this.date != this.lastDate) {
-        this.showData(0);
+        this.showData(0)
         if (this.maps[1] != null && this.maps[1] != undefined) {
-          this.showData(1);
+          this.showData(1)
         }
         if (this.maps[2] != null && this.maps[2] != undefined) {
-          this.showData(2);
+          this.showData(2)
         }
-      } 
+      }
     },
     getJson(json) {
     //  const stringData = JSON.stringify(json, null, 2)
       const blob = new Blob([json], {
-       type: 'text/plain;charset=utf-8'
+        type: 'text/plain;charset=utf-8'
       })
       const objectURL = URL.createObjectURL(blob)
       const aTag = document.createElement('a')
@@ -204,14 +204,14 @@ export default {
         this.typeIndex = index
         const that = this
         const formatter = function(params, ticket, callback) {
-          //console.log(params)
+          // console.log(params)
           const app = new Vue({
             el: document.createElement('div'),
-            render: h => h(Tooltip, {props:
-                {name: params.name, 
-                type: that.dataTypes[that.typeIndex].type,
-                value: params.value}
-              })
+            render: h => h(Tooltip, { props:
+                { name: params.name,
+                  type: that.dataTypes[that.typeIndex].type,
+                  value: params.value }
+            })
           })
           return app.$el
         }
@@ -236,18 +236,18 @@ export default {
       var string = ""
       mapData.features.forEach((feature1) => {
         if (feature1.properties.adcode != 100000) {
-          string += "adcode-" + feature1.properties.adcode + 
-          "-center-" + feature1.properties.center[0] + "-" + 
+          string += "adcode-" + feature1.properties.adcode +
+          "-center-" + feature1.properties.center[0] + "-" +
           feature1.properties.center[1] + "\n"
           getCityJson(feature1.properties.adcode).then((res) => {
             res.data.features.forEach((feature2) => {
-              string += "adcode-" + feature2.properties.adcode + 
-              "-center-" + feature2.properties.center[0] + "-" + 
+              string += "adcode-" + feature2.properties.adcode +
+              "-center-" + feature2.properties.center[0] + "-" +
               feature2.properties.center[1] + "\n"
               getCityJson(feature2.properties.adcode).then((res1) => {
                 res1.data.features.forEach((feature3) => {
-                  string += "adcode-" + feature3.properties.adcode + 
-                  "-center-" + feature3.properties.center[0] + "-" + 
+                  string += "adcode-" + feature3.properties.adcode +
+                  "-center-" + feature3.properties.center[0] + "-" +
                   feature3.properties.center[1] + "\n"
                 })
               })
@@ -359,7 +359,7 @@ export default {
       if (city.lentgh < 3) {
         this.showCity(city[0], city[1])
       } else {
-        this.$router.push({name: 'City', params: {c1 : city[2]}})
+        this.$router.push({ name: 'City', params: { c1: city[2] }})
       }
     },
     showCity2(name) {
@@ -368,7 +368,7 @@ export default {
         if (feature.properties.name === name) {
           getCityJson(feature.properties.adcode).then((res) => {
             if (res.data.features.length <= 1) {
-              this.$router.push({name: 'City', params: {c1 : name}})
+              this.$router.push({ name: 'City', params: { c1: name }})
               return
             }
             const newBoundingCoords = this.calBounding(res.data)
@@ -399,7 +399,7 @@ export default {
         if (feature.properties.name === name1) {
           getCityJson(feature.properties.adcode).then((res) => {
             if (res.data.features.length <= 1) {
-              this.$router.push({name: 'City', params: {c1 : name1}})
+              this.$router.push({ name: 'City', params: { c1: name1 }})
               return
             }
             const newBoundingCoords = this.calBounding(res.data)
@@ -434,21 +434,21 @@ export default {
       const tooltip = {
         show: true,
         enterable: true,
-        position: function (pos, params, dom, rect, size) {
-          var obj = {top: pos[1] + 10, left: pos[0]};
-          return obj;
+        position: function(pos, params, dom, rect, size) {
+          var obj = { top: pos[1] + 10, left: pos[0] }
+          return obj
         },
         formatter: function(params, ticket, callback) {
-          //console.log(params)
+          // console.log(params)
           const app = new Vue({
             el: document.createElement('div'),
-            render: h => h(Tooltip, {props:
-                {name: params.name, 
-                type: that.dataTypes[that.typeIndex].type,
-                value: params.value}
-              })
+            render: h => h(Tooltip, { props:
+                { name: params.name,
+                  type: that.dataTypes[that.typeIndex].type,
+                  value: params.value }
+            })
           })
-          return app.$el;
+          return app.$el
         }
       }
       this.option.tooltip = tooltip
