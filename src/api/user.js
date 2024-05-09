@@ -14,7 +14,6 @@ export function changePasswordService(data) {
 }
 
 export function registerService(data, CSRFToken) {
-  console.log(data)
   return request.post('/user/register', qs.stringify(data), {
     headers: {
       'X-CSRFToken': CSRFToken

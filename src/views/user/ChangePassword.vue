@@ -56,11 +56,14 @@ export default {
   },
   methods: {
     submit() {
-      console.log(this.$refs['form'])
       this.$refs.form.validate(async(valid) => {
         if (valid) {
           const result = await changePasswordService(this.form)
           Message.success(result.msg)
+          this.$store.dispatch('user/resetToken').then(() => {
+            this.$router.push({ path: `/login?redirect=${this.$route.fullPath}` })
+            Message.info('请重新登录')
+          })
         }
       })
     }
