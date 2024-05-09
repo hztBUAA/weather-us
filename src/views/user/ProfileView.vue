@@ -5,7 +5,7 @@ import { Message } from 'element-ui'
 export default {
   data() {
     return {
-      defaultAvatar: 'https://cube.elemecdn.com/e/fd/0fc7d20532fdaf769a25683617711png.png',
+      defaultAvatar: '',
       user: { },
       usernameReadOnly: true
     }
@@ -50,16 +50,16 @@ export default {
       </el-form-item>
       <el-form-item label="头像">
         <!-- todo: 调用上传文件接口, 成功后更新 store 内容 -->
-        <!--        <el-upload-->
-        <!--          class="avatar-uploader"-->
-        <!--          action=""-->
-        <!--          :show-file-list="false"-->
-        <!--          :http-request="uploadAvatar"-->
-        <!--          :before-upload="checkAvatar"-->
-        <!--          accept="image/*"-->
-        <!--        >-->
-        <img :src="defaultAvatar" class="avatar" title="更换头像" alt="头像">
-        <!--        </el-upload>-->
+        <el-upload
+          class="avatar-uploader"
+          action=""
+          :show-file-list="false"
+          :http-request="uploadAvatar"
+          :before-upload="checkAvatar"
+          accept="image/*"
+        >
+          <img :src="user.avatar" class="avatar" title="更换头像" alt="头像">
+        </el-upload>
       </el-form-item>
       <!-- todo: 等之后注册加入邮箱或者手机再进行显示 -->
       <!--      <el-form-item label="手机号">-->

@@ -36,8 +36,8 @@
       >
         <div class="cur-left-name-container" style="position: relative;">
           <div class="cur-left-name">
-            <h1 style="font-size: 3rem; left: 3.5rem; position: absolute;">{{ fixed_location }}</h1>
-            <h4 style="font-size: 1rem; left: 4rem; top: 5rem; position: absolute;">{{ '('+full_location +')' }}</h4>
+            <h1 style="font-size: 2rem; left: 1.5rem; position: absolute;">{{ fixed_location }}</h1>
+            <h4 style="font-size: 0.7rem; left: 1.3rem; top: 5rem; position: absolute;">{{ '('+full_location +')' }}</h4>
           </div>
         </div>
 
@@ -759,10 +759,11 @@ h4{
   }
   .current-panel {
     background-size: 100%;
-    height: 44vh; // 使用相对单位
+    height: 40vh; // 使用相对单位
     padding: 5vw; // 使用相对单位
     border-radius: 5px;
     box-shadow: 0 2px 4px rgba(26, 12, 12, 0.1);
+    background-repeat: no-repeat;
   }
   .forecast-container .forecast .forecast-content {
     padding: 2.5rem 10px 10px;
