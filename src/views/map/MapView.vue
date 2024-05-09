@@ -204,14 +204,14 @@ export default {
         this.typeIndex = index
         const that = this
         const formatter = function(params, ticket, callback) {
-          // console.log(params)
+          //console.log(params)
           const app = new Vue({
             el: document.createElement('div'),
-            render: h => h(Tooltip, { props:
-                { name: params.name,
-                  type: that.dataTypes[that.typeIndex].type,
-                  value: params.value }
-            })
+            render: h => h(Tooltip, {props:
+                {name: params.name, 
+                type: that.dataTypes[that.typeIndex].type,
+                value: params.value}
+              })
           })
           return app.$el
         }
@@ -236,18 +236,18 @@ export default {
       var string = ""
       mapData.features.forEach((feature1) => {
         if (feature1.properties.adcode != 100000) {
-          string += "adcode-" + feature1.properties.adcode +
-          "-center-" + feature1.properties.center[0] + "-" +
+          string += "adcode-" + feature1.properties.adcode + 
+          "-center-" + feature1.properties.center[0] + "-" + 
           feature1.properties.center[1] + "\n"
           getCityJson(feature1.properties.adcode).then((res) => {
             res.data.features.forEach((feature2) => {
-              string += "adcode-" + feature2.properties.adcode +
-              "-center-" + feature2.properties.center[0] + "-" +
+              string += "adcode-" + feature2.properties.adcode + 
+              "-center-" + feature2.properties.center[0] + "-" + 
               feature2.properties.center[1] + "\n"
               getCityJson(feature2.properties.adcode).then((res1) => {
                 res1.data.features.forEach((feature3) => {
-                  string += "adcode-" + feature3.properties.adcode +
-                  "-center-" + feature3.properties.center[0] + "-" +
+                  string += "adcode-" + feature3.properties.adcode + 
+                  "-center-" + feature3.properties.center[0] + "-" + 
                   feature3.properties.center[1] + "\n"
                 })
               })
@@ -359,7 +359,7 @@ export default {
       if (city.lentgh < 3) {
         this.showCity(city[0], city[1])
       } else {
-        this.$router.push({ name: 'City', params: { c1: city[2] }})
+        this.$router.push({name: 'City', params: {c1 : city[2]}})
       }
     },
     showCity2(name) {
@@ -368,7 +368,7 @@ export default {
         if (feature.properties.name === name) {
           getCityJson(feature.properties.adcode).then((res) => {
             if (res.data.features.length <= 1) {
-              this.$router.push({ name: 'City', params: { c1: name }})
+              this.$router.push({name: 'City', params: {c1 : name}})
               return
             }
             const newBoundingCoords = this.calBounding(res.data)
@@ -399,7 +399,7 @@ export default {
         if (feature.properties.name === name1) {
           getCityJson(feature.properties.adcode).then((res) => {
             if (res.data.features.length <= 1) {
-              this.$router.push({ name: 'City', params: { c1: name1 }})
+              this.$router.push({name: 'City', params: {c1 : name1}})
               return
             }
             const newBoundingCoords = this.calBounding(res.data)
@@ -434,21 +434,21 @@ export default {
       const tooltip = {
         show: true,
         enterable: true,
-        position: function(pos, params, dom, rect, size) {
-          var obj = { top: pos[1] + 10, left: pos[0] }
-          return obj
+        position: function (pos, params, dom, rect, size) {
+          var obj = {top: pos[1] + 10, left: pos[0]};
+          return obj;
         },
         formatter: function(params, ticket, callback) {
-          // console.log(params)
+          //console.log(params)
           const app = new Vue({
             el: document.createElement('div'),
-            render: h => h(Tooltip, { props:
-                { name: params.name,
-                  type: that.dataTypes[that.typeIndex].type,
-                  value: params.value }
-            })
+            render: h => h(Tooltip, {props:
+                {name: params.name, 
+                type: that.dataTypes[that.typeIndex].type,
+                value: params.value}
+              })
           })
-          return app.$el
+          return app.$el;
         }
       }
       this.option.tooltip = tooltip
