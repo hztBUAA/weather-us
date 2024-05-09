@@ -304,7 +304,7 @@ export default {
     async search() {
       // 在这里使用 AJAX 获取后台数据，并将获取的数据赋值给 this.options
       const res = await Axios.get(
-        `https://geoapi.qweather.com/v2/city/lookup?location=${this.location}&number=5&range=cn&key=3ca6d5e357a5470abf168dbcd8fe0fd7`
+        `https://geoapi.qweather.com/v2/city/lookup?location=${this.location}&number=5&range=cn&key=c61a9a73e7b44964887830a15e0bbbdd`
       )
       // console.log('res', res)
       if (res.data.location) {
@@ -322,7 +322,7 @@ export default {
       const headers = Object.assign({}, Axios.defaults.headers.common)
       delete headers['Apifoxtoken']
       const res = await Axios.get(
-        `https://geoapi.qweather.com/v2/city/lookup?location=${this.location}&number=5&range=cn&key=3ca6d5e357a5470abf168dbcd8fe0fd7`
+        `https://geoapi.qweather.com/v2/city/lookup?location=${this.location}&number=5&range=cn&key=c61a9a73e7b44964887830a15e0bbbdd`
         ,
         headers)
       this.wt_data = res.data
@@ -352,7 +352,7 @@ export default {
 
       // 当前实时天气
       const res = await Axios.get(
-        `https://devapi.qweather.com/v7/weather/now?location=${locationId}&key=3ca6d5e357a5470abf168dbcd8fe0fd7`
+        `https://api.qweather.com/v7/weather/now?location=${locationId}&key=c61a9a73e7b44964887830a15e0bbbdd`
         , {
           headers: {
             // 这里不设置任何请求头，即空对象
@@ -369,7 +369,7 @@ export default {
       // console.log(locationId, 'locationID')
       // console.log(params)
       const res_location = await Axios.get(
-        `https://devapi.qweather.com/v7/weather/7d?location=${locationId}&key=3ca6d5e357a5470abf168dbcd8fe0fd7`
+        `https://api.qweather.com/v7/weather/7d?location=${locationId}&key=c61a9a73e7b44964887830a15e0bbbdd`
       )
       // this.days_7 = res_location.data.daily
       this.days_7 = res_location.data.daily
@@ -381,11 +381,11 @@ export default {
       // this.$forceUpdate()
       // 小时天气
       const res_hourly = await Axios.get(
-        `https://devapi.qweather.com/v7/weather/24h?location=${locationId}&key=3ca6d5e357a5470abf168dbcd8fe0fd7`)
+        `https://api.qweather.com/v7/weather/24h?location=${locationId}&key=c61a9a73e7b44964887830a15e0bbbdd`)
       this.hourly = res_hourly.data.hourly
       // 灾害预警
       const res_event = await Axios.get(
-        `https://devapi.qweather.com/v7/warning/now?location=${locationId}&key=3ca6d5e357a5470abf168dbcd8fe0fd7`
+        `https://api.qweather.com/v7/warning/now?location=${locationId}&key=c61a9a73e7b44964887830a15e0bbbdd`
       )
       this.events = res_event.data.warning
       // console.log('events', this.events)
