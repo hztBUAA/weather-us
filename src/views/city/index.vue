@@ -1,5 +1,5 @@
 <template>
-
+  <!-- todo: 加上天气指数 -->
   <div class="forecast-table">
     <div style="display: flex; width: 100%;">
       <input v-model="location" type="text" class="search-input" style="flex: 1;" @input="search">
