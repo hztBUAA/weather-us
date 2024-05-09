@@ -107,7 +107,7 @@ export default {
             this.dialogVisible = false;
         },
         submitReply() {
-            reply_feedback(this.currentFeedback.username,
+            reply_feedback(this.currentFeedback.id,
                 this.currentFeedback.reply).then(() => {
                     this.$message.success('回复成功')
                     setTimeout(() => {
