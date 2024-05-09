@@ -1,17 +1,27 @@
 <template>
   <div>
     <div ref="charts" style="width: 100%; height: 100vh" />
-    <el-menu default-active="0" style="top: 50%; right: 0%; width: 60px; background-color: rgba(0, 0, 0, 0)" class="float" :collapse="true" @select="selectMode">
-      <div v-for="(item, i) in dataTypes.slice(0, 4)" :key="i">
-        <el-menu-item :index="String(i)">
-          <i class="el-icon-sunny" />
-          <span slot="title">{{ item.type }}</span>
+    <el-menu default-active="0" style="top: 40%; right: 0%; width: 60px; background-color: rgba(0, 0, 0, 0); text-align: center;" class="float" @select="selectMode" :collapse="true">
+      <div v-for="item in dataTypes.slice(0, 5)" :key="item.index">
+        <el-menu-item :index="String(item.index)">
+          <i class="el-icon-sunny"></i>
+          <span slot="title">{{ item.name }}</span>
         </el-menu-item>
       </div>
-      <el-menu-item index="4">
-        <i class="el-icon-menu" />
-        <span slot="title">更多选项</span>
-      </el-menu-item>
+      <el-submenu index="-1">
+        <template slot="title">
+          <i class="el-icon-menu"></i>
+        </template>
+        <el-menu-item-group>
+          <span slot="title">更多选项</span>
+          <div v-for="item in dataTypes.slice(5)" :key="item.index">
+            <el-menu-item :index="String(item.index)">
+              <i class="el-icon-sunny"></i>
+              <span slot="title">{{ item.name }}</span>
+            </el-menu-item>
+          </div>
+        </el-menu-item-group>
+      </el-submenu>
     </el-menu>
     <div class="float" style="top: 3%; left: 3%; display: flex; align-items: center; justify-content: center; height: 42px">
       <el-button
@@ -31,6 +41,14 @@
         :props="{ expandTrigger: 'hover', checkStrictly: true }"
         @change="chooseCity"
       />
+      <el-date-picker
+        style="margin-right: 25px"
+        v-model="date"
+        type="datetime"
+        @change="chooseDate"
+        placeholder="选择日期"
+        value-format="yyyy-MM-dd-HH">
+      </el-date-picker>
       <el-color-picker
         v-model="backgroundColor"
         show-alpha
@@ -48,6 +66,8 @@ import mapData from '../../assets/jsonData/china.json'
 import citiesData from '../../assets/jsonData/cities.json'
 import { getCityJson } from '../../api/staticApi'
 import { getCityData, getDataTypes } from '../../api/dataApi'
+import Tooltip from '../../views/map/tooltip.vue'
+import Vue from 'vue'
 const predefineColors = ['#ff4500',
   '#ff8c00',
   '#ffd700',
@@ -114,9 +134,12 @@ const option = {
   animation: false,
   animationDuration: 0,
   animationDurationUpdate: 0,
-  backgroundColor: '#cccccc'
+  backgroundColor: '#cccccc',
 }
 export default {
+  components: {
+    Tooltip
+  },
   data() {
     return {
       backgroundColor: '#cccccc',
@@ -132,7 +155,9 @@ export default {
       cities: [],
       chosenCity: [],
       dataTypes: [],
-      typeIndex: 0
+      typeIndex: 0,
+      date: null,
+      lastDate: null
     }
   },
   created() {
@@ -145,26 +170,54 @@ export default {
     })
   },
   methods: {
+    goCity() {
+      console.log(1)
+    },
+    chooseDate() {
+      if (this.date != this.lastDate) {
+        this.showData(0);
+        if (this.maps[1] != null && this.maps[1] != undefined) {
+          this.showData(1);
+        }
+        if (this.maps[2] != null && this.maps[2] != undefined) {
+          this.showData(2);
+        }
+      } 
+    },
     getJson(json) {
-      const stringData = JSON.stringify(json, null, 2)
-      const blob = new Blob([stringData], {
-        type: 'application/json'
+    //  const stringData = JSON.stringify(json, null, 2)
+      const blob = new Blob([json], {
+       type: 'text/plain;charset=utf-8'
       })
       const objectURL = URL.createObjectURL(blob)
       const aTag = document.createElement('a')
       aTag.href = objectURL
-      aTag.download = 'centers.json'
+      aTag.download = 'centers.txt'
       aTag.click()
       URL.revokeObjectURL(objectURL)
     },
     selectMode(index) {
-      if (index == this.typeIndex) {
+      console.log(index)
+      if (index == this.typeIndex || index == -1) {
         return
-      }
-      if (index == 4) {
-
       } else {
         this.typeIndex = index
+        const that = this
+        const formatter = function(params, ticket, callback) {
+          //console.log(params)
+          const app = new Vue({
+            el: document.createElement('div'),
+            render: h => h(Tooltip, {props:
+                {name: params.name, 
+                type: that.dataTypes[that.typeIndex].type,
+                value: params.value}
+              })
+          })
+          return app.$el
+        }
+        var option = this.charts.getOption()
+        option.tooltip.formatter = formatter
+        this.charts.setOption(option, true)
         this.changeMode()
       }
     },
@@ -179,6 +232,35 @@ export default {
     },
     initCities() {
       this.cities = citiesData
+      /*
+      var string = ""
+      mapData.features.forEach((feature1) => {
+        if (feature1.properties.adcode != 100000) {
+          string += "adcode-" + feature1.properties.adcode + 
+          "-center-" + feature1.properties.center[0] + "-" + 
+          feature1.properties.center[1] + "\n"
+          getCityJson(feature1.properties.adcode).then((res) => {
+            res.data.features.forEach((feature2) => {
+              string += "adcode-" + feature2.properties.adcode + 
+              "-center-" + feature2.properties.center[0] + "-" + 
+              feature2.properties.center[1] + "\n"
+              getCityJson(feature2.properties.adcode).then((res1) => {
+                res1.data.features.forEach((feature3) => {
+                  string += "adcode-" + feature3.properties.adcode + 
+                  "-center-" + feature3.properties.center[0] + "-" + 
+                  feature3.properties.center[1] + "\n"
+                })
+              })
+            })
+          })
+        }
+      })
+      const that = this
+      setTimeout(() => {
+        that.getJson(string)
+        console.log('start')
+      }, 120000)
+      */
     },
     colorChange(color) {
       const option = this.charts.getOption()
@@ -234,7 +316,7 @@ export default {
       this.maps[geoIndex].features.forEach(function(feature) {
         adcodes.push(feature.properties.adcode)
       })
-      getCityData(adcodes, type).then((res) => {
+      getCityData(adcodes, type, this.date).then((res) => {
         this.maps[geoIndex].features.forEach(function(feature) {
           data.push({ name: feature.properties.name, value: res.get(feature.properties.adcode) })
         })
@@ -274,7 +356,11 @@ export default {
       })
     },
     chooseCity(city) {
-      this.showCity(city[0], city[1])
+      if (city.lentgh < 3) {
+        this.showCity(city[0], city[1])
+      } else {
+        this.$router.push({name: 'City', params: {c1 : city[2]}})
+      }
     },
     showCity2(name) {
       const option = this.charts.getOption()
@@ -282,7 +368,7 @@ export default {
         if (feature.properties.name === name) {
           getCityJson(feature.properties.adcode).then((res) => {
             if (res.data.features.length <= 1) {
-              // route
+              this.$router.push({name: 'City', params: {c1 : name}})
               return
             }
             const newBoundingCoords = this.calBounding(res.data)
@@ -313,7 +399,7 @@ export default {
         if (feature.properties.name === name1) {
           getCityJson(feature.properties.adcode).then((res) => {
             if (res.data.features.length <= 1) {
-              // route
+              this.$router.push({name: 'City', params: {c1 : name1}})
               return
             }
             const newBoundingCoords = this.calBounding(res.data)
@@ -344,6 +430,28 @@ export default {
       })
     },
     initMap() {
+      const that = this
+      const tooltip = {
+        show: true,
+        enterable: true,
+        position: function (pos, params, dom, rect, size) {
+          var obj = {top: pos[1] + 10, left: pos[0]};
+          return obj;
+        },
+        formatter: function(params, ticket, callback) {
+          //console.log(params)
+          const app = new Vue({
+            el: document.createElement('div'),
+            render: h => h(Tooltip, {props:
+                {name: params.name, 
+                type: that.dataTypes[that.typeIndex].type,
+                value: params.value}
+              })
+          })
+          return app.$el;
+        }
+      }
+      this.option.tooltip = tooltip
       this.charts = echarts.init(this.$refs['charts'])
       const boundingCoords = this.calBounding(mapData)
       this.glabalBounding = [[boundingCoords[0][0] + 20, boundingCoords[0][1] - 2], [boundingCoords[1][0] - 20, boundingCoords[1][1] + 17]]
@@ -360,7 +468,6 @@ export default {
       echarts.registerMap('china', mapData)
       this.charts.setOption(this.option)
       this.showData(0)
-      const that = this
       this.charts.on('click', function(param) {
         if (that.layer == 0) {
           that.chosenCity = [param.name]
