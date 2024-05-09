@@ -1,89 +1,92 @@
 <template>
-  <div>
+  <div class="login-container">
+    <div class="login-card">
+      <template v-if="isRegister">
+        <div class="title">
+          注册
+        </div>
+        <div class="content">
+          <el-form ref="registerForm" status-icon :model="userData" :rules="rules">
+            <el-form-item prop="username">
+              <el-input
+                v-model="userData.username"
+                placeholder="请输入用户名"
+                name="username"
+                prefix-icon="el-icon-user"
+              />
+            </el-form-item>
+            <el-form-item prop="password">
+              <el-input
+                v-model="userData.password"
+                placeholder="请输入密码"
+                prefix-icon="el-icon-lock"
+                show-password
+              />
+            </el-form-item>
+            <el-form-item prop="rePassword">
+              <el-input
+                v-model="userData.rePassword"
+                placeholder="请重复密码"
+                prefix-icon="el-icon-lock"
+                show-password
+                @keyup.enter.native="handleRegister"
+              />
+            </el-form-item>
+            <el-form-item>
+              <el-button :loading="loading" class="button" type="primary" @click="handleRegister">
+                注册
+              </el-button>
+            </el-form-item>
+            <el-form-item class="flex">
+              <el-link type="info" :underline="false" @click="isRegister = false">
+                ← 返回
+              </el-link>
+            </el-form-item>
+          </el-form>
+        </div>
+      </template>
+      <template v-else>
+        <div class="title">
+          登录
+        </div>
+        <div class="content">
+          <el-form ref="loginForm" status-icon :model="userData" :rules="rules">
+            <el-form-item prop="username">
+              <el-input
+                v-model="userData.username"
+                placeholder="请输入用户名"
+                name="username"
+                prefix-icon="el-icon-user"
+              />
+            </el-form-item>
 
-    <el-row class="login-page">
-      <el-col :span="12" :offset="9" class="form" style="height: 100%">
-        <el-form v-show="isRegister" ref="registerForm" status-icon :model="userData" :rules="rules" style="width: 50%">
-          <el-form-item>
-            <h1>注册</h1>
-          </el-form-item>
-          <el-form-item prop="username">
-            <el-input
-              v-model="userData.username"
-              placeholder="请输入用户名"
-              name="username"
-              prefix-icon="el-icon-user"
-            />
-          </el-form-item>
-          <el-form-item prop="password">
-            <el-input
-              v-model="userData.password"
-              placeholder="请输入密码"
-              prefix-icon="el-icon-lock"
-              show-password
-            />
-          </el-form-item>
-          <el-form-item prop="rePassword">
-            <el-input
-              v-model="userData.rePassword"
-              placeholder="请重复密码"
-              prefix-icon="el-icon-lock"
-              show-password
-              @keyup.enter.native="handleRegister"
-            />
-          </el-form-item>
-          <el-form-item>
-            <el-button :loading="loading" class="button" type="primary" @click="handleRegister">
-              注册
-            </el-button>
-          </el-form-item>
-          <el-form-item class="flex">
-            <el-link type="info" :underline="false" @click="isRegister = false">
-              ← 返回
-            </el-link>
-          </el-form-item>
-        </el-form>
-        <el-form v-show="!isRegister" ref="loginForm" status-icon :model="userData" :rules="rules" style="width: 50%">
-          <el-form-item>
-            <h1>登录</h1>
-          </el-form-item>
-          <el-form-item prop="username">
-            <el-input
-              v-model="userData.username"
-              placeholder="请输入用户名"
-              name="username"
-              prefix-icon="el-icon-user"
-            />
-          </el-form-item>
+            <el-form-item prop="password">
+              <el-input
+                v-model="userData.password"
+                placeholder="请输入密码"
+                prefix-icon="el-icon-lock"
+                show-password
+                @keyup.enter.native="handleLogin"
+              />
+            </el-form-item>
 
-          <el-form-item prop="password">
-            <el-input
-              v-model="userData.password"
-              placeholder="请输入密码"
-              prefix-icon="el-icon-lock"
-              show-password
-              @keyup.enter.native="handleLogin"
-            />
-          </el-form-item>
+            <el-form-item>
+              <el-button :loading="loading" class="button" type="primary" @click="handleLogin">
+                登录
+              </el-button>
+            </el-form-item>
 
-          <el-form-item>
-            <el-button :loading="loading" class="button" type="primary" @click="handleLogin">
-              登录
-            </el-button>
-          </el-form-item>
+            <el-form-item class="flex">
+              <el-link type="info" :underline="false" @click="isRegister = true">
+                注册 →
+              </el-link>
+            </el-form-item>
 
-          <el-form-item class="flex">
-            <el-link type="info" :underline="false" @click="isRegister = true">
-              注册 →
-            </el-link>
-          </el-form-item>
+          </el-form>
+        </div>
+      </template>
+    </div>
 
-        </el-form>
-
-      </el-col>
-
-    </el-row>
-    <el-row />
   </div>
 </template>
 
@@ -152,9 +155,13 @@ export default {
     isRegister(newValue) {
       this.userData = {}
       if (newValue) {
-        this.$refs.registerForm.clearValidate()
+        this.$nextTick(() => {
+          this.$refs.registerForm.clearValidate()
+        })
       } else {
-        this.$refs.loginForm.clearValidate()
+        this.$nextTick(() => {
+          this.$refs.loginForm.clearValidate()
+        })
       }
     }
   },
@@ -207,6 +214,48 @@ export default {
 /* Detail see https://github.com/PanJiaChen/vue-element-admin/pull/927 */
 /* reset element-ui css */
 <style lang="scss" scoped>
+.login-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  min-height: 100%;
+  .login-card {
+    width: 480px;
+    max-width: 90%;
+    border-radius: 20px;
+    box-shadow: 0 0 10px #dcdfe6;
+    background-color: var(--el-bg-color);
+    overflow: hidden;
+    .title {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 150px;
+      font-size: 30px;
+    }
+    .content {
+      padding: 20px 50px 50px 50px;
+      ::v-deep .el-input-group__append {
+        padding: 0;
+        overflow: hidden;
+        .el-image {
+          width: 100px;
+          height: 40px;
+          border-left: 0px;
+          user-select: none;
+          cursor: pointer;
+          text-align: center;
+        }
+      }
+      .el-button {
+        width: 100%;
+        margin-top: 10px;
+      }
+    }
+  }
+}
 .login-page {
   height: 100vh;
   background-color: #2d3a4b;
