@@ -68,6 +68,7 @@ import { getCityJson } from '../../api/staticApi'
 import { getCityData, getDataTypes } from '../../api/dataApi'
 import Tooltip from '../../views/map/tooltip.vue'
 import Vue from 'vue'
+import resize from './mixins/resize'
 const predefineColors = ['#ff4500',
   '#ff8c00',
   '#ffd700',
@@ -137,6 +138,7 @@ const option = {
   backgroundColor: '#cccccc'
 }
 export default {
+  mixins: [resize],
   components: {
     Tooltip
   },
