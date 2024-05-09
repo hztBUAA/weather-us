@@ -69,6 +69,7 @@ export const constantRoutes = [
     children: [
       {
         path: 'user-con',
+        alias: '',
         component: () => import('@/views/admin/user-con'),
         name: '用户管理',
         meta: { title: '用户管理', icon: 'el-icon-user', roles: ['admin'] }
@@ -99,6 +100,7 @@ export const constantRoutes = [
     children: [
       {
         path: 'digests',
+        alias: '',
         component: () => import('@/views/notice/notice'),
         name: '公告',
         meta: { title: '公告', icon: 'el-icon-chat-dot-square' }
@@ -140,6 +142,7 @@ export const constantRoutes = [
     children: [
       {
         path: 'index',
+        alias: '',
         component: () => import('@/views/city/index'),
         name: 'City',
         meta: { title: '城市', icon: 'el-icon-location' }
@@ -173,6 +176,7 @@ export const constantRoutes = [
     children: [
       {
         path: 'index',
+        alias: '',
         component: () => import('@/views/map/MapView'),
         name: 'Map',
         meta: { title: '地图', icon: 'el-icon-map-location' }
