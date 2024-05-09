@@ -71,7 +71,7 @@
             <div class="location center mb-4">{{ fixed_location }}</div>
             <div class="center mb-4">{{ days_7[0].textDay }}</div>
             <div class="degree center">
-              <div class="degree mb-4"> {{ days_7[0].tempMin }} ~{{ days_7[0].tempMax }}<sup>o</sup>C</div>
+              <div class="degree mb-4" style="font-size:1rem"> {{ days_7[0].tempMin }} ~{{ days_7[0].tempMax }}<sup>o</sup>C</div>
               <div class="forecast-icon">
                 <i :class="'qi-' + days_7[0].iconDay" />
               <!-- <img src="./images/icons/icon-1.svg" alt="" width="90"> -->
