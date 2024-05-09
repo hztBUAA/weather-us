@@ -763,6 +763,7 @@ h4{
     padding: 5vw; // 使用相对单位
     border-radius: 5px;
     box-shadow: 0 2px 4px rgba(26, 12, 12, 0.1);
+    background-repeat: no-repeat;
   }
   .forecast-container .forecast .forecast-content {
     padding: 2.5rem 10px 10px;
