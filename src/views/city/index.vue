@@ -1,16 +1,80 @@
 <template>
-  <div class="page2">
-    hello
 
-    <el-container>
-      <el-aside width="200px">
-        Aside
-      </el-aside>
-      <el-main>Main
-        <div class="content">
-          <div id="circlePie" class="circlePie">
-            <canvas id="main" width="500" height="500" />
-            <canvas id="dot" />
+  <div class="forecast-table">
+    <div style="display: flex; width: 100%;">
+      <input v-model="location" type="text" class="search-input" style="flex: 1;" @input="search">
+      <button class="search-button" style="flex: 0 0 auto;" @click="submitLocation">搜索</button>
+      <!-- {{ showOptions }}
+      {{ options }} -->
+    </div>
+    <ul v-if="showOptions" class="options-list">
+      <template v-if="options.length && options.length > 0">
+        <li v-for="(option, index) in options" :key="index" @click="select(option)">
+          {{ option }}
+        </li>
+      </template>
+      <template v-else-if="options.length && options.length === 0">
+        <li>
+          暂时找不到哦
+        </li>
+      </template>
+    </ul>
+
+    <!-- <div class="current-weather">
+      <current-info />
+    </div> -->
+    <div class=" center" style="">
+      <h1>当前天气</h1>
+      <hr>
+      <!-- <img src="./images/sunny.png" alt=""> -->
+      <div
+        class="current-panel mb-4"
+        :style="{
+          backgroundImage: 'url(' + getWeatherImage(cur.icon) + ')',
+          color: isNight() ? 'white' : 'black',
+        }"
+      >
+        <h1 style="font-size:4rem;left:5rem;position:absolute">{{ fixed_location }}</h1>
+        <h4 style="font-size:1rem;left:6rem;position:absolute">{{ '('+full_location +')' }}</h4>
+        <div class="mb-4 current-time">
+          当前时间: {{ currentTime }}
+        </div>
+        <div class="mb-4">{{ cur.temp }}<sup>o</sup>C</div>
+        <div class="mb-4">{{ cur.text }}</div>
+        <div class="mb-4"><i class="qi-2208" style="font-size:16px;margin-right:4px" />{{ cur.windDir }}</div>
+        <div class="mb-4"><i class="qi-2120" style="font-size:16px;margin-right:4px" />{{ cur.humidity }}%</div>
+      </div>
+
+    </div>
+
+    <div class="container">
+      <h1>
+        七日预报信息
+      </h1>
+      <hr>
+      <div class="forecast-container">
+        <div class="today forecast">
+          <div class="forecast-header">
+            <!-- 应该是模版渲染时 没有weekday！ -->
+            <!-- 应该是模版渲染时 没有大小   现在还有有点疑惑关于  then  awit async的使用方法！ -->
+            <div v-if="days_7.length>0" class="day"> {{ days_7[0].weekday }}</div>
+            <div v-if="days_7.length>0" class="date">{{ days_7[0].fxDate }}</div>
+          </div> <!-- .forecast-header -->
+          <div class="forecast-content">
+            <div class="location center mb-4">{{ fixed_location }}</div>
+            <div class="center mb-4">{{ days_7[0].textDay }}</div>
+            <div class="degree center">
+              <div class="degree mb-4"> {{ days_7[0].tempMin }} ~{{ days_7[0].tempMax }}<sup>o</sup>C</div>
+              <div class="forecast-icon">
+                <i :class="'qi-' + days_7[0].iconDay" />
+              <!-- <img src="./images/icons/icon-1.svg" alt="" width="90"> -->
+              </div>
+            </div>
+            <dir class="center">
+              <span v-if="days_7.length>0"><img src="./images/icon-umberella.png" alt="">{{ days_7[0].humidity }}%</span>
+              <span v-if="days_7.length>0"><img src="./images/icon-wind.png" alt="">{{ days_7[0].windSpeedDay }}km/h</span>
+              <span v-if="days_7.length>0"><img src="./images/icon-compass.png" alt="">{{ days_7[0].windDirDay }}</span>
+            </dir>
           </div>
           <!-- <div class="chart-32">
         <radar-chart id="right_3" ref="chart7" :data="momentsRadarData" />
@@ -53,436 +117,203 @@ export default {
 
   data() {
     return {
-      everyPer: 0,
-      xOffset: 0,
-      circle: {
-        x: 250,
-        y: 250,
-        radius: 218
-      },
-      title: ['关于时间日期的数据可以切换'],
-      // 模块一面积图数据
-      cnfigData1: {
-        color: '#5CB1C1',
-        name: ['（次）', '（人）'],
-        data: [
-          {
-            name: '次数',
-            color: ['#9e70ff', '#6e5eff'],
-            data: [200, 12, 21, 54, 260, 130, 210]
-          },
-          {
-            name: '人数',
-            color: ['#48cefd', '#5356f1'],
-            data: [50, 182, 234, 191, 190, 30, 10]
-          }
-        ]
-      },
-      configData2: {
-        data: [213, 190, 137, 99, 63, 196, 248, 212, 248, 112]
-      },
-      // 模块一雷达图数据
-      chatRadarData: {
-        title: '标题',
-        position: ['center', '85%'],
-        center: ['50%', '50%'],
-        indicator: [
-          { text: '分类1' },
-          { text: '分类2' },
-          { text: '分类3' },
-          { text: '分类4' },
-          { text: '分类5' },
-          { text: '分类6' }
-        ],
-        data: [
-          {
-            name: '次数',
-            color: '#0DF5F8',
-            value: [100, 8, 0.40, -80, 2000, 332]
-          },
-          {
-            name: '人数',
-            color: '#ffffff',
-            value: [60, 5, 0.30, -100, 1500, 221]
-          }
-        ]
-      },
-      // 模块二雷达图数据
-      officeRadarData: {
-        title: '标题',
-        position: ['center', '85%'],
-        center: ['50%', '50%'],
-        indicator: [
-          { text: '分类1' },
-          { text: '分类2' },
-          { text: '分类3' },
-          { text: '分类4' },
-          { text: '分类5' },
-          { text: '分类6' },
-          { text: '分类7' },
-          { text: '分类8' },
-          { text: '分类9' },
-          { text: '分类10' }
-        ],
-        data: [
-          {
-            name: '数据',
-            color: '#55D35B',
-            value: [213, 190, 137, 99, 63, 196, 248, 212, 248, 112]
-          }
-        ]
-      },
-      // 模块三雷达图数据
-      friendRadarData: {
-        title: '分类标题',
-        position: ['center', '85%'],
-        center: ['50%', '50%'],
-        indicator: [
-          { text: '分类1' },
-          { text: '分类2' },
-          { text: '分类3' },
-          { text: '分类4' },
-          { text: '分类5' },
-          { text: '分类6' }
-        ],
-        data: [
-          {
-            name: '数据',
-            color: '#FA8486',
-            value: [100, 8, 0.40, -80, 2000, 332]
-          }
-        ]
-      },
-      // 模块四雷达图数据
-      momentsRadarData: {
-        title: '标题',
-        position: ['center', '85%'],
-        center: ['50%', '50%'],
-        indicator: [
-          { text: '分类1' },
-          { text: '分类2' },
-          { text: '分类3' },
-          { text: '分类4' },
-          { text: '分类5' },
-          { text: '分类6' }
-        ],
-        data: [
-          {
-            name: '个数',
-            color: '#D91748',
-            value: [100, 8, 0.40, -80, 2000, 332]
-          }
-        ]
-      },
-      warea: { x: 250, y: 250, max: 700 },
-      dots: [],
-      resizeFn: null,
-      animationFrame1: null,
-      animationFrame2: null,
-      centerBox: {
-        width: 0,
-        height: 0
-      }
+      location: '北京',
+      fixed_location: '北京',
+      full_location: '北京,中国',
+      days_7: [1, 2, 3],
+      hourly: [],
+      cur: {},
+      wt_data: [],
+      events: {},
+      warning_title: '',
+      warning_type: '',
+      show_days_7: false,
+      currentTime: '',
+      // 灾害分析部分
+      // like: true,
+      // value1: 4154.564,
+      // value2: 1314,
+      // title: '增长人数',
+      options: [],
+      showOptions: false
     }
   },
+  watch: {
+    hourly: {
+      handler(newVal) {
+        this.$forceUpdate()
+      },
+      deep: true // 深度监听hourly对象内部属性的变化
+    },
+    days_7: {
+      handler(oldVal, newVal) {
+        if (newVal !== oldVal) {
+          this.show_days_7 = false
+          // this.showdom = true
+        } else {
+          this.show_days_7 = true
+        }
+      },
+      deep: true
+    }
+
+  },
+
   mounted() {
-    this.centerBox = {
-      width: document.querySelector('#circlePie').offsetWidth,
-      height: document.querySelector('#circlePie').offsetHeight
+    if (this.$route.params) {
+      // this.location = this.$route.params.c3 + '  ' + this.$route.params.c2 + '  ' + this.$route.params.c1
+      // this.fixed_location = this.$route.params.c3 + '  ' + this.$route.params.c2 + '  ' + this.$route.params.c1
+      this.location = (this.$route.params.c3 ? this.$route.params.c3 : '北京')
+      this.fixed_location = (this.$route.params.c3 ? this.$route.params.c3 : '北京')
+      this.full_location = (this.$route.params.c3 ? (this.$route.params.c3 + ',') : '北京') + (this.$route.params.c2 ? (this.$route.params.c2 + ',') : '') + (this.$route.params.c1 ? (this.$route.params.c1) : ',中国')
+      console.log('params', this.$route.params, this.$route.params.c3, this.$route.params.c2, this.$route.params.c1)
     }
-    for (let i = 0; i < 200; i++) {
-      // 随机200个运动的圆点
-      const x = Math.random() * this.centerBox.width // 随机的x偏移量
-      const y = Math.random() * this.centerBox.height // 随机y轴偏移量
-      const xa = Math.random() * 2 - 1 // x轴运动速度
-      const ya = Math.random() * 2 - 1 // y轴运动速度
-      this.dots.push({
-        x: x,
-        y: y,
-        xa: xa,
-        ya: ya,
-        // 两个圆点之间需要连线的距离
-        max: 40
-      })
-    }
-    this.act()
-    this.drawDot()
-    this.resizeFn = this.$debounce(() => {
-      // 通过捕获系统的onresize事件触发我们需要执行的事件
-      this.centerBox = {
-        width: document.querySelector('#circlePie').offsetWidth,
-        height: document.querySelector('#circlePie').offsetHeight
-      }
-      for (let i = 1; i < 13; i++) {
-        this.$refs['chart' + i].setChart()
-      }
-    }, 500)
-    window.addEventListener('resize', this.resizeFn)
-  },
-  beforeDestroy() {
-    window.removeEventListener('resize', this.resizeFn)
-    window.cancelAnimationFrame(this.animationFrame1)
-    window.cancelAnimationFrame(this.animationFrame2)
+
+    this.requestForData()
+    this.updateTime()
+    setInterval(this.updateTime, 1000) // 每秒更新一次时间
+    // const c1 = this.$route.params.c1 ? this.$route.params.c1 : ''
+    // const c2 = this.$route.params.c2 ? this.$route.params.c2 : ''
+    // const c3 = this.$route.params.c3 ? this.$route.params.c3 : ''
+
+    // // const str = c3 + ' ' + c2 + ' ' + c1
+    // this.location = c3 + ' ' + c2 + ' ' + c1
+    // this.fixed_location = c3 + ' ' + c2 + ' ' + c1
   },
   methods: {
-    drawDot() {
-      const canvas = document.getElementById('dot')
-      canvas.width = document.querySelector('#circlePie').offsetWidth
-      canvas.height = document.querySelector('#circlePie').offsetHeight
-      const ctx = canvas.getContext('2d')
-      ctx.clearRect(0, 0, canvas.width, canvas.height)
-      // 将鼠标坐标添加进去，产生一个用于比对距离的点数组
-      const ndots = [this.warea].concat(this.dots)
-      this.dots.forEach((dot) => {
-        // 粒子位移
-        dot.x += dot.xa
-        dot.y += dot.ya
-        // 遇到边界将加速度反向
-        dot.xa *= (dot.x > canvas.width || dot.x < 0) ? -1 : 1
-        dot.ya *= (dot.y > canvas.height || dot.y < 0) ? -1 : 1
-        // 绘制点
-        ctx.fillStyle = '#ffffff'
-        ctx.beginPath()
-        ctx.arc(dot.x - 0.5, dot.y - 0.5, 2, 0, 2 * Math.PI, true)
-        ctx.closePath()
-        ctx.fill()
-        // 循环比对粒子间的距离
-        for (let i = 0; i < ndots.length; i++) {
-          const d2 = ndots[i]
-          if (dot === d2 || d2.x === null || d2.y === null) continue
-          const xc = dot.x - d2.x
-          const yc = dot.y - d2.y
-          // 两个粒子之间的距离
-          const dis = Math.sqrt(xc * xc + yc * yc)
-          // 距离比
-          let ratio
-          // 如果两个粒子之间的距离小于粒子对象的max值，则在两个粒子间画线
-          if (dis < d2.max) {
-            // 计算距离比
-            ratio = (d2.max - dis) / d2.max
-            // 画线
-            ctx.beginPath()
-            ctx.lineWidth = ratio / 2
-            if (d2 === this.warea) {
-              ctx.strokeStyle = 'rgba(255,255,255,0)'
-            } else {
-              // 距离变大 连线颜色变浅
-              ctx.strokeStyle = 'rgba(255,255,255,' + (ratio + 0.2) + ')'
-            }
-            ctx.moveTo(dot.x, dot.y)
-            ctx.lineTo(d2.x, d2.y)
-            ctx.stroke()
+    select(option) {
+      this.full_location = option
+      this.location = option.split(',')[0]
+      this.fixed_location = option.split(',')[0]
+      this.showOptions = false
+      this.options = []
+    },
+    async search() {
+      // 在这里使用 AJAX 获取后台数据，并将获取的数据赋值给 this.options
+      const res = await Axios.get(
+        `https://geoapi.qweather.com/v2/city/lookup?location=${this.location}&number=5&range=cn&key=3ca6d5e357a5470abf168dbcd8fe0fd7`
+      )
+      // console.log('res', res)
+      if (res.data.location) {
+        this.options = res.data.location.map(city => `${city.name},${city.adm2},${city.adm1},${city.country}`)
+      } else {
+        this.options = []
+      }
+
+      // 可以使用 debounce 或 throttle 控制 AJAX 请求的频率
+      this.showOptions = this.options.length > 0
+      // console.log('search\n', this.showOptions, '\n', 'options\n', this.options, '\n', 'location\n', this.location)
+    },
+    async getApi1() {
+      // 创建一个新的请求头对象，不包含 Apifoxtoken 请求头
+      const headers = Object.assign({}, Axios.defaults.headers.common)
+      delete headers['Apifoxtoken']
+      const res = await Axios.get(
+        `https://geoapi.qweather.com/v2/city/lookup?location=${this.location}&number=5&range=cn&key=3ca6d5e357a5470abf168dbcd8fe0fd7`
+        ,
+        headers)
+      this.wt_data = res.data
+      this.fixed_location = this.wt_data.location[0].name
+    },
+    isNight() {
+      const hour = new Date().getHours()
+      return hour >= 18 || hour < 6 // 晚上定义为18:00到次日06:00
+    },
+    updateTime() {
+      const now = new Date()
+      const hours = now.getHours().toString().padStart(2, '0')
+      const minutes = now.getMinutes().toString().padStart(2, '0')
+      const seconds = now.getSeconds().toString().padStart(2, '0')
+      this.currentTime = `${hours}:${minutes}:${seconds}`
+    },
+    async requestForData() {
+      // 问题解决  需要把getApi的异步进行阻塞  否则 js会先执行后面的  导致location没有数组索引！！
+      // 关于异步  js运行的单线程  需要进一步有时间了解一下！
+      let locationId
+      // !箭头函数的问题
+      await this.getApi1().then(() => {
+        locationId = this.wt_data.location[0].id
+      }
+      )
+      console.log(locationId, 'locationId')
+
+      // 当前实时天气
+      const res = await Axios.get(
+        `https://devapi.qweather.com/v7/weather/now?location=${locationId}&key=3ca6d5e357a5470abf168dbcd8fe0fd7`
+        , {
+          headers: {
+            // 这里不设置任何请求头，即空对象
           }
         }
-        // 将已经计算过的粒子从数组中删除
-        ndots.splice(ndots.indexOf(dot), 1)
+      )
+      this.cur = res.data.now
+      // res => {
+      //   this.cur = res.data.now
+      // },
+      this.$forceUpdate() // 强制更新组件
+
+      // 七日天气
+      // console.log(locationId, 'locationID')
+      // console.log(params)
+      const res_location = await Axios.get(
+        `https://devapi.qweather.com/v7/weather/7d?location=${locationId}&key=3ca6d5e357a5470abf168dbcd8fe0fd7`
+      )
+      // this.days_7 = res_location.data.daily
+      this.days_7 = res_location.data.daily
+      this.days_7.forEach(item => {
+        const weekday = this.getWeekday(item.fxDate)
+        this.$set(item, 'weekday', weekday)
+        this.$forceUpdate()
       })
-      this.animationFrame1 = window.requestAnimationFrame(this.drawDot)
+      // this.$forceUpdate()
+      // 小时天气
+      const res_hourly = await Axios.get(
+        `https://devapi.qweather.com/v7/weather/24h?location=${locationId}&key=3ca6d5e357a5470abf168dbcd8fe0fd7`)
+      this.hourly = res_hourly.data.hourly
+      // 灾害预警
+      const res_event = await Axios.get(
+        `https://devapi.qweather.com/v7/warning/now?location=${locationId}&key=3ca6d5e357a5470abf168dbcd8fe0fd7`
+      )
+      this.events = res_event.data.warning
+      // console.log('events', this.events)
+      this.warning_title = this.events.length > 0 ? '！有灾害' : '一切正常'
+      this.warning_type = this.events.length > 0 ? 'warning' : 'success'
+      // console.log(this.warning_title, this.warning_type, 'warning')
+      this.$forceUpdate()
     },
-    rads(x) { // 弧度转换
-      return Math.PI * x / 180
+    async submitLocation() {
+      this.requestForData()
+      // console.log(this.days_7)
     },
-    act() {
-      // 清空画布
-      const canvas = document.querySelector('#main')
-      canvas.style.width = this.centerBox.height + 'px'
-      canvas.style.height = this.centerBox.height + 'px'
-      const context = canvas.getContext('2d')
-      context.clearRect(0, 0, canvas.width, canvas.height)
-      this.drawPie(this.everyPer, context)
-      this.animationFrame2 = window.requestAnimationFrame(this.act)
-      this.everyPer += Math.PI / 180
-      const speed = 0.07 // 波浪速度，数越大速度越快
-      this.xOffset += speed
-    },
-    drawPie(everyPer, context) {
-      context.save()
-      context.fillStyle = 'rgba(18,55,88,.2)'
-      context.beginPath()
-      context.arc(this.circle.x, this.circle.y, 245, 0, 2 * Math.PI, true)
-      context.closePath()
-      context.fill()
-      context.restore()
+    // 根据当前天气状况返回对应的图片路径
+    getWeatherImage(weather) {
+      const hour = new Date().getHours()
+      // console.log('hour', hour, weather, 'weather')
+      if (hour >= 18) {
+        return require('@/assets/night-sunny.png') // 使用@表示src目录
+      }
 
-      // 外圆
-      context.save()
-      context.shadowBlur = 50
-      context.shadowColor = '#123959'
-      context.fillStyle = '#080D27'
-      context.beginPath()
-      context.arc(this.circle.x, this.circle.y, 235, 0, 2 * Math.PI, true)
-      context.closePath()
-      context.fill()
-      context.restore()
-      for (let i = 0; i < this.title.length; i++) { // 绘制文字。
-        context.save()
-        // 画文字
-        this.drawCircularText(this.circle, this.title[i], this.rads(i * 60 - 110), this.rads(i * 60 - 65), i, context)
-        context.restore()
+      switch (weather[0]) {
+        case '1':
+          return require('@/assets/sunny.png')
+        // case '151':
+        // case '152':
+        // case '101':
+        //   return require('@/assets/cloudy.png')
+        case '4':
+          return require('@/assets/snowy.png')
+        default:
+          // return require('@/assets/sunny.png')
+          return require('@/assets/cloudy.png')
       }
-      // 旋转小球
-      const x = 240 * Math.cos(everyPer)
-      const y = 240 * Math.sin(everyPer)
-      context.save()
-      context.fillStyle = 'rgb(56,252,253)'
-      context.shadowBlur = 80
-      context.shadowColor = '#39E9EE'
-      context.translate(this.circle.x, this.circle.y)
-      context.beginPath()
-      context.arc(x, y, 5, 0, 2 * Math.PI)
-      context.arc(-x, -y, 5, 0, 2 * Math.PI)
-      context.closePath()
-      context.fill()
-      context.restore()
-      //
-      context.save()
-      context.fillStyle = '#153776'
-      context.beginPath()
-      context.arc(this.circle.x, this.circle.y, 200, 0, 2 * Math.PI, true)
-      context.closePath()
-      context.fill()
+    },
+    // 根据当前天气状况返回对应的图片路径
 
-      context.fillStyle = '#121535'
-      context.beginPath()
-      context.arc(this.circle.x, this.circle.y, 190, 0, 2 * Math.PI, true)
-      context.closePath()
-      context.fill()
-      // 内圆
-      const nowRange = 24
-      context.save()
-      this.drawCircle(context)
-      this.drawSin(this.xOffset, context, nowRange)
-      this.drawText(context, nowRange)
-      context.restore()
-      for (let i = 0; i < 6; i++) { // 绘制刻度。
-        context.save()
-        context.translate(this.circle.x, this.circle.y)
-        context.rotate((-Math.PI / 2 + Math.PI / 6) + i * Math.PI / 3) // 旋转坐标轴。坐标轴x的正方形从 向上开始算起
-        context.beginPath()
-        context.moveTo(190, 0)
-        context.lineTo(200, 0)
-        context.lineWidth = 4
-        context.strokeStyle = '#0A122D'
-        context.stroke()
-        context.closePath()
-        context.restore()
-      }
-    },
-    drawCircle(ctx) { // 画圆 中心圆
-      ctx.beginPath()
-      ctx.fillStyle = '#209ADF'
-      ctx.arc(this.circle.x, this.circle.y, 120, 0, 2 * Math.PI)
-      ctx.fill()
-      ctx.beginPath()
-      ctx.arc(this.circle.x, this.circle.y, 120, 0, 2 * Math.PI)
-      ctx.clip()
-    },
-    drawSin(xOffset, ctx, nowRange) { // 画sin 曲线函数
-      const mW = 240
-      const mH = 240
-      const sX = 0
-      const axisLength = mW // 轴长
-      const waveWidth = 0.04 // 波浪宽度,数越小越宽
-      const waveHeight = 12 // 波浪高度,数越大越高
-      ctx.save()
-      ctx.translate(130, 130)
-      const points = [] // 用于存放绘制Sin曲线的点
-      ctx.beginPath()
-      // 在整个轴长上取点
-      for (let x = sX; x < sX + axisLength; x += 20 / axisLength) {
-        // 此处坐标(x,y)的取点，依靠公式 “振幅高*sin(x*振幅宽 + 振幅偏移量)”
-        const y = -Math.sin((sX + x) * waveWidth + xOffset)
-        const dY = mH * (1 - nowRange / 100)
-        points.push([x, dY, dY + y * waveHeight])
-        ctx.lineTo(x, dY + y * waveHeight)
-      }
-      // 封闭路径
-      ctx.lineTo(axisLength, mH)
-      ctx.lineTo(sX, mH)
-      ctx.lineTo(points[0][0], points[0][1])
-      ctx.fillStyle = '#2C50B1'
-      ctx.fill()
-
-      ctx.restore()
-    },
-    // 中心显示文字
-    drawText(ctx, nowRange) {
-      ctx.save()
-      ctx.translate(130, 130)
-      let size = 50
-      ctx.font = size + 'px Microsoft Yahei'
-      ctx.textAlign = 'center'
-      ctx.fillStyle = '#95EFFF'
-      ctx.fillText(nowRange + '℃', 120, 120 - size / 2)
-      ctx.restore()
-      ctx.save()
-      size = 25
-      ctx.translate(130, 130)
-      ctx.font = size + 'px Microsoft Yahei'
-      ctx.textAlign = 'center'
-      ctx.fillStyle = '#95EFFF'
-      ctx.fillText('温度', 120, 120 + size)
-      ctx.restore()
-    },
-    // 旋转的文字
-    drawCircularText(s, string, startAngle, endAngle, n, context) {
-      const radius = s.radius // 文字环绕的中心圆半径
-      let angleDecrement // 一个文字所占的角度
-      let angle = parseFloat(startAngle) // 文字的起始角度
-      let index = 0 // 文字的索引值
-      let character // 当前要画的文字
-      const arr = string.split(':')
-      context.save()
-      context.fillStyle = '#fff'
-      context.font = '12px 微软雅黑 '
-      context.textAlign = 'center'
-      context.textBaseline = 'middle'
-      if (n < 2 || n === 5) { // 上三个不需要反转的文字
-        while (index < string.length) {
-          character = string.charAt(index)
-          if (arr[0].indexOf(character) >= 0) {
-            if (arr[0].length > 6) {
-              angleDecrement = (startAngle - endAngle) / (string.length - 3)
-            } else {
-              angleDecrement = (startAngle - endAngle) / (string.length - 1)
-            }
-          } else {
-            angleDecrement = (startAngle - endAngle) / (string.length + 6)
-          }
-          context.save()
-          context.beginPath()
-          context.translate(s.x + Math.cos(angle) * radius,
-            s.y + Math.sin(angle) * radius)
-          context.rotate(Math.PI / 2 + angle)
-          context.fillText(character, 0, 0)
-          angle -= angleDecrement
-          index++
-          context.restore()
-        }
-      } else { // 下面三个需要反转的文字
-        while (index < string.length) {
-          character = string.split('').reverse().join('').charAt(index)// 字符串反转
-          if (arr[1].indexOf(character) >= 0) {
-            angleDecrement = (startAngle - endAngle) / (string.length + 6)
-          } else {
-            if (arr[0].length > 6) {
-              angleDecrement = (startAngle - endAngle) / (string.length - 3)
-            } else {
-              angleDecrement = (startAngle - endAngle) / (string.length - 1)
-            }
-          }
-          context.save()
-          context.beginPath()
-          context.translate(s.x + Math.cos(angle) * radius,
-            s.y + Math.sin(angle) * radius)
-          context.rotate(-Math.PI / 2 + angle)// 旋转文字
-          context.fillText(character, 0, 0)
-          angle -= angleDecrement
-          index++
-          context.restore()
-        }
-      }
-      context.restore()
+    getWeekday(dateString) {
+      const days = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
+      const date = new Date(dateString)
+      const weekday = days[date.getDay()]
+      return weekday
     }
 
   }
@@ -549,82 +380,205 @@ export default {
                     float: left;
                 }
 
-                .chart-32 {
-                    width: 32%;
-                    height: 100%;
-                    float: left;
-                }
-            }
-        }
-    }
+.forecast-container .forecast.today .forecast-header .date {
+	float: right;
+}
 
-    .bottom-list {
-        height: 35%;
+.forecast-container .forecast.today .forecast-content {
+	text-align: left;
+	padding-top: 30px;
+	padding-bottom: 30px;
+}
 
-        .ivu-col {
-            height: 100%;
+.forecast-container .forecast.today .location {
+	font-size: 18px;
+	font-size: 1.2857142857em;
+	font-weight: 400;
+}
 
-            .list {
-                height: 100%;
-                width: 33.3333%;
-                padding-right: 1.5%;
-                float: left;
+.forecast-container .forecast.today .degree .num,
+.forecast-container .forecast.today .degree .forecast-icon {
+	display: inline-block;
+	vertical-align: middle;
+}
 
-                #bottom_4 {
-                    padding: 0 20px;
-                }
+.forecast-container .forecast.today .degree .num {
+	font-size: 90px;
+	font-size: 6.4285714286rem;
+	margin-right: 30px;
+}
 
-                .bottom {
-                    width: 100%;
-                    height: 100%;
-                    border: 1px solid #0D2451;
-                    position: relative;
-                }
-            }
+.forecast-container .forecast.today span {
+	margin-right: 20px;
+}
 
-            .right-bottom {
-                width: 100%;
-                padding-right: 0;
+.forecast-container .forecast.today span img {
+	margin-right: 5px;
+	vertical-align: middle;
+}
 
-                .bottom1 {
-                    width: 100%;
-                }
-            }
-        }
-    }
+@media screen and (max-width: 990px) {
+	.forecast-container .forecast.today {
+		display: block;
+		width: 100%;
+	}
+}
+
+.forecast-container .forecast .forecast-header {
+	background: rgba(0, 0, 0, 0.1);
+	padding: 10px;
+	text-align: center;
+	font-weight: 400;
+}
+
+.forecast-container .forecast .forecast-icon {
+	height: 50px;
+}
+
+.forecast-container .forecast .forecast-content {
+	padding: 50px 20px 10px;
+	text-align: center;
+}
+
+.forecast-container .forecast .forecast-content .forecast-icon {
+	margin-bottom: 20px;
+}
+
+.forecast-container .forecast .forecast-content .degree {
+	font-size: 24px;
+	font-size: 1.7142857143em;
+	// color: #5BBCFF;
+	font-weight: 700;
+}
+
+.forecast-container .forecast .forecast-content small {
+	font-size: 16px;
+	font-size: 1.1428571429em;
+}
+
+.chart-container{
+  position: relative;
+  width: 100%;
+  height: calc(100vh - 84px);
+}
+
+i{
+  font-size: 48px;
+}
+.center{
+  text-align: center;
+}
+.mb-4{
+  margin-bottom: 16px;
+}
+.current-weather {
+  background-color: #f0f0f0;
+  border-radius: 5px;
+  text-align: center;
+}
+
+.current-panel {
+  // background-color: #fff;
+  // background-image: url(./images/sunny.png);
+  background-size: 100%;
+  height: 250px;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(26, 12, 12, 0.1);
+}
+
+hr {
+    border: 0;
+    padding-top: 10px;
+    color: #d0d0d5;
+    border-top: 1px solid rgba(0,0,0,.1);
+    box-shadow: inset 0 10px 10px -10px;
+}
+
+h1{
+  text-align: left;
+  font-size: 16px;
+}
+
+.forecast-table{
+  padding: 20px;
+}
+
+.event-title{
+  border-radius: 9px;
+  background: #c3c6cb;
+}
+.event-text{
+  border-radius: 9px;
+  background: #FFE4CF;
+  opacity: 50%;
 
 }
-.el-header, .el-footer {
-    background-color: #B3C0D1;
-    color: #333;
-    text-align: center;
-    line-height: 60px;
-  }
 
-  .el-aside {
-    background-color: #D3DCE6;
-    color: #333;
-    text-align: center;
-    line-height: 200px;
-  }
+.search-input {
+  padding: 8px 12px; /* 内边距 */
+  font-size: 16px; /* 字体大小 */
+  border: 1px solid #ccc; /* 边框 */
+  border-radius: 4px; /* 圆角 */
+  outline: none; /* 去掉默认的焦点样式 */
+}
 
-  .el-main {
-    background-color: #E9EEF3;
-    color: #333;
-    text-align: center;
-    line-height: 160px;
-  }
+/* 输入框聚焦样式 */
+.search-input:focus {
+  border-color: dodgerblue; /* 聚焦时的边框颜色 */
+  box-shadow: 0 0 5px dodgerblue; /* 聚焦时的阴影效果 */
+}
 
-  body > .el-container {
-    margin-bottom: 40px;
-  }
+/* 按钮样式 */
+.search-button {
+  padding: 8px 16px; /* 内边距 */
+  font-size: 16px; /* 字体大小 */
+  background-color: dodgerblue; /* 背景色 */
+  color: white; /* 文字颜色 */
+  border: none; /* 去掉边框 */
+  border-radius: 4px; /* 圆角 */
+  cursor: pointer; /* 鼠标悬停时显示手型 */
+}
 
-  .el-container:nth-child(5) .el-aside,
-  .el-container:nth-child(6) .el-aside {
-    line-height: 260px;
-  }
+/* 按钮悬停样式 */
+.search-button:hover {
+  background-color: #0077cc; /* 悬停时的背景色 */
+}
 
-  .el-container:nth-child(7) .el-aside {
-    line-height: 320px;
-  }
+.current-time {
+  font-size: 1.5rem;
+  // position: absolute;
+  // bottom: 10px;
+  // left: 50%;
+  // transform: translateX(-50%);
+}
+
+.options-list {
+  display: block;
+  position: relative;
+  width: 100%;
+  top: -100; /* 改变这个值以调整备选框与输入框的垂直间距 */
+  left: 0;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 1000; /* 确保备选框在其他元素上方 */
+  list-style-type: none;
+  margin: 0;
+}
+
+.options-list li {
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.options-list li:hover {
+  background-color: #f0f0f0;
+}
+
+h4{
+  opacity: 0.4;
+}
 </style>

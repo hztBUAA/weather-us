@@ -1,11 +1,10 @@
-import { login, logout, getInfo } from '@/api/user'
-import { getToken, setToken, removeToken } from '@/utils/auth'
+import { login, logout, getInfo, getCSRFTokenService } from '@/api/user'
+import { getToken, setToken, removeToken, setCSRFToken, removeCSRFToken } from '@/utils/auth'
 import { resetRouter } from '@/router'
 
 const getDefaultState = () => {
   return {
     token: getToken(),
-    name: '',
     avatar: ''
   }
 }
@@ -19,9 +18,6 @@ const mutations = {
   SET_TOKEN: (state, token) => {
     state.token = token
   },
-  SET_NAME: (state, name) => {
-    state.name = name
-  },
   SET_AVATAR: (state, avatar) => {
     state.avatar = avatar
   }
@@ -32,10 +28,12 @@ const actions = {
   login({ commit }, userInfo) {
     const { username, password } = userInfo
     return new Promise((resolve, reject) => {
-      login({ username: username.trim(), password: password }).then(response => {
+      login(userData).then(async response => {
         const { data } = response
-        commit('SET_TOKEN', data.token)
-        setToken(data.token)
+        const { csrf_token } = await getCSRFTokenService()
+        commit('SET_TOKEN', data)
+        setCSRFToken(csrf_token)
+        setToken(data)
         resolve()
       }).catch(error => {
         reject(error)
@@ -53,9 +51,9 @@ const actions = {
           return reject('Verification failed, please Login again.')
         }
 
-        const { name, avatar } = data
+        // const { avatar } = data
+        const avatar = 'https://cube.elemecdn.com/e/fd/0fc7d20532fdaf769a25683617711png.png'
 
-        commit('SET_NAME', name)
         commit('SET_AVATAR', avatar)
         resolve(data)
       }).catch(error => {
@@ -69,6 +67,7 @@ const actions = {
     return new Promise((resolve, reject) => {
       logout(state.token).then(() => {
         removeToken() // must remove  token  first
+        removeCSRFToken()
         resetRouter()
         commit('RESET_STATE')
         resolve()
@@ -82,6 +81,7 @@ const actions = {
   resetToken({ commit }) {
     return new Promise(resolve => {
       removeToken() // must remove  token  first
+      removeCSRFToken()
       commit('RESET_STATE')
       resolve()
     })

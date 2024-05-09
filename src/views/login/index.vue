@@ -53,8 +53,8 @@
 </template>
 
 <script>
-import { validUsername } from '@/utils/validate'
-import { getInfo } from '@/api/user'
+import { getCSRFTokenService, registerService } from '@/api/user'
+import { Message } from 'element-ui'
 
 export default {
   name: 'Login',
@@ -93,7 +93,18 @@ export default {
         this.redirect = route.query && route.query.redirect
       },
       immediate: true
+    },
+    isRegister(newValue) {
+      this.userData = {}
+      if (newValue) {
+        this.$refs.registerForm.clearValidate()
+      } else {
+        this.$refs.loginForm.clearValidate()
+      }
     }
+  },
+  mounted() {
+    console.log(process.env['VUE_APP_TARGET_API'])
   },
   methods: {
     showPwd() {
@@ -110,7 +121,7 @@ export default {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
           this.loading = true
-          this.$store.dispatch('user/login', this.loginForm).then(() => {
+          this.$store.dispatch('user/login', this.userData).then(async() => {
             this.$router.push({ path: this.redirect || '/' })
             this.loading = false
           }).catch(() => {
@@ -119,6 +130,22 @@ export default {
         } else {
           console.log('error submit!!')
           return false
+        }
+      })
+    },
+    handleRegister() {
+      this.$refs.registerForm.validate(async(valid) => {
+        if (valid) {
+          this.loading = true
+          const result = await getCSRFTokenService()
+          console.log(result)
+          registerService(this.userData, result.csrf_token).then((result) => {
+            Message.success(result.msg)
+            this.loading = false
+            this.isRegister = false
+          }).catch(() => {
+            this.loading = false
+          })
         }
       })
     }

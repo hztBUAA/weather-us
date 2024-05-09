@@ -43,7 +43,7 @@
                 </el-table-column>
             </el-table>
             <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange"
-                :current-page="currentPage" :page-sizes="[1, 10, 20, 50]" :page-size="pageSize"
+                :current-page="currentPage" :page-sizes="[10, 20, 50]" :page-size="pageSize"
                 layout="total, sizes, prev, pager, next, jumper" :total="tableData.length">
             </el-pagination>
         </div>
@@ -51,36 +51,24 @@
 </template>
 
 <script>
+import { getNoticeContent, getNoticeDigests, setNoticeState } from '@/api/notice'
 export default {
     data() {
         return {
-            tableData: [{
-                date: '2016-05-02',
-                title: '页面显示Bug',
-                tag: 'BUG修复',
-                state: '已读',
-            }, {
-                date: '2016-05-04',
-                title: '页面显示Bug',
-                tag: '新特性发布',
-                state: '未读',
-            }, {
-                date: '2016-05-01',
-                title: '页面显示Bug',
-                tag: '日常事务',
-                state: '已读',
-            }, {
-                date: '2016-05-03',
-                title: '页面显示Bug',
-                tag: '日常事务',
-                state: '已读',
-            }],
+            tableData: [],
             currentPage: 1,
             pageSize: 10,
             isAdmin: true,
         }
     },
+    created() {
+        this.fetchData()
+    },
     methods: {
+        async fetchData() {
+            const res = await getNoticeDigests()
+            this.tableData = res.data
+        },
         handleEdit(index, row) {
             console.log(index, row);
         },
@@ -105,15 +93,20 @@ export default {
         handleCurrentChange(newCurrentPage) {
             this.currentPage = newCurrentPage;
         },
-        handleRowClick(row, event, column) {
-            row.state = '已读';
-            this.$router.push('/notice/content')
-            // 如果有后端接口，可以在此处发送请求更新数据库中的状态
-            // axios.put(`/api/notifications/${row.id}/mark-as-read`).then(() => {
-            //   console.log('已读状态更新成功');
-            // }).catch(error => {
-            //   console.error('更新已读状态失败:', error);
-            // });
+        async handleRowClick(row, event, column) {
+            if (row.state !== '已读') {
+                row.state = '已读';
+                setNoticeState(row.id, row.state)
+            }
+            const response = await getNoticeContent(row.id);//帖子id
+            this.selectedRow = row
+            this.content = response.data.content
+            this.dialogVisible = true;
+        },
+        handleDialogClose() {
+            this.dialogVisible = false
+            this.selectedRow = {}
+            this.content = null
         },
         tableRowClassName({ row, rowIndex }) {
             if (row.state === '已读') {
@@ -124,7 +117,10 @@ export default {
         },
         handleUnread(index, row) {
             // 更新点击行的状态为未读
-            row.state = '未读';
+            if (row.state !== '未读') {
+                row.state = '未读'
+                setNoticeState(row.id, row.state)
+            }
         },
         readDetail() {
             alert('fuck')

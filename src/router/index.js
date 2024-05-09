@@ -64,31 +64,31 @@ export const constantRoutes = [
   {
     path: '/admin',
     component: Layout,
-    meta: { title: '管理员功能', icon: 'el-icon-view' },
+    meta: { title: '管理员功能', icon: 'el-icon-view', roles: ['admin'] },
     children: [
       {
         path: 'user-con',
         component: () => import('@/views/admin/user-con'),
         name: '用户管理',
-        meta: { title: '用户管理', icon: 'el-icon-user' }
+        meta: { title: '用户管理', icon: 'el-icon-user', roles: ['admin'] }
       },
       {
         path: 'launch-varn',
         component: () => import('@/views/admin/launch-varn'),
         name: '发布预警',
-        meta: { title: '发布预警', icon: 'el-icon-bell' }
+        meta: { title: '发布预警', icon: 'el-icon-bell', roles: ['admin'] }
       },
       {
         path: 'deal-feedback',
         component: () => import('@/views/admin/deal-feedback'),
         name: '处理反馈',
-        meta: { title: '处理反馈', icon: 'el-icon-edit-outline' }
+        meta: { title: '处理反馈', icon: 'el-icon-edit-outline', roles: ['admin'] }
       },
       {
         path: 'launch-notice',
         component: () => import('@/views/admin/launch-notice'),
         name: '发布公告',
-        meta: { title: '发布公告', icon: 'el-icon-s-opportunity' }
+        meta: { title: '发布公告', icon: 'el-icon-s-opportunity', roles: ['admin'] }
       }
     ]
   },
@@ -100,14 +100,7 @@ export const constantRoutes = [
         path: 'index',
         component: () => import('@/views/notice/notice'),
         name: '公告',
-        meta: { title: '公告', icon: 'el-icon-chat-dot-square' },
-      },
-      {
-        path: 'content',
-        component: () => import('@/views/notice/content'),
-        hidden: 'true',
-        name: '帖子详情',
-        meta: { title: '帖子详情' },
+        meta: { title: '公告', icon: 'el-icon-chat-dot-square' }
       }
     ]
   },
@@ -131,7 +124,12 @@ export const constantRoutes = [
       {
         path: 'citySubscribe',
         component: CitySubscribe,
-        meta: { title: '订阅城市', icon: 'el-icon-location-outline' }
+        meta: { title: '灾害订阅', icon: 'el-icon-location-outline' }
+      },
+      {
+        path: 'feedback',
+        component: Feedback,
+        meta: { title: '反馈', icon: 'el-icon-s-promotion' }
       }
     ]
   },
