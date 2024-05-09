@@ -55,12 +55,12 @@ export function fetch_feedback() {
         method: 'get',
     })
 }
-export function reply_feedback(username, reply) {
+export function reply_feedback(id, reply) {
     return request({
         url: '/admin/reply-feedback',
         method: 'post',
         params: {
-            username: username,
+            id: id,
             reply: reply,
         }
     })
