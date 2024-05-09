@@ -2,7 +2,7 @@
   <!-- todo: 加上天气指数 -->
   <div class="forecast-table">
     <div style="display: flex; width: 100%;">
-      <input v-model="location" type="text" class="search-input" style="flex: 1;" @input="search">
+      <input v-model="location" type="text" class="search-input" style="flex: 1;" @input="debounceSearch">
       <button class="search-button" style="flex: 0 0 auto;" @click="submitLocation">搜索</button>
       <!-- {{ showOptions }}
       {{ options }} -->
@@ -219,6 +219,7 @@
 import Axios from 'axios'
 import Chart from './components/Charts/LineMarker.vue'
 import MixChart from './components/Charts/MixChart.vue'
+import _ from 'lodash'
 // import CurrentInfo from './components/CurrentInfo.vue'
 export default {
   name: 'City',
@@ -293,6 +294,10 @@ export default {
     setInterval(this.updateTime, 1000) // 每秒更新一次时间
   },
   methods: {
+    // 在组件内部定义 debounceSearch 方法
+    debounceSearch: _.debounce(function() {
+      this.search()
+    }, 500), // 在这里设置 debounce 的延迟时间，单位为毫秒，
     select(option) {
       this.full_location = option
       this.location = option.split(',')[0]
