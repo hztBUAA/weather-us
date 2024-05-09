@@ -39,7 +39,7 @@ export default {
     city(newValue, oldValue) {
     // 当城市数据发生变化时，调用 genData 方法重新生成数据
       this.genData()
-      console.log('change value')
+      // console.log('change value')
       this.initChart()
       // this.$forceUpdate()
       // this.chart.setOption({

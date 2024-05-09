@@ -23,7 +23,7 @@
     <!-- <div class="current-weather">
       <current-info />
     </div> -->
-    <div class=" center">
+    <div class=" center" style="">
       <h1>当前天气</h1>
       <hr>
       <!-- <img src="./images/sunny.png" alt=""> -->
@@ -31,10 +31,11 @@
         class="current-panel mb-4"
         :style="{
           backgroundImage: 'url(' + getWeatherImage(cur.icon) + ')',
-          color: isNight() ? 'white' : 'black'
+          color: isNight() ? 'white' : 'black',
         }"
       >
-        <h1 class="" style="font-size:48px;left:150px;position:absolute">{{ fixed_location }}</h1>
+        <h1 style="font-size:4rem;left:5rem;position:absolute">{{ fixed_location }}</h1>
+        <h4 style="font-size:1rem;left:6rem;position:absolute">{{ '('+full_location +')' }}</h4>
         <div class="mb-4 current-time">
           当前时间: {{ currentTime }}
         </div>
@@ -42,7 +43,7 @@
         <div class="mb-4">{{ cur.text }}</div>
         <div class="mb-4"><i class="qi-2208" style="font-size:16px;margin-right:4px" />{{ cur.windDir }}</div>
         <div class="mb-4"><i class="qi-2120" style="font-size:16px;margin-right:4px" />{{ cur.humidity }}%</div>
-      </div>
+        </h4></div>
 
     </div>
 
@@ -234,6 +235,7 @@ export default {
     return {
       location: '北京',
       fixed_location: '北京',
+      full_location: '北京,中国',
       days_7: [1, 2, 3],
       hourly: [],
       cur: {},
@@ -269,12 +271,6 @@ export default {
         }
       },
       deep: true
-    },
-    showOptions: {
-      handler(oldVal, newVal) {
-        this.showOptions = newVal
-      },
-      deep: true
     }
 
   },
@@ -287,10 +283,7 @@ export default {
       this.fixed_location = this.$route.params.c3
     }
 
-    this.requestForData().then(() => {
-      console.log(this.days_7)
-      console.log(this.hourly)
-    })
+    this.requestForData()
     this.updateTime()
     setInterval(this.updateTime, 1000) // 每秒更新一次时间
     // const c1 = this.$route.params.c1 ? this.$route.params.c1 : ''
@@ -303,9 +296,9 @@ export default {
   },
   methods: {
     select(option) {
-      this.fixed_location = option
-      this.location = option.split(' ')[0]
-      this.fixed_location = option.split(' ')[0]
+      this.full_location = option
+      this.location = option.split(',')[0]
+      this.fixed_location = option.split(',')[0]
       this.showOptions = false
       this.options = []
     },
@@ -314,16 +307,16 @@ export default {
       const res = await Axios.get(
         `https://geoapi.qweather.com/v2/city/lookup?location=${this.location}&number=5&range=cn&key=3ca6d5e357a5470abf168dbcd8fe0fd7`
       )
-      console.log('res', res)
+      // console.log('res', res)
       if (res.data.location) {
-        this.options = res.data.location.map(city => `${city.adm2} ${city.adm1} ${city.country}`)
+        this.options = res.data.location.map(city => `${city.name},${city.adm2},${city.adm1},${city.country}`)
       } else {
         this.options = []
       }
 
       // 可以使用 debounce 或 throttle 控制 AJAX 请求的频率
       this.showOptions = this.options.length > 0
-      console.log('search', this.showOptions, '\n', 'options\n', this.options, '\n', 'location\n', this.location)
+      // console.log('search\n', this.showOptions, '\n', 'options\n', this.options, '\n', 'location\n', this.location)
     },
     async getApi1() {
       // 创建一个新的请求头对象，不包含 Apifoxtoken 请求头
@@ -374,7 +367,7 @@ export default {
       this.$forceUpdate() // 强制更新组件
 
       // 七日天气
-      console.log(locationId, 'locationID')
+      // console.log(locationId, 'locationID')
       // console.log(params)
       const res_location = await Axios.get(
         `https://devapi.qweather.com/v7/weather/7d?location=${locationId}&key=3ca6d5e357a5470abf168dbcd8fe0fd7`
@@ -396,20 +389,20 @@ export default {
         `https://devapi.qweather.com/v7/warning/now?location=${locationId}&key=3ca6d5e357a5470abf168dbcd8fe0fd7`
       )
       this.events = res_event.data.warning
-      console.log('events', this.events)
+      // console.log('events', this.events)
       this.warning_title = this.events.length > 0 ? '！有灾害' : '一切正常'
       this.warning_type = this.events.length > 0 ? 'warning' : 'success'
-      console.log(this.warning_title, this.warning_type, 'warning')
+      // console.log(this.warning_title, this.warning_type, 'warning')
       this.$forceUpdate()
     },
     async submitLocation() {
       this.requestForData()
-      console.log(this.days_7)
+      // console.log(this.days_7)
     },
     // 根据当前天气状况返回对应的图片路径
     getWeatherImage(weather) {
       const hour = new Date().getHours()
-      console.log('hour', hour, weather, 'weather')
+      // console.log('hour', hour, weather, 'weather')
       if (hour >= 18) {
         return require('@/assets/night-sunny.png') // 使用@表示src目录
       }
@@ -732,5 +725,9 @@ h1{
 
 .options-list li:hover {
   background-color: #f0f0f0;
+}
+
+h4{
+  opacity: 0.4;
 }
 </style>
