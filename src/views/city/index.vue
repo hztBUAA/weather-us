@@ -758,6 +758,7 @@ h4{
   }
   .current-panel {
     background-size: 100%;
+    background-size: cover;
     height: 39vh; // 使用相对单位
     border-radius: 5px;
     box-shadow: 0 2px 4px rgba(26, 12, 12, 0.1);
