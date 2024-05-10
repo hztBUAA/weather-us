@@ -165,9 +165,6 @@ export default {
       }
     }
   },
-  mounted() {
-    console.log(process.env['VUE_APP_TARGET_API'])
-  },
   methods: {
     handleLogin() {
       this.$refs.loginForm.validate(valid => {
@@ -180,7 +177,6 @@ export default {
             this.loading = false
           })
         } else {
-          console.log('error submit!!')
           return false
         }
       })
@@ -190,7 +186,6 @@ export default {
         if (valid) {
           this.loading = true
           const result = await getCSRFTokenService()
-          console.log(result)
           registerService(this.userData, result.csrf_token).then((result) => {
             Message.success(result.msg)
             this.$store.dispatch('user/login', this.userData).then(async() => {

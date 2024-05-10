@@ -11,7 +11,6 @@ export default {
     }
   },
   mounted() {
-    console.log(process.env.NODE_ENV)
     this.loadInfo()
     // Message.success(result.msg)
   },
@@ -28,12 +27,10 @@ export default {
         Message.error('图片大小不应超过2MB')
         return false
       }
-      console.log(file.type)
       return true
     },
     async uploadAvatar(upload) {
       const avatar = upload.file
-      console.log(upload)
       const result = await updateAvatarService(avatar)
       Message.success(result.msg)
       this.loadInfo()
