@@ -115,6 +115,9 @@ export default {
     async fetchData() {
       const res = await getNoticeDigests()
       this.tableData = res.data
+      this.tableData.forEach((item) => {
+        item.state = item.state ? '已读' : '未读'
+      })
     },
     handleEdit(index, row) {
       console.log(index, row)
