@@ -671,7 +671,6 @@ h1{
 .event-text{
   border-radius: 9px;
   background: #FFE4CF;
-  opacity: 50%;
 
 }
 

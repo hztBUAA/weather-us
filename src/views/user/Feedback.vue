@@ -73,7 +73,7 @@ export default {
     <template v-slot:header>
       <div style="display: flex; align-items: center; justify-content: space-between;">
         <span> 反馈</span>
-        <el-button type="primary" @click="showForm">新增订阅</el-button>
+        <el-button type="primary" @click="showForm">新增反馈</el-button>
       </div>
     </template>
     <el-table
