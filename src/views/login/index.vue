@@ -1,7 +1,7 @@
 <template>
   <div class="login-container">
     <div class="login-card">
-      <template v-if="isRegister">
+      <div v-show="isRegister">
         <div class="title">
           注册
         </div>
@@ -14,6 +14,23 @@
                 name="username"
                 prefix-icon="el-icon-user"
               />
+            </el-form-item>
+            <el-form-item prop="email">
+              <el-input v-model="userData.email" placeholder="请输入邮箱" prefix-icon="el-icon-message" />
+            </el-form-item>
+            <el-form-item prop="verifyCode">
+              <el-row :gutter="20">
+                <el-col :span="18">
+                  <el-input v-model="userData.verifyCode" placeholder="请输入验证码" prefix-icon="el-icon-lock" />
+                </el-col>
+                <el-col :span="6">
+                  <el-button
+                    :disabled="isDisabled"
+                    style="margin-top: 0; display: flex; justify-content: center"
+                    @click="start('registerForm', 'email')"
+                  >{{ text.length ? text : "发送验证码" }}</el-button>
+                </el-col>
+              </el-row>
             </el-form-item>
             <el-form-item prop="password">
               <el-input
@@ -44,8 +61,8 @@
             </el-form-item>
           </el-form>
         </div>
-      </template>
-      <template v-else>
+      </div>
+      <div v-show="!isRegister">
         <div class="title">
           登录
         </div>
@@ -53,8 +70,8 @@
           <el-form ref="loginForm" status-icon :model="userData" :rules="rules">
             <el-form-item prop="username">
               <el-input
-                v-model="userData.username"
-                placeholder="请输入用户名"
+                v-model="userData.uid"
+                placeholder="请输入用户名或邮箱"
                 name="username"
                 prefix-icon="el-icon-user"
               />
@@ -84,14 +101,14 @@
 
           </el-form>
         </div>
-      </template>
+      </div>
     </div>
 
   </div>
 </template>
 
 <script>
-import { getCSRFTokenService, registerService } from '@/api/user'
+import { getCSRFTokenService, registerService, sendVerifyCodeService } from '@/api/user'
 import { Message } from 'element-ui'
 
 export default {
@@ -117,8 +134,40 @@ export default {
             trigger: 'blur'
           },
           {
-            pattern: '^\\S{3,15}$',
-            message: '用户名长度为 3 到 15 个非空字符',
+            pattern: /^\w{3,15}$/,
+            message: '用户名由3到15个字母, 数字或下划线组成',
+            trigger: 'blur'
+          }
+        ],
+        uid: [
+          {
+            required: true,
+            message: '请输入用户名或邮箱',
+            trigger: 'blur'
+          },
+          {
+            // 邮箱部分可能有问题
+            pattern: /^\w{3,15}$|^[a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/,
+            message: '请输入正确格式的用户名或邮箱',
+            trigger: 'blur'
+          }
+        ],
+        email: [
+          {
+            required: true,
+            message: '请输入邮箱',
+            trigger: 'blur'
+          },
+          {
+            type: 'email',
+            message: '请输入邮箱',
+            trigger: 'blur'
+          }
+        ],
+        verifyCode: [
+          {
+            required: true,
+            message: '请输入验证码',
             trigger: 'blur'
           }
         ],
@@ -142,7 +191,10 @@ export default {
         ]
       },
       loading: false,
-      redirect: undefined
+      redirect: undefined,
+      text: '',
+      timer: null,
+      isDisabled: false
     }
   },
   watch: {
@@ -200,6 +252,39 @@ export default {
           })
         }
       })
+    },
+    async start(formEl, props, time = 60) {
+      formEl = this.$refs[formEl]
+      if (!formEl) {
+        return
+      }
+      console.log(formEl, props)
+      const initTime = time
+      await formEl.validateField(props, async errorMessage => {
+        console.log(errorMessage)
+        if (!errorMessage) {
+          await sendVerifyCodeService({ email: this.userData.email, sendType: 'register' })
+          clearInterval(this.timer)
+          this.isDisabled = true
+          this.text = `${time}`
+          this.timer = setInterval(() => {
+            if (time > 0) {
+              time -= 1
+              this.text = `${time}`
+            } else {
+              this.text = ''
+              this.isDisabled = false
+              clearInterval(this.timer)
+              time = initTime
+            }
+          }, 1000)
+        }
+      })
+    },
+    end() {
+      this.text = ''
+      this.isDisabled = false
+      clearInterval(this.timer)
     }
   }
 }
@@ -238,7 +323,7 @@ export default {
         .el-image {
           width: 100px;
           height: 40px;
-          border-left: 0px;
+          border-left: 0;
           user-select: none;
           cursor: pointer;
           text-align: center;
@@ -248,31 +333,6 @@ export default {
         width: 100%;
         margin-top: 10px;
       }
-    }
-  }
-}
-.login-page {
-  height: 100vh;
-  background-color: #2d3a4b;
-
-  .form {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    user-select: none;
-
-    .title {
-      margin: 0 auto;
-    }
-
-    .button {
-      width: 100%;
-    }
-
-    .flex {
-      width: 100%;
-      display: flex;
-      justify-content: flex-start;
     }
   }
 }

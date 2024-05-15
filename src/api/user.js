@@ -60,3 +60,7 @@ export function updateAvatarService(avatar) {
 export function getCSRFTokenService() {
   return request.get('/get_csrf')
 }
+
+export function sendVerifyCodeService(data) {
+  return request.post('/verifyCode', qs.stringify(data))
+}
