@@ -1,5 +1,6 @@
 <template>
   <!-- todo: 加上天气指数 -->
+  <!-- todo 打字机效果 接入ai的提示对数据的分析 | 预警的高级提示 |  -->
   <div class="forecast-table">
     <div style="display: flex; width: 100%;">
       <input v-model="location" type="text" class="search-input" style="flex: 1;" @input="debounceSearch">
