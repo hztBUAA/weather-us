@@ -176,6 +176,7 @@ export default {
       console.log(1)
     },
     chooseDate() {
+      /*
       if (this.date != this.lastDate) {
         this.showData(0)
         if (this.maps[1] != null && this.maps[1] != undefined) {
@@ -185,6 +186,7 @@ export default {
           this.showData(2)
         }
       }
+      */
     },
     getJson(json) {
     //  const stringData = JSON.stringify(json, null, 2)
@@ -199,37 +201,27 @@ export default {
       URL.revokeObjectURL(objectURL)
     },
     selectMode(index) {
-      console.log(index)
+      //console.log(index)
       if (index == this.typeIndex || index == -1) {
         return
       } else {
         this.typeIndex = index
         const that = this
         const formatter = function(params, ticket, callback) {
-          // console.log(params)
           const app = new Vue({
             el: document.createElement('div'),
             render: h => h(Tooltip, { props:
                 { name: params.name,
-                  type: that.dataTypes[that.typeIndex].type,
-                  value: params.value }
+                  type: that.dataTypes[that.typeIndex].name,
+                  value: params.data[Number(that.typeIndex) + 1] }
             })
           })
           return app.$el
         }
         var option = this.charts.getOption()
         option.tooltip.formatter = formatter
+        option.visualMap[0].dimension = Number(this.typeIndex) + 1
         this.charts.setOption(option, true)
-        this.changeMode()
-      }
-    },
-    changeMode() {
-      this.showData(0)
-      if (this.maps[1] != null && this.maps[1] != undefined) {
-        this.showData(1)
-      }
-      if (this.maps[2] != null && this.maps[2] != undefined) {
-        this.showData(2)
       }
     },
     initCities() {
@@ -275,6 +267,7 @@ export default {
         this.layer = 0
         this.maps[1] = null
         option.series[1] = null
+        option.dataset[1] = null
         option.geo[1] = null
         option.geo[0].boundingCoords = this.glabalBounding
         option.geo[0].silent = false
@@ -285,6 +278,7 @@ export default {
         this.layer = 1
         this.maps[2] = null
         option.series[2] = null
+        option.dataset[2] = null
         option.geo[2] = null
         option.geo[0].boundingCoords = this.glabalBounding2
         option.geo[1].boundingCoords = this.glabalBounding2
@@ -312,27 +306,38 @@ export default {
       })
       return boundingCoords
     },
-    async getAllData(type, geoIndex) {
+    async getAllData(geoIndex) {
       const data = []
+      const dimension = ['name']
+      this.dataTypes.forEach(function(dataType) {
+        dimension.push(dataType.type)
+      })
+      data.push(dimension)
       const adcodes = []
       this.maps[geoIndex].features.forEach(function(feature) {
         adcodes.push(feature.properties.adcode)
       })
-      getCityData(adcodes, type, this.date).then((res) => {
+      getCityData(adcodes).then((res) => {
+        const that = this
         this.maps[geoIndex].features.forEach(function(feature) {
-          data.push({ name: feature.properties.name, value: res.get(feature.properties.adcode) })
+          const value = [ feature.properties.name ]
+          value.push.apply(value, res.get(feature.properties.adcode))
+          data.push(value)
         })
       })
       return data
     },
     showData(geoIndex) {
       var option = this.charts.getOption()
-      this.getAllData(this.dataTypes[this.typeIndex].type, geoIndex).then((res) => {
+      this.getAllData(geoIndex).then((res) => {
         const series = option.series
+        const dataset = option.dataset
+        dataset[geoIndex] = { source: res }
+        console.log(dataset)
         series[geoIndex] = {
           type: 'map',
           geoIndex: geoIndex,
-          data: res,
+          datasetIndex: geoIndex,
           select: {
             disabled: true
           }
@@ -342,6 +347,7 @@ export default {
             type: 'continuous',
             min: this.dataTypes[this.typeIndex].valueRange[0],
             max: this.dataTypes[this.typeIndex].valueRange[1],
+            dimension: this.typeIndex + 1,
             left: '6%',
             bottom: '5%',
             itemWidth: 30,
@@ -349,9 +355,10 @@ export default {
             inRange: {
               color: this.dataTypes[this.typeIndex].colorRange
             },
-            text: [this.dataTypes[this.typeIndex].valueRange[1], this.dataTypes[this.typeIndex].valueRange[0]],
+            text: [this.dataTypes[this.typeIndex].valueRange[1] + this.dataTypes[this.typeIndex].dw, this.dataTypes[this.typeIndex].valueRange[0] + this.dataTypes[this.typeIndex].dw],
             zlevel: 3
           },
+          dataset: dataset,
           series: series
         }}
         this.charts.setOption(option, true)
@@ -442,13 +449,13 @@ export default {
           return obj
         },
         formatter: function(params, ticket, callback) {
-          // console.log(params)
+          //console.log(params)
           const app = new Vue({
             el: document.createElement('div'),
             render: h => h(Tooltip, { props:
                 { name: params.name,
-                  type: that.dataTypes[that.typeIndex].type,
-                  value: params.value }
+                  type: that.dataTypes[that.typeIndex].name,
+                  value: params.data[Number(that.typeIndex) + 1] }
             })
           })
           return app.$el
@@ -458,6 +465,7 @@ export default {
       this.charts = echarts.init(this.$refs['charts'])
       const boundingCoords = this.calBounding(mapData)
       this.glabalBounding = [[boundingCoords[0][0] + 20, boundingCoords[0][1] - 2], [boundingCoords[1][0] - 20, boundingCoords[1][1] + 17]]
+      this.option.dataset = [null, null, null]
       this.option.geo = [
         { ...{ map: 'china',
           boundingCoords: this.glabalBounding,
