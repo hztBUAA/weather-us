@@ -50,8 +50,7 @@ const actions = {
           return reject('Verification failed, please Login again.')
         }
 
-        // const { avatar } = data
-        const avatar = 'https://cube.elemecdn.com/e/fd/0fc7d20532fdaf769a25683617711png.png'
+        const { avatar } = data
 
         commit('SET_AVATAR', avatar)
         resolve(data)
@@ -82,6 +81,13 @@ const actions = {
       removeToken() // must remove  token  first
       removeCSRFToken()
       commit('RESET_STATE')
+      resolve()
+    })
+  },
+
+  setAvatar({ commit }, avatar) {
+    return new Promise(resolve => {
+      commit('SET_AVATAR', avatar)
       resolve()
     })
   }
