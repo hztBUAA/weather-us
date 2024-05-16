@@ -298,7 +298,7 @@ export default {
           const result = await getCSRFTokenService()
           registerService(this.userData, result.csrf_token).then((result) => {
             Message.success(result.msg)
-            this.$store.dispatch('user/login', this.userData).then(async() => {
+            this.$store.dispatch('user/login', { uid: this.userData.email, password: this.userData.password }).then(async() => {
               this.$router.push({ path: this.redirect || '/' })
               this.loading = false
             }).catch(() => {

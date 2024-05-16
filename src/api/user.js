@@ -50,11 +50,7 @@ export function getWarningsService() {
 }
 
 export function updateAvatarService(avatar) {
-  return request.post('/user/avatar', avatar, {
-    headers: {
-      'content-type': 'form-data'
-    }
-  })
+  return request.postForm('/user/avatar', avatar)
 }
 
 export function getCSRFTokenService() {
