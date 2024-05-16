@@ -2,7 +2,7 @@ import request from '@/utils/request'
 import qs from 'qs'
 
 export function login(data) {
-  return request.post('/user/login', qs.stringify({ uid: data.username, password: data.password }))
+  return request.post('/user/login', qs.stringify(data))
 }
 
 export function getInfo() {
@@ -59,4 +59,12 @@ export function updateAvatarService(avatar) {
 
 export function getCSRFTokenService() {
   return request.get('/get_csrf')
+}
+
+export function sendVerifyCodeService(data) {
+  return request.post('/verifyCode', qs.stringify(data))
+}
+
+export function forgetPasswordService(data) {
+  return request.post('/user/forgetPassword', qs.stringify(data))
 }
