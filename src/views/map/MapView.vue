@@ -132,10 +132,18 @@ const geoOption = {
   }
 }
 const option = {
-  animation: false,
-  animationDuration: 0,
-  animationDurationUpdate: 0,
+  animation: true,
+  animationDuration: 2000,
+  animationDurationUpdate: 300,
   backgroundColor: '#cccccc'
+}
+const virsualSet = {
+  type: 'continuous',
+  left: '6%',
+  bottom: '5%',
+  itemWidth: 30,
+  itemHeight: 180,
+  zlevel: 3
 }
 export default {
   mixins: [resize],
@@ -149,6 +157,7 @@ export default {
       emphasis: emphasis,
       geoOption: geoOption,
       option: option,
+      virsualSet: virsualSet,
       charts: null,
       layer: 0,
       glabalBounding: [],
@@ -206,21 +215,23 @@ export default {
         return
       } else {
         this.typeIndex = index
-        const that = this
-        const formatter = function(params, ticket, callback) {
-          const app = new Vue({
-            el: document.createElement('div'),
-            render: h => h(Tooltip, { props:
-                { name: params.name,
-                  type: that.dataTypes[that.typeIndex].name,
-                  value: params.data[Number(that.typeIndex) + 1] }
-            })
-          })
-          return app.$el
-        }
+        const visualMap = {...this.virsualSet, ...{
+          min: this.dataTypes[this.typeIndex].valueRange[0],
+          max: this.dataTypes[this.typeIndex].valueRange[1],
+          dimension: Number(this.typeIndex) + 1,
+          inRange: {
+              color: this.dataTypes[this.typeIndex].colorRange
+          },
+          controller: {
+            inRange: {
+              color: this.dataTypes[this.typeIndex].colorRange
+            },
+          },
+          text: [this.dataTypes[this.typeIndex].valueRange[1] + this.dataTypes[this.typeIndex].dw, this.dataTypes[this.typeIndex].valueRange[0] + this.dataTypes[this.typeIndex].dw],
+        }}
         var option = this.charts.getOption()
-        option.tooltip.formatter = formatter
-        option.visualMap[0].dimension = Number(this.typeIndex) + 1
+        option.visualMap = visualMap
+        //console.log(option)
         this.charts.setOption(option, true)
       }
     },
@@ -307,33 +318,39 @@ export default {
       return boundingCoords
     },
     async getAllData(geoIndex) {
+      const adcodes = []
+      this.maps[geoIndex].features.forEach(function(feature) {
+        if (feature.properties.adcode != 100000) {
+          adcodes.push(String(feature.properties.adcode))
+        }
+      })
       const data = []
       const dimension = ['name']
       this.dataTypes.forEach(function(dataType) {
         dimension.push(dataType.type)
       })
       data.push(dimension)
-      const adcodes = []
-      this.maps[geoIndex].features.forEach(function(feature) {
-        adcodes.push(feature.properties.adcode)
-      })
-      getCityData(adcodes).then((res) => {
-        const that = this
+      await getCityData(adcodes).then((res) => {
+        //console.log(res)
         this.maps[geoIndex].features.forEach(function(feature) {
-          const value = [ feature.properties.name ]
-          value.push.apply(value, res.get(feature.properties.adcode))
-          data.push(value)
+          if (feature.properties.adcode != 100000) {
+            const value = [ feature.properties.name ]
+            value.push.apply(value, res.get(String(feature.properties.adcode)))
+            data.push(value)
+          }
         })
+        //console.log(data)
       })
       return data
     },
     showData(geoIndex) {
       var option = this.charts.getOption()
       this.getAllData(geoIndex).then((res) => {
+        //console.log(res)
         const series = option.series
         const dataset = option.dataset
         dataset[geoIndex] = { source: res }
-        console.log(dataset)
+        //console.log(dataset)
         series[geoIndex] = {
           type: 'map',
           geoIndex: geoIndex,
@@ -343,21 +360,20 @@ export default {
           }
         }
         option = { ...option, ...{
-          visualMap: {
-            type: 'continuous',
+          visualMap: {...this.virsualSet, ...{
             min: this.dataTypes[this.typeIndex].valueRange[0],
             max: this.dataTypes[this.typeIndex].valueRange[1],
-            dimension: this.typeIndex + 1,
-            left: '6%',
-            bottom: '5%',
-            itemWidth: 30,
-            itemHeight: 180,
+            dimension: Number(this.typeIndex) + 1,
             inRange: {
-              color: this.dataTypes[this.typeIndex].colorRange
+                color: this.dataTypes[this.typeIndex].colorRange
+            },
+            controller: {
+              inRange: {
+                color: this.dataTypes[this.typeIndex].colorRange
+              },
             },
             text: [this.dataTypes[this.typeIndex].valueRange[1] + this.dataTypes[this.typeIndex].dw, this.dataTypes[this.typeIndex].valueRange[0] + this.dataTypes[this.typeIndex].dw],
-            zlevel: 3
-          },
+          }},
           dataset: dataset,
           series: series
         }}
@@ -449,7 +465,7 @@ export default {
           return obj
         },
         formatter: function(params, ticket, callback) {
-          //console.log(params)
+        //console.log(params)
           const app = new Vue({
             el: document.createElement('div'),
             render: h => h(Tooltip, { props:

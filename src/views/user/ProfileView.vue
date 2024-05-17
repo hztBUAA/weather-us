@@ -47,7 +47,6 @@ export default {
         {{ user.username }}
       </el-form-item>
       <el-form-item label="头像">
-        todo: 调用上传文件接口, 成功后更新 store 内容
         <el-upload
           class="avatar-uploader"
           action=""

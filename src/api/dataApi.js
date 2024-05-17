@@ -1,28 +1,27 @@
 import request from '@/utils/request'
 
 export async function getCityData(adcodes) {
-  /*
-  const params = { adcodes: adcodes }
-  console.log(params)
-  */
   const map = new Map()
-  request({
+  const params = { adcodes: adcodes }
+  /*
+  console.log(params)
+  adcodes.forEach((adcode) => {
+    map.set(adcode, [100 * Math.random(), 100 * Math.random(), 100 * Math.random(), 100 * Math.random(), 100 * Math.random(), 100 * Math.random(), 100 * Math.random()])
+  });
+  return map 
+  */
+  
+  await request({
     url: '/getCityData',
     method: 'get',
-    params: {
-      adcodes: adcodes
-    }
+    params: params
   }).then ((res) => {
-    /*
-    adcodes.forEach((adcode) => {
-      map.set(adcode, [100 * Math.random(), 100 * Math.random(), 100 * Math.random(), 100 * Math.random(), 100 * Math.random(), 100 * Math.random(), 100 * Math.random()])
-    });
-    */
-    res.data.weather.foreach(function(w) {
+    console.log(res)
+    res.data.weather.forEach(function(w) {
       map.set(w.adcode, w.value)
     })
-    return map
   })
+  return map
 }
 
 export async function getDataTypes() {
@@ -33,7 +32,7 @@ export async function getDataTypes() {
         name: '气压',
         type: 'pressure',
         dataType: 0,
-        valueRange: [0, 100],
+        valueRange: [500, 1100],
         colorRange: ['#50a3ba', '#d94e5d'],
         dw: '百帕'
       },
@@ -42,7 +41,7 @@ export async function getDataTypes() {
         name: '气温',
         type: 'temp',
         dataType: 0,
-        valueRange: [0, 100],
+        valueRange: [-40, 60],
         colorRange: ['rgb(2, 69, 255, 1)', 'rgb(255, 82, 2)'],
         dw: '摄氏度'
       },
@@ -60,7 +59,7 @@ export async function getDataTypes() {
         name: '降雨量',
         type: 'precip',
         dataType: 0,
-        valueRange: [0, 100],
+        valueRange: [0, 300],
         colorRange: ['rgb(225, 97, 18)', 'rgb(74, 179, 245)'],
         dw: '毫米'
       },
@@ -78,7 +77,7 @@ export async function getDataTypes() {
         name: '能见度',
         type: 'vis',
         dataType: 0,
-        valueRange: [0, 100],
+        valueRange: [0, 50],
         colorRange: ['rgb(225, 97, 18)', 'rgb(228, 223, 222)'],
         dw: '公里'
       },
