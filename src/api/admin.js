@@ -1,4 +1,5 @@
 import request from '@/utils/request'
+import qs from 'qs'
 
 export function getUserDigests() {
   return request({
@@ -8,60 +9,28 @@ export function getUserDigests() {
 }
 
 export function permission_change(username, isAdmin) {
-  return request({
-    url: '/admin/permission-change',
-    method: 'post',
-    params: {
-      username: username,
-      isAdmin: isAdmin
-    }
-  })
+  return request.post('/admin/permission-change', qs.stringify({ username, isAdmin }))
 }
 
 export function delete_user(username) {
-  return request({
-    url: '/admin/delete-user',
-    method: 'post',
-    params: {
-      username: username
-    }
-  })
+  return request.post('/admin/delete-user', qs.stringify({ username }))
 }
+
 export function reset_password(username) {
-  return request({
-    url: '/admin/reset-password',
-    method: 'post',
-    params: {
-      username: username
-    }
-  })
+  return request.post('/admin/reset-password', qs.stringify({ username }))
 }
+
 export function launch_varn(title, address, warningTime, type, content) {
-  return request({
-    url: '/admin/launch-warn',
-    method: 'post',
-    params: {
-      title: title,
-      address: address,
-      warningTime: warningTime,
-      type: type,
-      content: content
-    }
-  })
+  return request.post('/admin/launch-warn', qs.stringify({ title, address, warningTime, type, content }))
 }
+
 export function fetch_feedback() {
   return request({
     url: '/admin/fetch-feedback',
     method: 'get'
   })
 }
+
 export function reply_feedback(id, reply) {
-  return request({
-    url: '/admin/reply-feedback',
-    method: 'post',
-    params: {
-      id: id,
-      reply: reply
-    }
-  })
+  return request.post('/admin/reply-feedback', qs.stringify({ id, reply }))
 }

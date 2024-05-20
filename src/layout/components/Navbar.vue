@@ -16,12 +16,12 @@
               Home
             </el-dropdown-item>
           </router-link>
-            <el-dropdown-item @click.native="goToUserProfile">
-    个人信息管理
-  </el-dropdown-item>
-    <el-dropdown-item @click.native="goToFeedback">
-    反馈
-  </el-dropdown-item>
+          <el-dropdown-item @click.native="goToUserProfile">
+            个人信息管理
+          </el-dropdown-item>
+          <el-dropdown-item @click.native="goToFeedback">
+            反馈
+          </el-dropdown-item>
           <a target="_blank" href="https://github.com/hztBUAA/weather-us">
             <el-dropdown-item>Github</el-dropdown-item>
           </a>
@@ -51,10 +51,10 @@ export default {
     ])
   },
   methods: {
-      goToUserProfile() {
+    goToUserProfile() {
     // 导航到个人信息管理的路由
-    this.$router.push('/user/profile');
-  },
+      this.$router.push('/user/profile')
+    },
     toggleSideBar() {
       this.$store.dispatch('app/toggleSideBar')
     },
@@ -62,10 +62,10 @@ export default {
       await this.$store.dispatch('user/logout')
       this.$router.push(`/login?redirect=${this.$route.fullPath}`)
     },
-      goToFeedback() {
+    goToFeedback() {
     // 导航到反馈界面的路由
-    this.$router.push('/user/feedback');
-  }
+      this.$router.push('/user/feedback')
+    }
   }
 }
 </script>

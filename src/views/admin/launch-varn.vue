@@ -36,26 +36,26 @@
         <el-radio v-model="form.type" label="泥石流">泥石流</el-radio>
         <el-radio v-model="form.type" label="沙尘暴">沙尘暴</el-radio>
       </el-form-item>
-      <el-form-item label="发件邮箱">
-        <el-dropdown trigger="click" @command="handleDropdownCommand">
-          <span class="el-dropdown-link">
-            {{ selectedEmail || '邮箱选择' }}
-            <i class="el-icon-setting el-icon--right" />
-          </span>
-          <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item
-              v-for="(email, index) in emailList"
-              :key="index"
-              :command="email"
-              icon="el-icon-circle-check"
-            >
-              {{ email }}
-            </el-dropdown-item>
-          </el-dropdown-menu>
-        </el-dropdown>
-        <span style="margin-left: 40px;color: #409EFF;cursor: pointer;" @click="send_message">
-          测试发送<i class="el-icon-search el-icon--right" /></span>
-      </el-form-item>
+      <!--      <el-form-item label="发件邮箱">-->
+      <!--        <el-dropdown trigger="click" @command="handleDropdownCommand">-->
+      <!--          <span class="el-dropdown-link">-->
+      <!--            {{ selectedEmail || '邮箱选择' }}-->
+      <!--            <i class="el-icon-setting el-icon&#45;&#45;right" />-->
+      <!--          </span>-->
+      <!--          <el-dropdown-menu slot="dropdown">-->
+      <!--            <el-dropdown-item-->
+      <!--              v-for="(email, index) in emailList"-->
+      <!--              :key="index"-->
+      <!--              :command="email"-->
+      <!--              icon="el-icon-circle-check"-->
+      <!--            >-->
+      <!--              {{ email }}-->
+      <!--            </el-dropdown-item>-->
+      <!--          </el-dropdown-menu>-->
+      <!--        </el-dropdown>-->
+      <!--        <span style="margin-left: 40px;color: #409EFF;cursor: pointer;" @click="send_message">-->
+      <!--          测试发送<i class="el-icon-search el-icon&#45;&#45;right" /></span>-->
+      <!--      </el-form-item>-->
       <el-form-item label="预警信息" style="width: 500px;" :rules="rules.content" prop="content">
         <el-input v-model="form.content" type="textarea" />
       </el-form-item>
