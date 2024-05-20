@@ -1,11 +1,10 @@
 <script>
-import { getInfo, updateAvatarService } from '@/api/user'
+import { updateAvatarService } from '@/api/user'
 import { Message } from 'element-ui'
 
 export default {
   data() {
     return {
-      defaultAvatar: 'https://cube.elemecdn.com/e/fd/0fc7d20532fdaf769a25683617711png.png',
       user: { },
       usernameReadOnly: true
     }
@@ -16,8 +15,7 @@ export default {
   },
   methods: {
     async loadInfo() {
-      const result = await getInfo()
-      this.user = result.data
+      this.user = await this.$store.dispatch('user/getInfo')
     },
     checkAvatar(file) {
       if (!/^image\/.+/.test(file.type)) {
@@ -34,7 +32,6 @@ export default {
       const result = await updateAvatarService(avatar)
       Message.success(result.msg)
       await this.loadInfo()
-      await this.$store.dispatch('user/setAvatar', this.user.avatar)
     }
   }
 }
@@ -47,7 +44,6 @@ export default {
         {{ user.username }}
       </el-form-item>
       <el-form-item label="头像">
-        todo: 调用上传文件接口, 成功后更新 store 内容
         <el-upload
           class="avatar-uploader"
           action=""
