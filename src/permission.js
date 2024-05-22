@@ -1,10 +1,9 @@
+import { getToken } from '@/utils/auth'
+import getPageTitle from '@/utils/get-page-title'
+import NProgress from 'nprogress'; // progress bar
+import 'nprogress/nprogress.css'; // progress bar style
 import router from './router'
 import store from './store'
-import { Message } from 'element-ui'
-import NProgress from 'nprogress' // progress bar
-import 'nprogress/nprogress.css' // progress bar style
-import getPageTitle from '@/utils/get-page-title'
-import { getToken } from '@/utils/auth'
 
 NProgress.configure({ showSpinner: false }) // NProgress Configuration
 
@@ -36,7 +35,7 @@ router.beforeEach(async(to, from, next) => {
   if (token) {
     if (to.path === '/login') {
       // if is logged in, redirect to the home page
-      next({ path: '/' })
+      next({ path: '/map' })
       NProgress.done()
     } else if (to.path === '/404') {
       next()
@@ -65,10 +64,12 @@ router.beforeEach(async(to, from, next) => {
     if (whiteList.indexOf(to.path) !== -1) {
       // in the free login whitelist, go directly
       next()
-    } else {
-      // other pages that do not have permission to access are redirected to the login page.
+    } else if (to.path === '/admin' || to.path === '/user' || to.path === 'notice') {
       next(`/login?redirect=${to.path}`)
       NProgress.done()
+    } else {
+      // all can be accessed unless the above page
+      next({ path: '/map' })
     }
   }
 })
