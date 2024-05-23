@@ -1,4 +1,4 @@
-<template>
+·<template>
   <div class="navbar">
     <hamburger :is-active="sidebar.opened" class="hamburger-container" @toggleClick="toggleSideBar" />
 
@@ -25,7 +25,8 @@
           <a target="_blank" href="https://github.com/hztBUAA/weather-us">
             <el-dropdown-item>Github</el-dropdown-item>
           </a>
-          <el-dropdown-item divided @click.native="logout">
+          <!-- 使用 v-if 来根据用户登录状态显示或隐藏 Log Out 选项 -->
+          <el-dropdown-item v-if="isLoggedIn" divided @click.native="logout">
             <span style="display:block;">Log Out</span>
           </el-dropdown-item>
         </el-dropdown-menu>
@@ -48,9 +49,14 @@ export default {
     ...mapGetters([
       'sidebar',
       'avatar'
-    ])
+    ]),
+    isLoggedIn() {
+      // 检查用户是否已登录
+      return this.$store.getters.token !== undefined
+    }
   },
   methods: {
+
     goToUserProfile() {
     // 导航到个人信息管理的路由
       this.$router.push('/user/profile')
