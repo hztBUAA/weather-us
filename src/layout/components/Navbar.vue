@@ -25,9 +25,12 @@
           <a target="_blank" href="https://github.com/hztBUAA/weather-us">
             <el-dropdown-item>Github</el-dropdown-item>
           </a>
-          <!-- 使用 v-if 来根据用户登录状态显示或隐藏 Log Out 选项 -->
+          <!-- 使用 v-if 和 v-else 来根据用户登录状态显示不同的选项 -->
           <el-dropdown-item v-if="isLoggedIn" divided @click.native="logout">
             <span style="display:block;">Log Out</span>
+          </el-dropdown-item>
+          <el-dropdown-item v-else @click.native="login">
+            <span style="display:block;">Log In</span>
           </el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
@@ -67,6 +70,15 @@ export default {
     async logout() {
       await this.$store.dispatch('user/logout')
       this.$router.push(`/login?redirect=${this.$route.fullPath}`)
+    },
+    login() {
+      this.$router.push(`/login?redirect=${this.$route.fullPath}`)
+      this.$message({
+        message: '请登录您的账号',
+        type: 'warning', // 消息类型，可以是 'success', 'info', 'warning', 'error'
+        duration: 3000, // 消息显示的持续时间，单位是毫秒
+        showClose: true // 是否显示关闭按钮
+      })
     },
     goToFeedback() {
     // 导航到反馈界面的路由
