@@ -76,7 +76,7 @@ export default {
       this.$message({
         message: '请登录您的账号',
         type: 'warning', // 消息类型，可以是 'success', 'info', 'warning', 'error'
-        duration: 3000, // 消息显示的持续时间，单位是毫秒
+        duration: 1000, // 消息显示的持续时间，单位是毫秒
         showClose: true // 是否显示关闭按钮
       })
     },
