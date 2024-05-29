@@ -152,6 +152,7 @@ export default {
       this.selectedRow = row
       this.content = response.data.content
       this.dialogVisible = true
+      console.log(this.content)
     },
     handleDialogClose() {
       this.dialogVisible = false
@@ -182,5 +183,9 @@ export default {
 .el-table .success-row {
     /* background: oldlace; */
     background: aliceblue;
+}
+.dialog-content img {
+  max-width: 100%;
+  height: auto;
 }
 </style>
