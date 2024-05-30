@@ -1,6 +1,7 @@
 <template>
   <!-- todo: 加上天气指数 -->
   <!-- todo 打字机效果 接入ai的提示对数据的分析 | 预警的高级提示 |  -->
+
   <div class="forecast-table">
     <div style="display: flex; width: 100%;">
       <input v-model="location" type="text" class="search-input" style="flex: 1;" @input="debounceSearch">
@@ -24,6 +25,10 @@
     <!-- <div class="current-weather">
       <current-info />
     </div> -->
+    <div class="a-map-container">
+      <AMap :center="mapcenter" />
+    </div>
+
     <div class=" center" style="">
       <h1>当前天气</h1>
       <hr>
@@ -228,12 +233,14 @@ import Axios from 'axios'
 import Chart from './components/Charts/LineMarker.vue'
 import MixChart from './components/Charts/MixChart.vue'
 import _ from 'lodash'
+import AMap from './components/AMap/AMap.vue'
 // import CurrentInfo from './components/CurrentInfo.vue'
 export default {
   name: 'City',
   components: {
     Chart,
-    MixChart
+    MixChart,
+    AMap
     // CurrentInfo
     // LineChart,
     // PanelGroup,
@@ -260,7 +267,8 @@ export default {
       // value2: 1314,
       // title: '增长人数',
       options: [],
-      showOptions: false
+      showOptions: false,
+      mapcenter: []
     }
   },
   watch: {
@@ -340,6 +348,8 @@ export default {
         headers)
       this.wt_data = res.data
       this.fixed_location = this.wt_data.location[0].name
+      this.mapcenter = [this.wt_data.location[0].lon, this.wt_data.location[0].lat]
+      // console.log('mapcenter', this.mapcenter)
     },
     isNight() {
       const hour = new Date().getHours()
@@ -359,9 +369,10 @@ export default {
       // !箭头函数的问题
       await this.getApi1().then(() => {
         locationId = this.wt_data.location[0].id
+        // map center 经纬度
       }
       )
-      console.log(locationId, 'locationId')
+      // console.log(locationId, 'locationId')
 
       // 当前实时天气
       const res = await Axios.get(
@@ -742,6 +753,10 @@ h4{
 .cur-list-values {
   float: none; // 取消原有的浮动
   margin-top: 2rem; // 添加顶部间距
+}
+.a-map-container {
+  height: 450px;
+  width: 95%;
 }
 
 @media screen and (max-width: 768px) {
