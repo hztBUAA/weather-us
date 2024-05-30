@@ -25,9 +25,6 @@
     <!-- <div class="current-weather">
       <current-info />
     </div> -->
-    <div class="a-map-container">
-      <AMap :center="mapcenter" />
-    </div>
 
     <div class=" center" style="">
       <h1>当前天气</h1>
@@ -51,8 +48,9 @@
           <div class="mb-4 current-time">
             当前时间: {{ currentTime }}
           </div>
-          <div class="mb-4">{{ cur.temp }}<sup>o</sup>C</div>
-          <div class="mb-4">{{ cur.text }}</div>
+          <div class="mb-4"><i class="qi-2155" style="font-size:16px;margin-right:4px" />{{ cur.temp }}<sup>o</sup>C</div>
+          <div class="mb-4"><i class="el-icon-odometer" style="font-size:16px;margin-right:4px" />{{ cur.vis }}km</div>
+          <div class="mb-4"><i style="font-size:16px;margin-right:4px" :class="'qi-' + cur.icon" />{{ cur.text }}</div>
           <div class="mb-4"><i class="qi-2208" style="font-size:16px;margin-right:4px" />{{ cur.windDir }}</div>
           <div class="mb-4"><i class="qi-2120" style="font-size:16px;margin-right:4px" />{{ cur.humidity }}%</div>
         </div>
@@ -101,8 +99,10 @@
             </div>
             <div class="mb-4">{{ days_7[1].textDay }}</div>
             <div class="degree mb-4">{{ days_7[1].tempMax }}<sup>o</sup>C</div>
+            <div class="degree mb-4">{{ days_7[1].tempMin }}<sup>o</sup>C</div>
             <!-- <div class="degree mb-4">{{ days_7[1].tempMin }}<sup>o</sup>C</div> -->
-            <small>{{ days_7[1].tempMin }}<sup>o</sup></small>
+            <!-- <small>{{ days_7[1].tempMin }}<sup>o</sup></small> -->
+            <div class="mb-4"><i class="qi-2120" style="font-size:16px;margin-right:4px" />{{ days_7[1].humidity }}%</div>
           </div>
         </div>
         <div class="forecast">
@@ -116,7 +116,9 @@
             </div>
             <div class="mb-4">{{ days_7[2].textDay }}</div>
             <div class="degree mb-4">{{ days_7[2].tempMax }}<sup>o</sup>C</div>
-            <small>{{ days_7[2].tempMin }}<sup>o</sup></small>
+            <div class="degree mb-4">{{ days_7[2].tempMin }}<sup>o</sup>C</div>
+            <!-- <small>{{ days_7[2].tempMin }}<sup>o</sup></small> -->
+            <div class="mb-4"><i class="qi-2120" style="font-size:16px;margin-right:4px" />{{ days_7[2].humidity }}%</div>
           </div>
         </div>
         <div class="forecast">
@@ -130,7 +132,9 @@
             </div>
             <div class="mb-4">{{ days_7[3].textDay }}</div>
             <div class="degree mb-4">{{ days_7[3].tempMax }}<sup>o</sup>C</div>
-            <small>{{ days_7[3].tempMin }}<sup>o</sup></small>
+            <div class="degree mb-4">{{ days_7[3].tempMin }}<sup>o</sup>C</div>
+            <!-- <small>{{ days_7[3].tempMin }}<sup>o</sup></small> -->
+            <div class="mb-4"><i class="qi-2120" style="font-size:16px;margin-right:4px" />{{ days_7[3].humidity }}%</div>
           </div>
         </div>
         <div class="forecast">
@@ -144,7 +148,9 @@
             </div>
             <div class="mb-4">{{ days_7[4].textDay }}</div>
             <div class="degree mb-4">{{ days_7[4].tempMax }}<sup>o</sup>C</div>
-            <small>{{ days_7[4].tempMin }}<sup>o</sup></small>
+            <div class="degree mb-4">{{ days_7[4].tempMin }}<sup>o</sup>C</div>
+            <!-- <small>{{ days_7[4].tempMin }}<sup>o</sup></small> -->
+            <div class="mb-4"><i class="qi-2120" style="font-size:16px;margin-right:4px" />{{ days_7[4].humidity }}%</div>
           </div>
         </div>
         <div class="forecast">
@@ -158,7 +164,9 @@
             </div>
             <div class="mb-4">{{ days_7[5].textDay }}</div>
             <div class="degree mb-4">{{ days_7[5].tempMax }}<sup>o</sup>C</div>
-            <small>{{ days_7[5].tempMin }}<sup>o</sup></small>
+            <div class="degree mb-4">{{ days_7[5].tempMin }}<sup>o</sup>C</div>
+            <!-- <small>{{ days_7[5].tempMin }}<sup>o</sup></small> -->
+            <div class="mb-4"><i class="qi-2120" style="font-size:16px;margin-right:4px" />{{ days_7[5].humidity }}%</div>
           </div>
         </div>
         <div class="forecast">
@@ -172,7 +180,9 @@
             </div>
             <div class="mb-4">{{ days_7[6].textDay }}</div>
             <div class="degree mb-4">{{ days_7[6].tempMax }}<sup>o</sup>C</div>
-            <small>{{ days_7[6].tempMin }}<sup>o</sup></small>
+            <div class="degree mb-4">{{ days_7[6].tempMin }}<sup>o</sup>C</div>
+            <div class="mb-4"><i class="qi-2120" style="font-size:16px;margin-right:4px" />{{ days_7[6].humidity }}%</div>
+            <!-- <small>{{ days_7[6].tempMin }}<sup>o</sup></small> -->
           </div>
         </div>
       </div>
@@ -183,6 +193,13 @@
     <!-- <div class="container">
 
     </div> -->
+    <div class="a-map-container">
+      <h1>地理信息</h1>
+      <p>您可以点击某一处地图上查看具体信息</p>
+      <hr>
+      <AMap :center="mapcenter" />
+
+    </div>
     <div class="hourly-info">
       <h1>
         逐小时数据
@@ -618,7 +635,7 @@ export default {
 
 .forecast-container .forecast .forecast-content .degree {
 	// font-size: 24px;
-	font-size: 0.8em;
+	font-size: 1rem;
 	// color: #5BBCFF;
 	font-weight: 700;
 }
@@ -669,7 +686,7 @@ hr {
 
 h1{
   text-align: left;
-  font-size: 16px;
+  font-size: 32px;
 }
 
 .forecast-table{
@@ -755,8 +772,13 @@ h4{
   margin-top: 2rem; // 添加顶部间距
 }
 .a-map-container {
-  height: 450px;
-  width: 95%;
+  height: 100vh;
+  width: 100%;
+  margin-bottom: 16px;
+  overflow: hidden;
+}
+small {
+   margin-bottom: 4vh;
 }
 
 @media screen and (max-width: 768px) {
@@ -792,6 +814,7 @@ h4{
   }
   small{
     font-size: 0.7rem;
+    margin-bottom: 4vh;
   }
 }
 
