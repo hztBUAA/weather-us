@@ -229,12 +229,12 @@
       />
       <el-card class="box-card">
         <div slot="header">
-          <span v-if="events.length>0" class="event-title">{{ events[0].title }}</span>
-          <span v-else>暂无可能的灾害 </span>
+          <span v-if="events.length>0" class="event-title"><i class="qi-2166" />{{ events[0].title }}</span>
+          <span v-else><i class="el-icon-headset" style="font-size:16px;margin-right:4px" />暂无可能的灾害 </span>
         </div>
         <div>
-          <span v-if="events.length>0" class="event-text">{{ events[0].text }}</span>
-          <span v-else>您所在的地区很安全！您可以放心写软工了哦！</span>
+          <span v-if="events.length>0" class="event-text"><i class="el-icon-chat-dot-round" style="font-size:16px;margin-right:4px" />{{ events[0].text }}</span>
+          <span v-else><i class="el-icon-chat-dot-round" style="font-size:16px;margin-right:4px" />您所在的地区很安全！您可以放心写软工了哦！</span>
         </div>
 
       </el-card>
