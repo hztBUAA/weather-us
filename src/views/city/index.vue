@@ -27,10 +27,11 @@
     </div> -->
 
     <div class=" center" style="">
-      <h1>当前天气</h1>
+      <h1>当前天气<span class="el-icon-arrow-down el-icon--right hover-effect" @click="toggleCurWeather" /></h1>
       <hr>
       <!-- <img src="./images/sunny.png" alt=""> -->
       <div
+        v-if="shows.cur_weather"
         class="current-panel mb-4"
         :style="{
           backgroundImage: 'url(' + getWeatherImage(cur.icon) + ')',
@@ -60,10 +61,10 @@
 
     <div class="container">
       <h1>
-        七日预报信息
+        七日预报信息<span class="el-icon-arrow-down el-icon--right hover-effect" @click="toggleSevenDays" />
       </h1>
       <hr>
-      <div class="forecast-container">
+      <div v-if="shows.seven_day_weather" class="forecast-container">
         <div class="today forecast">
           <div class="forecast-header">
             <!-- 应该是模版渲染时 没有weekday！ -->
@@ -194,42 +195,44 @@
 
     </div> -->
     <div class="a-map-container">
-      <h1>地理信息</h1>
-      <p>您可以点击某一处地图上查看具体信息</p>
+      <h1>地理信息<span class="el-icon-arrow-down el-icon--right hover-effect" @click="toggleGeoMap" /></h1>
       <hr>
-      <AMap :center="mapcenter" />
-
+      <div v-if="shows.geoMap" class="chart-container">
+        <p>您可以点击某一处地图上查看具体信息</p>
+        <AMap :center="mapcenter" />
+      </div>
     </div>
-    <div class="hourly-info">
+    <div id="hourly-info">
       <h1>
-        逐小时数据
+        逐小时数据<span class="el-icon-arrow-down el-icon--right hover-effect" @click="toggleHourlyInfo" />
       </h1>
       <hr>
-      <div class="chart-container">
+      <div v-if="shows.hourly_info" class="chart-container">
         <chart height="100%" width="100%" :hourly="hourly" />
       </div>
     </div>
-    <div class="hourly-info">
+    <div id="history-info">
       <h1>
-        历史数据
+        历史数据<span class="el-icon-arrow-down el-icon--right hover-effect" @click="toggleHistoryInfo" />
       </h1>
       <hr>
-      <div class="chart-container">
+      <div v-if="shows.historyInfo" class="chart-container">
         <mix-chart height="100%" width="100%" :city="fixed_location" />
       </div>
     </div>
     <div class="event-info">
       <h1>
-        灾害预警通知
+        灾害预警通知<span class="el-icon-arrow-down el-icon--right hover-effect" @click="toggleEvents" />
       </h1>
       <hr>
       <el-alert
         :title="warning_title"
         :type="warning_type"
       />
-      <el-card class="box-card">
+      <el-card v-if="shows.event_prediction" class="box-card">
+
         <div slot="header">
-          <span v-if="events.length>0" class="event-title"><i class="qi-2166" />{{ events[0].title }}</span>
+          <span v-if="events.length>0" class="event-title"><i class="qi-2166" style="font-size:16px;margin-right:4px" />{{ events[0].title }}</span>
           <span v-else><i class="el-icon-headset" style="font-size:16px;margin-right:4px" />暂无可能的灾害 </span>
         </div>
         <div>
@@ -285,7 +288,16 @@ export default {
       // title: '增长人数',
       options: [],
       showOptions: false,
-      mapcenter: []
+      mapcenter: [],
+      shows: {
+        cur_weather: true,
+        seven_day_weather: true,
+        event_prediction: false,
+        hourly_info: false,
+        geoMap: true,
+        historyInfo: false
+
+      }
     }
   },
   watch: {
@@ -327,6 +339,24 @@ export default {
     setInterval(this.updateTime, 1000) // 每秒更新一次时间
   },
   methods: {
+    toggleCurWeather() {
+      this.shows.cur_weather = !this.shows.cur_weather // 切换面板的显示状态
+    },
+    toggleSevenDays() {
+      this.shows.seven_day_weather = !this.shows.seven_day_weather
+    },
+    toggleGeoMap() {
+      this.shows.geoMap = !this.shows.geoMap
+    },
+    toggleHourlyInfo() {
+      this.shows.hourly_info = !this.shows.hourly_info
+    },
+    toggleHistoryInfo() {
+      this.shows.historyInfo = !this.shows.historyInfo
+    },
+    toggleEvents() {
+      this.shows.event_prediction = !this.shows.event_prediction
+    },
     // 在组件内部定义 debounceSearch 方法
     debounceSearch: _.debounce(function() {
       this.search()
@@ -772,13 +802,24 @@ h4{
   margin-top: 2rem; // 添加顶部间距
 }
 .a-map-container {
-  height: 100vh;
+  height: 100%;
   width: 100%;
-  margin-bottom: 16px;
+  // margin-bottom: 16px;
   overflow: hidden;
 }
 small {
    margin-bottom: 4vh;
+}
+
+/* 定义一个可重用的悬停样式类 */
+.hover-effect {
+  cursor: pointer; /* 将鼠标指针改为手形，表示可点击 */
+}
+
+.hover-effect:hover {
+  /* 鼠标悬停时的样式 */
+  color: rgb(25, 84, 156); /* 例如，改变文本或图标的颜色以指示悬停状态 */
+  /* 可以添加其他样式，如背景颜色、边框等 */
 }
 
 @media screen and (max-width: 768px) {
