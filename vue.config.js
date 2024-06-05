@@ -6,7 +6,7 @@ function resolve(dir) {
   return path.join(__dirname, dir)
 }
 
-const name = 'WeathdefaultSettings.title || er-us' // page title
+const name = 'defaultSettings.title || Weather-us' // page title
 
 // If your port is set to 80,
 // use administrator privileges to execute the command line.

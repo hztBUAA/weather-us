@@ -1,7 +1,7 @@
 <template>
-  <div :class="{'has-logo':showLogo}">
+  <div :class="{'has-logo': showLogo}" class="top-bar">
     <logo v-if="showLogo" :collapse="isCollapse" />
-    <el-scrollbar wrap-class="scrollbar-wrapper">
+    <el-scrollbar wrap-class="scrollbar-wrapper-horizontal">
       <el-menu
         :default-active="activeMenu"
         :collapse="isCollapse"
@@ -10,7 +10,7 @@
         :unique-opened="false"
         :active-text-color="variables.menuActiveText"
         :collapse-transition="false"
-        mode="vertical"
+        mode="horizontal"
       >
         <sidebar-item v-for="route in routes" :key="route.path" :item="route" :base-path="route.path" />
       </el-menu>
@@ -65,3 +65,27 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.top-bar {
+  display: flex;
+  align-items: center;
+  height: 60px; /* 根据需要调整高度 */
+  background-color: #fff; /* 根据需要调整背景色 */
+}
+
+.scrollbar-wrapper-horizontal {
+  flex: 1;
+  overflow: auto;
+}
+
+.el-scrollbar__wrap {
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  white-space: nowrap;
+}
+
+.el-menu--horizontal {
+  line-height: 60px; /* 确保菜单项垂直居中 */
+}
+</style>
