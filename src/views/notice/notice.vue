@@ -14,20 +14,8 @@
             <span style="margin-left: 10px">{{ scope.row.date }}</span>
           </template>
         </el-table-column>
-        <el-table-column
-          prop="tag"
-          label="状态"
-          width="180"
-          :filters="[{ text: '已读', value: '已读' }, { text: '未读', value: '未读' }]"
-          :filter-method="filterState"
-          filter-placement="bottom-end"
-        >
-          <template slot-scope="scope">
-            <el-tag :type="scope.row.state === '已读' ? 'primary' : 'success'" disable-transitions>{{
-              scope.row.state }}</el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column label="公告标题" width="360">
+
+        <el-table-column label="公告标题" width="540">
           <template slot-scope="scope">
             <span style="font-weight: bolder;">{{ scope.row.title }}</span>
           </template>

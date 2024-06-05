@@ -80,11 +80,11 @@ const emphasis = {
   label: {
     fontSize: 14,
     textStyle: {
-      color: '#eee'
+      color: '#1e1e1e'
     }
   },
   itemStyle: {
-    areaColor: '#rgb(147, 235, 248)'
+    areaColor: 'rgb(255, 250, 250)'
     // opacity: 0.2,
     // borderWidth: 0
   }
@@ -101,7 +101,7 @@ const geoOption = {
   },
   itemStyle: {
     // borderWidth: 0,
-    areaColor: '#rgb(147, 235, 248)'
+    areaColor: 'rgb(204, 204, 204)'
     // opacity: 0.1,
     /*
     areaColor: {
@@ -133,8 +133,11 @@ const geoOption = {
 }
 const option = {
   animation: true,
+  animationThreshold: 100000,
   animationDuration: 2000,
-  animationDurationUpdate: 300,
+  animationDelay: 100,
+  animationDurationUpdate: 2000,
+  animationDelayUpdate: 100,
   backgroundColor: '#cccccc'
 }
 const virsualSet = {
@@ -405,16 +408,19 @@ export default {
             // newGeo.itemStyle.borderWidth = 3
             option.geo[2] = newGeo
             echarts.registerMap(feature.properties.name, res.data)
-            this.charts.setOption(option)
+            //this.charts.setOption(option)
             option.geo[0].boundingCoords = newBoundingCoords
             option.geo[1].boundingCoords = newBoundingCoords
             option.geo[2].boundingCoords = newBoundingCoords
             option.geo[1].silent = true
             option.geo[1].label.show = false
-            this.charts.setOption(option)
             this.layer = 2
             this.maps[2] = res.data
-            this.showData(2)
+            const that = this
+            setTimeout(() => {
+              that.charts.setOption(option)
+              that.showData(2)
+            }, 500)
           })
         }
       })
@@ -424,6 +430,7 @@ export default {
       mapData.features.forEach((feature) => {
         if (feature.properties.name === name1) {
           getCityJson(feature.properties.adcode).then((res) => {
+            const that = this
             if (res.data.features.length <= 1) {
               this.$router.push({ name: 'City', params: { c1: name1 }})
               return
@@ -436,20 +443,24 @@ export default {
             if (option.geo[1] == null || option.geo[1].map != newGeo.map) {
               option.geo[1] = newGeo
               echarts.registerMap(feature.properties.name, res.data)
-              this.charts.setOption(option)
+              //this.charts.setOption(option)
               option.geo[0].boundingCoords = newBoundingCoords
               option.geo[1].boundingCoords = newBoundingCoords
               option.geo[0].silent = true
               option.geo[0].label.show = false
-              this.charts.setOption(option)
               this.glabalBounding2 = newBoundingCoords
               this.maps[1] = res.data
               this.maps[2] = null
-              this.showData(1)
+              setTimeout(() => {
+                that.charts.setOption(option,{lazyUpdate: true})
+                that.showData(1)
+              }, 500)
             }
             this.layer = 1
             if (name2 != null && name2 != undefined) {
-              this.showCity2(name2)
+              setTimeout(() => {
+                that.showCity2(name2)
+              }, 1000)
             }
           })
         }
