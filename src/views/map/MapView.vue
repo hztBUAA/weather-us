@@ -1,29 +1,24 @@
 <template>
   <div>
-    <div ref="charts" style="width: 100%; height: 100vh" />
+    <div style="width: 100%; height: 100vh">
+      <div ref="charts" style="width: 100%; height: 100%"></div>
+    </div>
+    <div class="float" style="width: 100%; height: 100vh; top: 0%; left: 0%" v-if="dataType == '地质'"> 
+      <GeoView></GeoView>
+    </div>
     <el-menu default-active="0" style="top: 40%; right: 0%; width: 60px; background-color: rgba(0, 0, 0, 0); text-align: center;" class="float" :collapse="true" @select="selectMode">
-      <div v-for="item in dataTypes.slice(0, 5)" :key="item.index">
+      <el-radio-group v-model="dataType" size="mini" @input="changeType">
+        <el-radio-button label="气象"></el-radio-button>
+        <el-radio-button label="地质"></el-radio-button>
+      </el-radio-group>
+      <div v-for="item in dataTypes" :key="item.index" v-if="dataType == '气象'">
         <el-menu-item :index="String(item.index)">
-          <i class="el-icon-sunny" />
+          <img :src="item.img" style="object-fit: contain; width: 23px;">
           <span slot="title">{{ item.name }}</span>
         </el-menu-item>
       </div>
-      <el-submenu index="-1">
-        <template slot="title">
-          <i class="el-icon-menu" />
-        </template>
-        <el-menu-item-group>
-          <span slot="title">更多选项</span>
-          <div v-for="item in dataTypes.slice(5)" :key="item.index">
-            <el-menu-item :index="String(item.index)">
-              <i class="el-icon-sunny" />
-              <span slot="title">{{ item.name }}</span>
-            </el-menu-item>
-          </div>
-        </el-menu-item-group>
-      </el-submenu>
     </el-menu>
-    <div class="float" style="top: 3%; left: 3%; display: flex; align-items: center; justify-content: center; height: 42px">
+    <div class="float" style="top: 3%; left: 3%; display: flex; align-items: center; justify-content: center; height: 42px" v-if="dataType == '气象'">
       <el-button
         plain
         size="medium"
@@ -41,20 +36,13 @@
         :props="{ expandTrigger: 'hover', checkStrictly: true }"
         @change="chooseCity"
       />
-      <el-date-picker
-        v-model="date"
-        style="margin-right: 25px"
-        type="datetime"
-        placeholder="选择日期"
-        value-format="yyyy-MM-dd-HH"
-        @change="chooseDate"
-      />
       <el-color-picker
         v-model="backgroundColor"
         show-alpha
         :predefine="predefineColors"
         @active-change="colorChange"
       />
+      <div id="geoView"></div>
     </div>
   </div>
 </template>
@@ -67,6 +55,7 @@ import citiesData from '../../assets/jsonData/cities.json'
 import { getCityJson } from '../../api/staticApi'
 import { getCityData, getDataTypes } from '../../api/dataApi'
 import Tooltip from '../../views/map/tooltip.vue'
+import GeoView from '../../views/map/GeoView.vue'
 import Vue from 'vue'
 import resize from './mixins/resize'
 const predefineColors = ['#ff4500',
@@ -151,7 +140,8 @@ const virsualSet = {
 export default {
   mixins: [resize],
   components: {
-    Tooltip
+    Tooltip,
+    GeoView
   },
   data() {
     return {
@@ -169,9 +159,8 @@ export default {
       cities: [],
       chosenCity: [],
       dataTypes: [],
+      dataType: '气象',
       typeIndex: 0,
-      date: null,
-      lastDate: null
     }
   },
   created() {
@@ -187,18 +176,14 @@ export default {
     goCity() {
       console.log(1)
     },
-    chooseDate() {
-      /*
-      if (this.date != this.lastDate) {
-        this.showData(0)
-        if (this.maps[1] != null && this.maps[1] != undefined) {
-          this.showData(1)
-        }
-        if (this.maps[2] != null && this.maps[2] != undefined) {
-          this.showData(2)
-        }
-      }
-      */
+    changeType(label) {
+      const option = this.charts.getOption()
+      option.geo.forEach((geo) => {
+        geo.show = label == '气象'
+      })
+      option.visualMap[0].show = label == '气象'
+      //console.log(option)
+      this.charts.setOption(option)
     },
     getJson(json) {
     //  const stringData = JSON.stringify(json, null, 2)
@@ -476,13 +461,12 @@ export default {
           return obj
         },
         formatter: function(params, ticket, callback) {
-        //console.log(params)
+          //console.log(params)
           const app = new Vue({
             el: document.createElement('div'),
             render: h => h(Tooltip, { props:
                 { name: params.name,
-                  type: that.dataTypes[that.typeIndex].name,
-                  value: params.data[Number(that.typeIndex) + 1] }
+                  value: params.data }
             })
           })
           return app.$el
@@ -540,5 +524,8 @@ export default {
 
 .move_button:hover {
     opacity: 0.8;
+}
+.el-dropdown-menu__item, .el-menu-item {
+  padding-left: 0;
 }
 </style>

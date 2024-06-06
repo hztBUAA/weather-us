@@ -26,6 +26,7 @@
     "lodash": "^4.17.21",
     "normalize.css": "7.0.0",
     "nprogress": "0.2.0",
+    "ol": "^9.2.4",
     "path-to-regexp": "2.4.0",
     "qs": "^6.12.1",
     "qweather-icons": "^1.6.0",

@@ -1,26 +1,31 @@
 <template>
   <div>
     {{ name }} <br>
-    {{ type }} : {{ value }} <br>
+    <div v-for="item in dataTypes" :key="item.index">
+      {{ item.name }} : {{ value[item.index + 1] }} <br>
+    </div>
     <div style="cursor: pointer" @click="click"><b> 查看详情 </b></div>
   </div>
 </template>
 
 <script>
-
+import { getDataTypes } from '../../api/dataApi'
 import router from '@/router'
 export default {
   props: [
     'name',
-    'type',
     'value'
   ],
   data() {
     return {
-      path: {}
+      path: {},
+      dataTypes: []
     }
   },
   mounted() {
+    getDataTypes().then((res) => {
+      this.dataTypes = res.data
+    })
     this.path = {
       name: 'City',
       params: {
