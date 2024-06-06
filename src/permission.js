@@ -26,7 +26,7 @@ const hasPermission = (to, token, next) => {
 const shouldLogin = [
   '/admin',
   '/user',
-  '/notice'
+  //'/notice'
 ]
 
 router.beforeEach(async(to, from, next) => {
