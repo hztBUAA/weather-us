@@ -48,7 +48,7 @@ export default {
     submit() {
       this.$refs.cascaderForm.validate(async(valid) => {
         if (valid) {
-          const result = await addCitySubscribeService({ city: this.cascaderData.city.join('') })
+          const result = await addCitySubscribeService({ city: this.cascaderData.city })
           Message.success(result.msg)
           this.dialogVisible = false
           this.loadData()
@@ -83,7 +83,7 @@ export default {
     <el-table :data="cities" stripe border style="margin-top: 10px; width: 251px">
       <el-table-column label="城市" width="150px">
         <template slot-scope="{row}">
-          {{ row }}
+          {{ row.join('') }}
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" width="100px">
@@ -109,7 +109,7 @@ export default {
     <el-card v-for="(warning, key) in warnings" :key="key" style="margin-top: 5px">
       <el-descriptions :title="warning.title" border :label-style="labelStyle">
         <el-descriptions-item label="类型">{{ warning.type }}</el-descriptions-item>
-        <el-descriptions-item label="地点">{{ warning.address }}</el-descriptions-item>
+        <el-descriptions-item label="地点">{{ warning.address.join('') }}</el-descriptions-item>
         <el-descriptions-item label="时间">{{ warning.warningTime }}</el-descriptions-item>
         <el-descriptions-item label="内容">{{ warning.content }}</el-descriptions-item>
       </el-descriptions>
