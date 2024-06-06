@@ -21,7 +21,7 @@ export function reset_password(username) {
 }
 
 export function launch_varn(title, address, warningTime, type, content) {
-  return request.post('/admin/launch-warn', qs.stringify({ title, address, warningTime, type, content }))
+  return request.post('/admin/launch-warn', { title, address, warningTime, type, content })
 }
 
 export function fetch_feedback() {
