@@ -98,7 +98,7 @@ export default {
     onSubmit() {
       this.$refs.form.validate(async(valid) => {
         if (valid) {
-          launch_varn(this.form.title, this.form.address.join(''),
+          launch_varn(this.form.title, this.form.address,
             this.form.warningTime, this.form.type, this.form.content).then(() => {
             this.$message.success('发布成功')
             setTimeout(() => {

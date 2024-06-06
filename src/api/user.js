@@ -30,11 +30,11 @@ export function getCitySubscribeService() {
 }
 
 export function addCitySubscribeService(data) {
-  return request.post('/user/citySubscribe', qs.stringify(data))
+  return request.post('/user/citySubscribe', data)
 }
 
 export function deleteCitySubscribeService(city) {
-  return request.delete('/user/citySubscribe', { params: { city }})
+  return request.delete('/user/citySubscribe', { data: { city }})
 }
 
 export function getUserFeedbackService() {
