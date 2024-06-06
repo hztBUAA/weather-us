@@ -10,3 +10,9 @@
     主要是 旧版本的设置echart  需要弄成this.$echart    直接import echart as echarts  是不会显示图片的   因为 包不够
 
 
+
+
+## 没其他事 这一次commit单独是因为发现在服务器上进行开发时的commit算做了judger2003 离谱
+## 涉及了路由、权限、前端页面、后端api审视，我只能说“悟已往之不谏，知来者之可追”。
+
+
