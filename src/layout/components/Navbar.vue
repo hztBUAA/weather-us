@@ -11,6 +11,36 @@
           <span>首页</span>
         </router-link>
       </el-menu-item>
+      <el-submenu v-if="isAdmin" index="cnm">
+        <template slot="title">
+          <el-icon class="el-icon-s-check" />
+          <span>管理员功能</span>
+        </template>
+        <el-menu-item index="cnm-1">
+          <router-link to="/admin/user-con">
+            <el-icon class="el-icon-user" />
+            <span>用户管理</span>
+          </router-link>
+        </el-menu-item>
+        <el-menu-item index="cnm-2">
+          <router-link to="/admin/launch-varn">
+            <el-icon class="el-icon-bell" />
+            <span>发布预警</span>
+          </router-link>
+        </el-menu-item>
+        <el-menu-item index="cnm-3">
+          <router-link to="/admin/deal-feedback">
+            <el-icon class="el-icon-edit-outline" />
+            <span>处理反馈</span>
+          </router-link>
+        </el-menu-item>
+        <el-menu-item index="cnm-4">
+          <router-link to="/admin/launch-notice">
+            <el-icon class="el-icon-s-opportunity" />
+            <span>发布公告</span>
+          </router-link>
+        </el-menu-item>
+      </el-submenu>
       <el-menu-item index="2">
         <router-link to="/notice/digests">
           <el-icon class="el-icon-chat-dot-square" />
@@ -47,6 +77,7 @@
           </router-link>
         </el-menu-item>
       </el-submenu>
+
       <el-menu-item index="4">
         <router-link to="/city/index">
           <el-icon class="el-icon-school" />
@@ -98,9 +129,15 @@
 import { mapGetters } from 'vuex'
 // import Breadcrumb from '@/components/Breadcrumb'
 // import Hamburger from '@/components/Hamburger'
-
+// import store from '@/store'
+import { getToken } from '@/utils/auth'
 export default {
   components: {
+  },
+  data() {
+    return {
+      isAdminFlag: false
+    }
   },
   computed: {
     ...mapGetters([
@@ -110,10 +147,42 @@ export default {
     isLoggedIn() {
       // 检查用户是否已登录
       return this.$store.getters.token !== undefined
+    },
+    isAdmin() {
+      return this.isAdminFlag
+    }
+  },
+  async created() {
+    const token = getToken()
+    if (token) {
+      const hasGetUserInfo = this.$store.getters.avatar
+      if (!hasGetUserInfo) {
+        await this.$store.dispatch('user/getInfo')
+      }
+      const role = token === 'true' ? 'admin' : 'user'
+      if (role === 'admin') {
+        this.isAdminFlag = true
+      }
     }
   },
   methods: {
 
+    // isAdmin() {
+    //   const token = getToken()
+    //   if (token) {
+    //     // const hasGetUserInfo = store.getters.avatar
+    //     // if (!hasGetUserInfo) {
+    //     //   await store.dispatch('user/getInfo')
+    //     // }
+    //     // const role = token === 'true' ? 'admin' : 'user'
+    //     // if (role === 'admin') {
+    //     //   console.log(role, 'role')
+    //     //   return true
+    //     // }
+    //     return true
+    //   }
+    //   return false
+    // },
     goToUserProfile() {
     // 导航到个人信息管理的路由
       this.$router.push('/user/profile')
