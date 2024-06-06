@@ -96,6 +96,9 @@
                 <el-link type="info" :underline="false" @click="page = 'register'">
                   注册 →
                 </el-link>
+                <el-link type="success" :underline="false" @click="goToIndex">
+                  游客身份登录
+                </el-link>
                 <el-link :underline="false" type="primary" @click="page = 'forget'">
                   忘记密码?
                 </el-link>
@@ -276,6 +279,15 @@ export default {
     }
   },
   methods: {
+    goToIndex() {
+      this.$router.push('/dashboard')
+      this.$message({
+        message: '您正在以游客身份登录~',
+        type: 'success', // 消息类型，可以是 'success', 'info', 'warning', 'error'
+        duration: 3000, // 消息显示的持续时间，单位是毫秒
+        showClose: true // 是否显示关闭按钮
+      })
+    },
     handleLogin() {
       this.$refs.loginForm.validate(valid => {
         if (valid) {

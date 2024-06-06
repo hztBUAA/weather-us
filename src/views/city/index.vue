@@ -1,5 +1,6 @@
 <template>
   <!-- todo: 加上天气指数 -->
+  <!-- todo 打字机效果 接入ai的提示对数据的分析 | 预警的高级提示 |  -->
   <div class="forecast-table">
     <div style="display: flex; width: 100%;">
       <input v-model="location" type="text" class="search-input" style="flex: 1;" @input="debounceSearch">
@@ -414,7 +415,7 @@ export default {
     getWeatherImage(weather) {
       const hour = new Date().getHours()
       // console.log('hour', hour, weather, 'weather')
-      if (hour >= 18) {
+      if (hour >= 18 || hour <= 6) {
         return require('@/assets/night-sunny.png') // 使用@表示src目录
       }
 
@@ -641,7 +642,7 @@ i{
   // background-color: #fff;
   // background-image: url(./images/sunny.png);
   background-size: 100%;
-  height: 20rem;
+  height: 44vh;
   padding: 1rem;
   border-radius: 5px;
   box-shadow: 0 2px 4px rgba(26, 12, 12, 0.1);
@@ -751,15 +752,15 @@ h4{
   }
 
   .cur-list-values > div {
-    margin-bottom: 2vh; // 调整每个子元素的底部间距
+    margin-bottom: 1.5vh; // 调整每个子元素的底部间距
   }
   .cur-left-name{
     margin-top: 3rem;
   }
   .current-panel {
     background-size: 100%;
-    height: 40vh; // 使用相对单位
-    padding: 5vw; // 使用相对单位
+    background-size: cover;
+    height: 39vh; // 使用相对单位
     border-radius: 5px;
     box-shadow: 0 2px 4px rgba(26, 12, 12, 0.1);
     background-repeat: no-repeat;

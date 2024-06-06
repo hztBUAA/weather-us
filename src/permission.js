@@ -1,10 +1,10 @@
+import { getToken } from '@/utils/auth'
+import getPageTitle from '@/utils/get-page-title'
+import { Message } from 'element-ui'
+import NProgress from 'nprogress'
+import 'nprogress/nprogress.css'
 import router from './router'
 import store from './store'
-import { Message } from 'element-ui'
-import NProgress from 'nprogress' // progress bar
-import 'nprogress/nprogress.css' // progress bar style
-import getPageTitle from '@/utils/get-page-title'
-import { getToken } from '@/utils/auth'
 
 NProgress.configure({ showSpinner: false }) // NProgress Configuration
 
@@ -23,6 +23,12 @@ const hasPermission = (to, token, next) => {
   }
 }
 
+const shouldLogin = [
+  '/admin',
+  '/user',
+  '/notice'
+]
+
 router.beforeEach(async(to, from, next) => {
   // start progress bar
   NProgress.start()
@@ -36,7 +42,7 @@ router.beforeEach(async(to, from, next) => {
   if (token) {
     if (to.path === '/login') {
       // if is logged in, redirect to the home page
-      next({ path: '/' })
+      next({ path: '/map' })
       NProgress.done()
     } else if (to.path === '/404') {
       next()
@@ -65,9 +71,14 @@ router.beforeEach(async(to, from, next) => {
     if (whiteList.indexOf(to.path) !== -1) {
       // in the free login whitelist, go directly
       next()
-    } else {
+    } else if (shouldLogin.some(path => to.path.startsWith(path))) {
+      Message.warning('请先登录~') // 弹出提示
       // other pages that do not have permission to access are redirected to the login page.
       next(`/login?redirect=${to.path}`)
+      NProgress.done()
+    } else {
+      // allow access to all other pages
+      next()
       NProgress.done()
     }
   }
