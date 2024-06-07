@@ -3,7 +3,7 @@
 
     <div class="loader" />
 
-    <h1>Welcome to the Weather Platform</h1>
+    <h1>Welcome to the Weather-us</h1>
     <div class="explore-button">
       <router-link to="map/index">探索</router-link>
     </div>

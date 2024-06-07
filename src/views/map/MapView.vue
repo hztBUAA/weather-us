@@ -7,10 +7,6 @@
       <GeoView></GeoView>
     </div>
     <el-menu default-active="0" style="top: 40%; right: 0%; width: 60px; background-color: rgba(0, 0, 0, 0); text-align: center;" class="float" :collapse="true" @select="selectMode">
-      <el-radio-group v-model="dataType" size="mini" @input="changeType">
-        <el-radio-button label="气象"></el-radio-button>
-        <el-radio-button label="地质"></el-radio-button>
-      </el-radio-group>
       <div v-for="item in dataTypes" :key="item.index" v-if="dataType == '气象'">
         <el-menu-item :index="String(item.index)">
           <img :src="item.img" style="object-fit: contain; width: 23px;">
@@ -18,12 +14,13 @@
         </el-menu-item>
       </div>
     </el-menu>
-    <div class="float" style="top: 3%; left: 3%; display: flex; align-items: center; justify-content: center; height: 42px" v-if="dataType == '气象'">
+    <div class="float" style="top: 3%; left: 3%; display: flex; align-items: center; justify-content: center; height: 42px">
       <el-button
         plain
         size="medium"
         style="margin-right: 25px"
         @click="back"
+        v-if="dataType == '气象'"
       >
         <i class="el-icon-caret-left" />&nbsp;回退
       </el-button>
@@ -35,14 +32,27 @@
         filterable
         :props="{ expandTrigger: 'hover', checkStrictly: true }"
         @change="chooseCity"
+        v-if="dataType == '气象'"
       />
+      <el-switch
+        style="margin-right: 25px"
+        v-model="showWarning"
+        active-text="显示灾害预警"
+        @change="showWarningChange"
+        v-if="dataType == '气象'">
+      </el-switch>
+      <div v-else style="margin-right: 25px"></div>
       <el-color-picker
         v-model="backgroundColor"
         show-alpha
+        style="margin-right: 25px"
         :predefine="predefineColors"
         @active-change="colorChange"
       />
-      <div id="geoView"></div>
+      <el-radio-group v-model="dataType" size="small" @input="changeType" style="background-color: rgba(0, 0, 0, 0)">
+        <el-radio-button label="气象"></el-radio-button>
+        <el-radio-button label="地质"></el-radio-button>
+      </el-radio-group>
     </div>
   </div>
 </template>
@@ -52,12 +62,15 @@ import * as echarts from 'echarts'
 import mapData from '../../assets/jsonData/china.json'
 // import cityData from '../../assets/jsonData/city.json'
 import citiesData from '../../assets/jsonData/cities.json'
-import { getCityJson } from '../../api/staticApi'
+import { getCityJson, getCenter } from '../../api/staticApi'
 import { getCityData, getDataTypes } from '../../api/dataApi'
 import Tooltip from '../../views/map/tooltip.vue'
 import GeoView from '../../views/map/GeoView.vue'
 import Vue from 'vue'
 import resize from './mixins/resize'
+import {
+  getWarningsService
+} from '@/api/user'
 const predefineColors = ['#ff4500',
   '#ff8c00',
   '#ffd700',
@@ -137,6 +150,38 @@ const virsualSet = {
   itemHeight: 180,
   zlevel: 3
 }
+const testWarning = [
+  {
+    title: "林它立约和",
+    address: [
+      "广东省",
+      "深圳市"
+    ],
+    type: "地震",
+    content: "身状精总已候达为身影特义任这气计里。管流些为次石说于人机而先号进西。业物织切风这米相越况织直江内两状就每。参去手三然等入率真同业第育般头精合。",
+    warningTime: "1984-07-23 23:39:42"
+  },
+  {
+    title: "林它立约和",
+    address: [
+      "广东省",
+      "深圳市"
+    ],
+    type: "台风",
+    content: "身状精总已候达为身影特义任这气计里。管流些为次石说于人机而先号进西。业物织切风这米相越况织直江内两状就每。参去手三然等入率真同业第育般头精合。",
+    warningTime: "1984-07-23 23:39:42"
+  },
+  {
+    title: "林它立约和",
+    address: [
+      "北京市",
+      "东城区"
+    ],
+    type: "地震",
+    content: "身状精总已候达为身影特义任这气计里。管流些为次石说于人机而先号进西。业物织切风这米相越况织直江内两状就每。参去手三然等入率真同业第育般头精合。",
+    warningTime: "1984-07-23 23:39:42"
+  }
+]
 export default {
   mixins: [resize],
   components: {
@@ -161,18 +206,148 @@ export default {
       dataTypes: [],
       dataType: '气象',
       typeIndex: 0,
+      warningList: testWarning,
+      warningSeries: [null, null, null],
+      centers: null,
+      showWarning: true
     }
   },
   created() {
     this.$nextTick(() => {
       getDataTypes().then((res) => {
         this.dataTypes = res.data
+        this.getWarnings()
         this.initMap()
         this.initCities()
       })
     })
   },
   methods: {
+    async getWarnings() {
+      //const result = await getWarningsService()
+      //this.warningList = result.data
+      const ds1 = []
+      const ds2 = []
+      const ds3 = []
+      const st = {
+        type: 'effectScatter',
+        coordinateSystem: 'geo',
+        z: 4,
+        zlevel: 4,
+        symbolSize: 16,
+        showEffectOn: 'render',
+        rippleEffect: { // 坐标点动画
+          period: 2,
+          scale: 4,
+          brushType: 'fill'
+        },
+        label: {
+          show: false
+        },
+        itemStyle: { // 坐标点颜色
+          show: true,
+          color: '#333',
+          shadowBlur: 30,
+          shadowColor: 'rgba(122, 233, 86, 1)'
+        },
+        emphasis: {
+          scale: true
+        },
+        encode: {
+          value: 2
+        },
+        tooltip: {
+            position: function (point, params, dom, rect, size) {
+                // 鼠标坐标和提示框位置的参考坐标系
+                let x = 0; // x坐标位置
+                let y = 0; // y坐标位置
+                const pointX = point[0];
+                const pointY = point[1];
+                const boxHeight = size.contentSize[1];
+                if (size.contentSize[0] > pointX) {
+                    x = 5
+                } else {
+                    x = pointX - 40
+                }
+                if (boxHeight > pointY) {
+                    y = 5
+                } else {
+                    y = pointY - boxHeight - 10
+                }
+                return [x, y]
+            },
+            extraCssText: 'box-shadow: 0 0 3px transparent;', // 额外附加到浮层的 css 样式
+            borderColor: "transparent",
+            trigger: 'item',
+            backgroundColor: "transparent",
+            enterable: true,
+            alwaysShowContent: true,
+            formatter: function (params) {
+                var str = "";
+                if (params.value) {
+                  //console.log(params)
+                    str = `<div class="map-tip"><div class="map-text">`;
+                    params.data.list.forEach(function(i) {
+                      str += `<div><span class="time">${i.type}</span><span class="time">${i.time}</span></div>`
+                    })
+                    str += `</div></div>`
+                }
+                return str
+            }
+        }
+      }
+      const map1 = new Map()
+      const map2 = new Map()
+      const map3 = new Map()
+      await this.warningList.forEach((warning) => {
+        if (warning.address.length > 0) {
+          if (map1.has(warning.address[0])) {
+            const item = map1.get(warning.address[0])
+            const value = item.value
+            const list = item.list
+            map1.set(warning.address[0], { value: value + 1, list: [...list, ...[{type: warning.type, time: warning.warningTime}]]})
+          } else {
+            map1.set(warning.address[0], { value: 1, list: [{type: warning.type, time: warning.warningTime}]})
+          }
+        }
+        if (warning.address.length > 1) {
+          if (map2.has(warning.address[1])) {
+            const item = map2.get(warning.address[1])
+            const value = item.value
+            const list = item.list
+            map2.set(warning.address[1], { value: value + 1, list: [...list, ...[{type: warning.type, time: warning.warningTime}]]})
+          } else {
+            map2.set(warning.address[1], { value: 1, list: [{type: warning.type, time: warning.warningTime}]})
+          }
+        }
+        if (warning.address.length > 2) {
+          if (map3.has(warning.address[2])) {
+            const item = map3.get(warning.address[2])
+            const value = item.value
+            const list = item.list
+            map3.set(warning.address[1], { value: value + 1, list: [...list, ...[{type: warning.type, time: warning.warningTime}]]})
+          } else {
+            map3.set(warning.address[1], { value: 1, list: [{type: warning.type, time: warning.warningTime}]})
+          }
+        }
+      })
+      this.centers = await getCenter()
+      //console.log(this.centers)
+      const that = this
+      map1.forEach(function(item, key) {
+        ds1.push({name: key, value: [...that.centers.get(key), ...[item.value]], list: item.list})
+      })
+      //console.log(ds1)
+      map2.forEach(function(item, key) {
+        ds2.push({name: key, value: [...that.centers.get(key), ...[item.value]], list: item.list})
+      })
+      map3.forEach(function(item, key) {
+        ds3.push({name: key, value: [...that.centers.get(key), ...[item.value]], list: item.list})
+      })
+      this.warningSeries[0] = {...st, ...{ data: ds1, geoIndex: 0 }}
+      this.warningSeries[1] = {...st, ...{ data: ds2, geoIndex: 1 }}
+      this.warningSeries[2] = {...st, ...{ data: ds3, geoIndex: 2 }}
+    },
     goCity() {
       console.log(1)
     },
@@ -188,12 +363,12 @@ export default {
     getJson(json) {
     //  const stringData = JSON.stringify(json, null, 2)
       const blob = new Blob([json], {
-        type: 'text/plain;charset=utf-8'
+        type: 'text/json'
       })
       const objectURL = URL.createObjectURL(blob)
       const aTag = document.createElement('a')
       aTag.href = objectURL
-      aTag.download = 'centers.txt'
+      aTag.download = 'centers.json'
       aTag.click()
       URL.revokeObjectURL(objectURL)
     },
@@ -226,22 +401,16 @@ export default {
     initCities() {
       this.cities = citiesData
       /*
-      var string = ""
+      var string = []
       mapData.features.forEach((feature1) => {
         if (feature1.properties.adcode != 100000) {
-          string += "adcode-" + feature1.properties.adcode +
-          "-center-" + feature1.properties.center[0] + "-" +
-          feature1.properties.center[1] + "\n"
+          string.push({name: feature1.properties.name, centers: feature1.properties.center})
           getCityJson(feature1.properties.adcode).then((res) => {
             res.data.features.forEach((feature2) => {
-              string += "adcode-" + feature2.properties.adcode +
-              "-center-" + feature2.properties.center[0] + "-" +
-              feature2.properties.center[1] + "\n"
+              string.push({name: feature2.properties.name, centers: feature2.properties.center})
               getCityJson(feature2.properties.adcode).then((res1) => {
                 res1.data.features.forEach((feature3) => {
-                  string += "adcode-" + feature3.properties.adcode +
-                  "-center-" + feature3.properties.center[0] + "-" +
-                  feature3.properties.center[1] + "\n"
+                  string.push({name: feature3.properties.name, centers: feature3.properties.center})
                 })
               })
             })
@@ -250,7 +419,7 @@ export default {
       })
       const that = this
       setTimeout(() => {
-        that.getJson(string)
+        that.getJson(JSON.stringify(string))
         console.log('start')
       }, 120000)
       */
@@ -260,13 +429,23 @@ export default {
       option.backgroundColor = color
       this.charts.setOption(option)
     },
+    showWarningChange(show) {
+      const option = this.charts.getOption()
+      if (show) {
+        option.series[this.layer + 1] = this.warningSeries[this.layer]
+      } else {
+        option.series[this.layer + 1] = null
+      }
+      this.charts.setOption(option, true)
+    },
     back() {
       const option = this.charts.getOption()
       if (this.layer == 1) {
         this.layer = 0
         this.maps[1] = null
-        option.series[1] = null
+        option.series[1] = this.showWarning ? this.warningSeries[0] : null
         option.dataset[1] = null
+        option.series[2] = null
         option.geo[1] = null
         option.geo[0].boundingCoords = this.glabalBounding
         option.geo[0].silent = false
@@ -276,8 +455,9 @@ export default {
       } else if (this.layer == 2) {
         this.layer = 1
         this.maps[2] = null
-        option.series[2] = null
+        option.series[2] = this.showWarning ? this.warningSeries[1] : null
         option.dataset[2] = null
+        option.series[3] = null
         option.geo[2] = null
         option.geo[0].boundingCoords = this.glabalBounding2
         option.geo[1].boundingCoords = this.glabalBounding2
@@ -347,6 +527,9 @@ export default {
             disabled: true
           }
         }
+        if (this.showWarning) {
+          series[geoIndex + 1] = this.warningSeries[geoIndex]
+        }
         option = { ...option, ...{
           visualMap: {...this.virsualSet, ...{
             min: this.dataTypes[this.typeIndex].valueRange[0],
@@ -365,6 +548,7 @@ export default {
           dataset: dataset,
           series: series
         }}
+        //console.log(option)
         this.charts.setOption(option, true)
       })
     },
@@ -436,8 +620,12 @@ export default {
               this.glabalBounding2 = newBoundingCoords
               this.maps[1] = res.data
               this.maps[2] = null
+              option.series[2] = null
+              option.dataset[2] = null
+              option.series[3] = null
+              option.geo[2] = null
               setTimeout(() => {
-                that.charts.setOption(option,{lazyUpdate: true})
+                that.charts.setOption(option, true)
                 that.showData(1)
               }, 500)
             }
@@ -476,7 +664,8 @@ export default {
       this.charts = echarts.init(this.$refs['charts'])
       const boundingCoords = this.calBounding(mapData)
       this.glabalBounding = [[boundingCoords[0][0] + 20, boundingCoords[0][1] - 2], [boundingCoords[1][0] - 20, boundingCoords[1][1] + 17]]
-      this.option.dataset = [null, null, null]
+      this.option.dataset = [null, null, null, null, null, null]
+      this.option.series = [null, null, null, null, null, null]
       this.option.geo = [
         { ...{ map: 'china',
           boundingCoords: this.glabalBounding,
@@ -527,5 +716,24 @@ export default {
 }
 .el-dropdown-menu__item, .el-menu-item {
   padding-left: 0;
+}
+.map-tip {
+    border: none;
+    width: 260px;
+    height: 160px;
+    padding: 22px 8px 36px 22px;
+    background-size: 100% 100%;
+}
+.map-text {
+    overflow: auto;
+    height: 100px;
+}
+.map-text .state-wrap {
+    margin-bottom: 6px;
+    display: flex;
+}
+.map-text .time {
+    margin-left: 10px;
+    margin-right: 10px;
 }
 </style>
