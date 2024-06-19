@@ -255,6 +255,8 @@ import MixChart from './components/Charts/MixChart.vue'
 import _ from 'lodash'
 import AMap from './components/AMap/AMap.vue'
 // import CurrentInfo from './components/CurrentInfo.vue'
+const freeKey = "05c89ff27fa14e36aa027d3ce650a5d8"
+const baseURL = "devapi.qweather.com"
 export default {
   name: 'City',
   components: {
@@ -372,7 +374,7 @@ export default {
     async search() {
       // 在这里使用 AJAX 获取后台数据，并将获取的数据赋值给 this.options
       const res = await Axios.get(
-        `https://geoapi.qweather.com/v2/city/lookup?location=${this.location}&number=5&range=cn&key=c61a9a73e7b44964887830a15e0bbbdd`
+        `https://geoapi.qweather.com/v2/city/lookup?location=${this.location}&number=5&range=cn&key=${freeKey}`
       )
       // console.log('res', res)
       if (res.data.location) {
@@ -390,7 +392,7 @@ export default {
       const headers = Object.assign({}, Axios.defaults.headers.common)
       delete headers['Apifoxtoken']
       const res = await Axios.get(
-        `https://geoapi.qweather.com/v2/city/lookup?location=${this.location}&number=5&range=cn&key=c61a9a73e7b44964887830a15e0bbbdd`
+        `https://geoapi.qweather.com/v2/city/lookup?location=${this.location}&number=5&range=cn&key=${freeKey}`
         ,
         headers)
       this.wt_data = res.data
@@ -423,7 +425,7 @@ export default {
 
       // 当前实时天气
       const res = await Axios.get(
-        `https://api.qweather.com/v7/weather/now?location=${locationId}&key=c61a9a73e7b44964887830a15e0bbbdd`
+        `https://${baseURL}/v7/weather/now?location=${locationId}&key=${freeKey}`
         , {
           headers: {
             // 这里不设置任何请求头，即空对象
@@ -440,7 +442,7 @@ export default {
       // console.log(locationId, 'locationID')
       // console.log(params)
       const res_location = await Axios.get(
-        `https://api.qweather.com/v7/weather/7d?location=${locationId}&key=c61a9a73e7b44964887830a15e0bbbdd`
+        `https://${baseURL}/v7/weather/7d?location=${locationId}&key=${freeKey}`
       )
       // this.days_7 = res_location.data.daily
       this.days_7 = res_location.data.daily
@@ -452,11 +454,11 @@ export default {
       // this.$forceUpdate()
       // 小时天气
       const res_hourly = await Axios.get(
-        `https://api.qweather.com/v7/weather/24h?location=${locationId}&key=c61a9a73e7b44964887830a15e0bbbdd`)
+        `https://${baseURL}/v7/weather/24h?location=${locationId}&key=${freeKey}`)
       this.hourly = res_hourly.data.hourly
       // 灾害预警
       const res_event = await Axios.get(
-        `https://api.qweather.com/v7/warning/now?location=${locationId}&key=c61a9a73e7b44964887830a15e0bbbdd`
+        `https://${baseURL}/v7/warning/now?location=${locationId}&key=${freeKey}`
       )
       this.events = res_event.data.warning
       // console.log('events', this.events)
